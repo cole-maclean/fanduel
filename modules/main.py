@@ -5,6 +5,8 @@ import collections
 import difflib
 import numpy
 from openopt import *
+import general_utils as Ugen
+from time import sleep
 def build_player_universe(full_playerlist,goalie_list):
 	delkeys = []
 	for key,data in full_playerlist.iteritems():
@@ -92,7 +94,7 @@ def build_full_player_dictionary():
 				Avg_SavePercent = numpy.mean(np_array)
 				d['Avg_Line_Goals'] = (Avg_SavePercent - 1) * 10#arbitrary scaling
 			else:
-				np_array = numpy.array([database_operations.getSec(s) for s in player_data_dict[mapped_name]['ToI']])
+				np_array = numpy.array([Ugen.getSec(s) for s in player_data_dict[mapped_name]['ToI']])
 				Avg_ToI = numpy.mean(numpy.mean(np_array[numpy.nonzero(np_array)]))
 				d['Avg_ToI'] = Avg_ToI
 			player_data_dict[mapped_name].update(d)

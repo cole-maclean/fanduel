@@ -1,12 +1,15 @@
 import MySQLdb
 import collections
 import general_utils as Ugen
-def get_player_data_dict(GameIDLimit):#TODO: Limits for history games and season
+import time
+def get_connection_cursor():
     with open('C:\Users\Cole\Desktop\Fanduel\Parameters.txt',"r") as myfile:
         passwd = myfile.read()
     conn = MySQLdb.Connection(db="autotrader",host="localhost",user="root",passwd=passwd);
     cur = conn.cursor()
-
+    return cur
+def get_player_data_dict(GameIDLimit):#TODO: Limits for history games and season
+    cur = get_connection_cursor()
     sql = "SELECT Player, GameID, Stat1, Stat2, Stat3, Stat4, Stat5, Stat6, Stat7, Team FROM hist_player_data WHERE GameID > " + GameIDLimit
     cur.execute(sql)
     resultset = cur.fetchall()
@@ -68,8 +71,7 @@ def write_to_db(static_columns,static_data,write_data): #TODO: need to generaliz
     insert_mysql(columns, placeholders, static_data)
 def insert_mysql(columns, placeholders, data):
     sql = "INSERT INTO hist_player_data (%s) VALUES (%s)" % (columns, placeholders)
-    conn = MySQLdb.Connection(db="autotrader",host="localhost",user="root",passwd="Timeflies1");
-    cur = conn.cursor()
+    cur = get_connection_cursor()
     cur.execute(sql, data)
     cur.execute('COMMIT')
     time.sleep(.1)

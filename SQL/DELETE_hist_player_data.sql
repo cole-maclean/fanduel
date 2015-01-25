@@ -1,0 +1,1 @@
+DELETE FROM hist_player_data WHERE GameID >= 2014020696
