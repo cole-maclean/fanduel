@@ -42,7 +42,7 @@ def NHL_gamedata(sGameSeason,sGameID):
 				except KeyError:
 					print str(player_stats['num']) + " KeyError"
 					player = str(player_stats['num']) + " KeyError"
-				dbo.write_to_db('Player, GameID, Team',[player,sGameID,player_team],player_stats)
+				dbo.write_to_db('hist_player_data','Player, GameID, Team',[player,sGameID,player_team],player_stats)
 		roster_team = 'away'
 	return "Data Succesfully loaded"
 def get_NHL_roster_data(sGameSeason, sGameID):
