@@ -1,17 +1,8 @@
 import MySQLdb
 import collections
-#from openopt import *
-def getSec(s):
-    try:
-        if len(s) == 2:
-            s = s + ':00'
-        l = s.split(':')
-        return int(l[0]) * 60 + int(l[1])
-    except ValueError:
-        return 0
-
+import general_utils as Ugen
 def get_player_data_dict(GameIDLimit):#TODO: Limits for history games and season
-    with open('C:\Users\Cole\Desktop\FanduelV2\Parameters.txt',"r") as myfile:
+    with open('C:\Users\Cole\Desktop\Fanduel\Parameters.txt',"r") as myfile:
         passwd = myfile.read()
     conn = MySQLdb.Connection(db="autotrader",host="localhost",user="root",passwd=passwd);
     cur = conn.cursor()
@@ -36,7 +27,7 @@ def get_player_data_dict(GameIDLimit):#TODO: Limits for history games and season
                     if data_point == 'weighted_toi':
                         try:
                             if rw[7]:
-                                player_dict[rw[0]][data_point].append(getSec(rw[4]) * float(rw[7])) #Weighted goilie ToI, arbitrary div by 3 scaling
+                                player_dict[rw[0]][data_point].append(Ugen.getSec(rw[4]) * float(rw[7])) #Weighted goilie ToI, arbitrary div by 3 scaling
                             else:
                                 player_dict[rw[0]][data_point].append(0)
                         except TypeError:
@@ -55,7 +46,7 @@ def build_data_dict_structure(column_names, rw_data, start_rw = 0): #TODO: seems
                 if d['SavePercent'][0] == '':
                     d[column] = [0]
                 else:
-                    d[column] = [getSec(d['ToI'][0]) * float(d['SavePercent'][0])]
+                    d[column] = [Ugen.getSec(d['ToI'][0]) * float(d['SavePercent'][0])]
             except TypeError:
                 d[column] = [0]
             except ValueError:
@@ -67,6 +58,21 @@ def build_data_dict_structure(column_names, rw_data, start_rw = 0): #TODO: seems
             d[column] = [rw_data[start_rw]]
         start_rw = start_rw + 1
     return d
+def write_to_db(static_columns,static_data,write_data): #TODO: need to generalize (columns, placeholders, etc.)
+    row_data = [str(v) for v in write_data.values()]
+    static_data.extend(row_data)
+    placeholders = ', '.join(['%s'] * (len(static_data)))
+    columns = static_columns
+    for i in range(1,len(row_data) + 1):
+        columns = columns + ', Stat' + str(i)
+    insert_mysql(columns, placeholders, static_data)
+def insert_mysql(columns, placeholders, data):
+    sql = "INSERT INTO hist_player_data (%s) VALUES (%s)" % (columns, placeholders)
+    conn = MySQLdb.Connection(db="autotrader",host="localhost",user="root",passwd="Timeflies1");
+    cur = conn.cursor()
+    cur.execute(sql, data)
+    cur.execute('COMMIT')
+    time.sleep(.1)
 #def compute_avg_toi(player_data_dict,game_limit):
 #Cell(1,2).value = get_player_data_dict('2014020001')['Marc-Andre Fleury']
 #os.system("pause")
