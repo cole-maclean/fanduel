@@ -6,7 +6,6 @@ import difflib
 import numpy
 from openopt import *
 import general_utils as Ugen
-from time import sleep
 def build_player_universe(full_playerlist,goalie_list):
 	delkeys = []
 	for key,data in full_playerlist.iteritems():
@@ -62,7 +61,7 @@ def build_lineup_avg_goals_dict(player_data_dict):
 def build_full_player_dictionary():
 	player_map = player_mapping()
 	rw = 2
-	player_data_dict = database_operations.get_player_data_dict('2014020600')
+	player_data_dict = database_operations.get_player_data_dict('nhl','2014020600')
 	lineup_avg_goals_dict = build_lineup_avg_goals_dict(player_data_dict)
 	columns = ['G','C','LW','RW','D','Position','FD_name','Dummy1','TeamID','Dummy2','Salary','PPG','GamesPlayed','Dummy3','Dummy4','Injury','InjuryAge','Dummy5']
  	for player_data in data_scrapping.get_FD_playerlist().iteritems():

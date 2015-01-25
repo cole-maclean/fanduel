@@ -8,7 +8,10 @@ def get_connection_cursor():
     conn = MySQLdb.Connection(db="autotrader",host="localhost",user="root",passwd=passwd);
     cur = conn.cursor()
     return cur
-def get_player_data_dict(GameIDLimit):#TODO: Limits for history games and season
+def get_data_dict_structure(sport,position):
+    data_dict_structures = {'nhl':{'player':['GameID','Assists','num','Goals','SoG','ToI','PlusMinus','PiM','Team'],'goalie':['GameID','num','Saves','ToI','GoalsAgainst','ShotsAgainst','SavePercent','weighted_toi','Team']}} #might need to move this to config file
+    return data_dict_structures[sport][position]
+def get_player_data_dict(sport, GameIDLimit):#TODO: Limits for history games and season
     cur = get_connection_cursor()
     sql = "SELECT Player, GameID, Stat1, Stat2, Stat3, Stat4, Stat5, Stat6, Stat7, Team FROM hist_player_data WHERE GameID > " + GameIDLimit
     cur.execute(sql)
@@ -22,7 +25,7 @@ def get_player_data_dict(GameIDLimit):#TODO: Limits for history games and season
                     player_dict[rw[0]][data_point].append(rw[data_index])
                     data_index = data_index + 1
             else:
-                player_dict[rw[0]] = build_data_dict_structure(['GameID','Assists','num','Goals','SoG','ToI','PlusMinus','PiM','Team'],rw,1)
+                player_dict[rw[0]] = build_data_dict_structure(get_data_dict_structure(sport,'player'),rw,1)
         else:
             if  rw[0] in player_dict:
                 data_index = 1
@@ -39,7 +42,7 @@ def get_player_data_dict(GameIDLimit):#TODO: Limits for history games and season
                         player_dict[rw[0]][data_point].append(rw[data_index])
                     data_index = data_index + 1
             else:
-                player_dict[rw[0]] = build_data_dict_structure(['GameID','num','Saves','ToI','GoalsAgainst','ShotsAgainst','SavePercent','weighted_toi','Team'],rw,1)
+                player_dict[rw[0]] = build_data_dict_structure(get_data_dict_structure(sport,'goalie'),rw,1)
     return player_dict
 def build_data_dict_structure(column_names, rw_data, start_rw = 0): #TODO: seems like a good place for functional thing (decorator) 
     d = collections.OrderedDict()
