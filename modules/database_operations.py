@@ -9,7 +9,7 @@ def get_connection_cursor():
     cur = conn.cursor()
     return cur
 def get_data_dict_structure(sport,position):
-    data_dict_structures = {'nhl':{'player':['GameID','Assists','num','Goals','SoG','ToI','PlusMinus','PiM','Team'],'goalie':['GameID','num','Saves','ToI','GoalsAgainst','ShotsAgainst','SavePercent','weighted_toi','Team']}} #might need to move this to config file
+    data_dict_structures = {'nhl':{'player':['GameID','Assists','num','Goals','SoG','ToI','PlusMinus','PiM','Team'],'goalie':['GameID','num','Saves','ToI','GoalsAgainst','ShotsAgainst','SavePercent','weighted_toi=int(Ugen.getSec(player_dict[rw_data[0]]["ToI"][-1]))*float(player_dict[rw_data[0]]["SavePercent"][-1])','Team']}} #might need to move this to config file
     return data_dict_structures[sport][position]
 def get_player_data_dict(sport, GameIDLimit):#TODO: Limits for history games and season
     cur = get_connection_cursor()
@@ -19,51 +19,28 @@ def get_player_data_dict(sport, GameIDLimit):#TODO: Limits for history games and
     player_dict = collections.OrderedDict()
     for rw in resultset:
         if rw[8] != None: #Check if player is goalie, hack job need to clean
-            if  rw[0] in player_dict:
-                data_index = 1
-                for data_point in player_dict[rw[0]]:
-                    player_dict[rw[0]][data_point].append(rw[data_index])
-                    data_index = data_index + 1
-            else:
-                player_dict[rw[0]] = build_data_dict_structure(get_data_dict_structure(sport,'player'),rw,1)
+            player_dict = build_data_dict_structure(player_dict,get_data_dict_structure(sport,'player'),rw,1)
         else:
-            if  rw[0] in player_dict:
-                data_index = 1
-                for data_point in player_dict[rw[0]]:
-                    if data_point == 'weighted_toi':
-                        try:
-                            if rw[7]:
-                                player_dict[rw[0]][data_point].append(Ugen.getSec(rw[4]) * float(rw[7])) #Weighted goilie ToI, arbitrary div by 3 scaling
-                            else:
-                                player_dict[rw[0]][data_point].append(0)
-                        except TypeError:
-                            player_dict[rw[0]][data_point].append(0)
-                    else:
-                        player_dict[rw[0]][data_point].append(rw[data_index])
-                    data_index = data_index + 1
-            else:
-                player_dict[rw[0]] = build_data_dict_structure(get_data_dict_structure(sport,'goalie'),rw,1)
+            player_dict = build_data_dict_structure(player_dict,get_data_dict_structure(sport,'goalie'),rw,1)
     return player_dict
-def build_data_dict_structure(column_names, rw_data, start_rw = 0): #TODO: seems like a good place for functional thing (decorator) 
+def build_data_dict_structure(player_dict,column_names, rw_data, start_rw = 0): #TODO: seems like a good place for functional thing (decorator) 
     d = collections.OrderedDict()
     for column in column_names:
-        if column == 'weighted_toi': #TODO: hack job, need to clean up with functional way of allowing functions in column definition and values
-            try:
-                if d['SavePercent'][0] == '':
-                    d[column] = [0]
-                else:
-                    d[column] = [Ugen.getSec(d['ToI'][0]) * float(d['SavePercent'][0])]
-            except TypeError:
-                d[column] = [0]
-            except ValueError:
-                print d['SavePercent'][0]
-                print 2
-                print rw_data[0]
-                os.system('pause')
+        if '=' in column:
+            parsed_column = column.split("=")
+            col_name = parsed_column[0]
+            col_function = parsed_column[1]
+            data_value = eval(col_function)
         else:
-            d[column] = [rw_data[start_rw]]
+            col_name = column
+            data_value = rw_data[start_rw]
+        if rw_data[0] in player_dict and col_name in player_dict[rw_data[0]]:
+            player_dict[rw_data[0]][col_name].append(data_value)
+        else:
+            d[col_name] = [data_value]
+            player_dict[rw_data[0]] = d
         start_rw = start_rw + 1
-    return d
+    return player_dict
 def write_to_db(table,static_columns,static_data,write_data): #TODO: need to generalize (columns, placeholders, etc.)
     row_data = [str(v) for v in write_data.values()]
     static_data.extend(row_data)
