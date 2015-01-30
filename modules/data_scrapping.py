@@ -90,7 +90,7 @@ def get_starting_goalies():
 				goalie_list.append(goalie)
 	return goalie_list
 def get_FD_contests():
-	with open('C:/Users/Cole/Desktop/FanduelV2/fanduel/contest html.html',"r") as myfile:
+	with open('C:/Users/Cole/Desktop/Fanduel/fanduel/contest html.html',"r") as myfile:
 		data = myfile.read()
 	data= data.replace('false',"False")
 	data= data.replace('true',"True")
@@ -101,7 +101,7 @@ def get_FD_contests():
 	parsed_html = parsed_html.replace(':,',':0,')
 	contest_dict = ast.literal_eval(parsed_html)
 	return contest_dict['additions']
-def get_best_contests(sport_list,game_type_list,size_range,entry_fee_list,percent_full):
+def get_best_contests(sport_list,game_type_list,size_range,entry_fee_list,percent_full,game_start):
 	contest_dict = get_FD_contests()
 	with open('C:/Users/Cole/Desktop/Fanduel/fanduel/userwinscache.txt',"r") as myfile:
 		data = myfile.read()
@@ -116,9 +116,10 @@ def get_best_contests(sport_list,game_type_list,size_range,entry_fee_list,percen
              'size':  int(contest['size']), 
              'gameType': contest['flags'],
              'entriesData': int(contest['entriesData']),
+             'startString': str(contest['startString'])
          } 
          for contest in contest_dict if contest['sport'] in sport_list and size_range[0] <= int(contest['size']) <=size_range[1] \
-          and contest['entryFee'] in entry_fee_list and  contest['flags'] in game_type_list and \
+          and contest['entryFee'] in entry_fee_list and  contest['flags'] in game_type_list and  game_start in contest['startString'] and \
            float(contest['entriesData'])/float(contest['size']) > percent_full and float(contest['entriesData'])/float(contest['size']) < 1
          ]
 	for contest in potential_contests:
@@ -164,9 +165,9 @@ def get_best_contests(sport_list,game_type_list,size_range,entry_fee_list,percen
 		contest['game_url'] = 'https://www.fanduel.com/e/Game/' + contest['game_id'] + '?tableId=' + contest['contest_id'] + '&fromLobby=true'
 	with open('C:/Users/Cole/Desktop/Fanduel/fanduel/userwinscache.txt',"w") as myfile:
 		myfile.write(str(user_wins_cache))
-	return potential_contests
+	return sorted(potential_contests,key=operator.itemgetter('nhl_avg_top_wins'),reverse=False)
 def get_FD_playerlist():
- 	FD_list = ast.literal_eval(Uds.parse_html('https://www.fanduel.com/e/Game/11498?tableId=9979076&fromLobby=true',"FD.playerpicker.allPlayersFullData = ",";"))
+ 	FD_list = ast.literal_eval(Uds.parse_html('https://www.fanduel.com/e/Game/11536?tableId=10178596&fromLobby=true',"FD.playerpicker.allPlayersFullData = ",";"))
  	#for player_data in FD_list:
  		#rival_team = matchups[FD_list[player_data][3]][1]
  		#FD_list[player_data].append(rival_team)
@@ -214,20 +215,15 @@ def build_lineup_dict():
 	return team_lineups_dict
 def output_best_contests():
 	rw = 2
-	items = [contest for contest in get_best_contests(['nhl'],[{"standard":1,"50_50":1}],[3,100],[1,2,5,10],0.5) if contest['nhl_avg_top_wins'] <= Cell('Parameters','clMaxAvgWins').value]
-	constraints = lambda values : (
-    	values['entryFee'] <= Cell('Parameters','clEntryLimit').value,
-    	values['entryFee'] >= Cell('Parameters','clEntryLimit').value*.7,
-    )
-	objective  = 'nhl_avg_top_wins_weighted_avg'
-	p = KSP(objective, items, goal = 'min', constraints=constraints)
-	r = p.solve('glpk',iprint = 0)
-	for contest in r.xf:
-		Cell('Best Contests',rw,1).value = items[contest]['game_url']
-		Cell('Best Contests',rw,2).value = items[contest]['nhl_avg_top_wins']
-		Cell('Best Contests',rw,3).value = items[contest]['entriesData']
-		Cell('Best Contests',rw,4).value = items[contest]['entryFee']
-		rw = rw + 1
-#print output_best_contests()
+	all_contests = get_best_contests(['nhl'],[{"standard":1,"50_50":1}],[3,100],[1,2,5,10],0.5,'7:00')
+	for contest in all_contests:
+		if contest['nhl_avg_top_wins'] <=Cell('Parameters','clMaxAvgWins').value:
+			Cell('Best Contests',rw,1).value = contest['game_url']
+			Cell('Best Contests',rw,2).value = contest['nhl_avg_top_wins']
+			Cell('Best Contests',rw,3).value = contest['size']
+			Cell('Best Contests',rw,4).value = contest['entryFee']
+			Cell('Best Contests',rw,5).value = contest['entriesData']
+			rw = rw + 1
+print output_best_contests()
 #print build_lineup_dict()['TOR']
 #os.system('pause')

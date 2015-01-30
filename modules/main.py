@@ -61,9 +61,7 @@ def build_lineup_avg_goals_dict(player_data_dict):
 def build_full_player_dictionary():
 	player_map = player_mapping()
 	rw = 2
-	player_data_dict = database_operations.get_player_data_dict('nhl','2014020600')
-	print player_data_dict['Jonathan Quick']['weighted_toi']
-	os.system('pause')
+	player_data_dict = database_operations.get_player_data_dict('nhl','2014020640')
 	lineup_avg_goals_dict = build_lineup_avg_goals_dict(player_data_dict)
 	columns = ['G','C','LW','RW','D','Position','FD_name','Dummy1','TeamID','Dummy2','Salary','PPG','GamesPlayed','Dummy3','Dummy4','Injury','InjuryAge','Dummy5']
  	for player_data in data_scrapping.get_FD_playerlist().iteritems():
@@ -118,8 +116,8 @@ def optimum_roster():
 	player_data_dict = build_full_player_dictionary()
 	starting_goalies = data_scrapping.get_starting_goalies()
 	player_universe = build_player_universe(player_data_dict,starting_goalies)
-	losing_team_list =['OTT','EDM','NSH','MIN','VAN','PHI','BOS','DAL','ARI']
-	ex_list = []
+	losing_team_list =['NJD','CAR','NSH','ANA','CHI','BUF','COL']
+	ex_list = ['Nick Spaling']
 	items = [
          {
              'name': player,
@@ -144,14 +142,12 @@ def optimum_roster():
         values['LW'] == 2,
         values['RW'] == 2,
         values['D'] == 2,
-        # And now add uniqueness constraints: all pids must be unique and max 3 players per team
     )
 	objective  = 'Weighted_Avg_Line_Goals'
-	#print player_data_dict['Keith Yandle']['Salary']
 	p = KSP(objective, items, goal = 'max', constraints=constraints)
 	r = p.solve('glpk',iprint = 0)
 	return r,player_universe,objective
-data_scrapping.update_gamedata(Cell("Parameters",'clLastGameDataID').value)
+#data_scrapping.update_gamedata(Cell("Parameters",'clLastGameDataID').value)
 rw = 2
 r,player_universe,objective = optimum_roster()
 for player in r.xf:
