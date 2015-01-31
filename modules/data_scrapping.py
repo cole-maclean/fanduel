@@ -1,6 +1,5 @@
 import json
 import urllib2
-import MySQLdb
 import os
 import time
 import ast
@@ -8,67 +7,50 @@ from bs4 import BeautifulSoup
 import numpy
 import operator
 import math
-from openopt import *
 import database_operations as dbo
 import data_scrapping_utils as Uds
 def update_gamedata(LastGameDataID): #TODO: add optional paramters for which tables to update, check team roster for player #s, consideration for other sports
-	# game data
 	print 'Only update game data when no games are currently in progress'
 	os.system('pause')
 	for i in range(LastGameDataID + 1,10000): 
 		sGameID = '201402' + str(i).zfill(4)
-		data_status = NHL_gamedata('20142015',sGameID)
+		data_status = get_NHL_gamedata('20142015',sGameID)
 		if data_status == "URL not found":
 			break
-def NHL_gamedata(sGameSeason,sGameID):
-	sUrl = 'http://live.nhle.com/GameData/' + sGameSeason + '/' + sGameID + '/gc/gcbx.jsonp'
-	json_data = Uds.get_JSON_data(sUrl, ['GCBX.load(',')'])
-	if json_data == "URL not found":
+def get_NHL_gamedata(sGameSeason,sGameID):
+	game_stats_Url = 'http://live.nhle.com/GameData/' + sGameSeason + '/' + sGameID + '/gc/gcbx.jsonp'
+	game_stats_data = Uds.get_JSON_data(game_stats_Url, ['GCBX.load(',')'])
+	if game_stats_data == "URL not found":
 		Cell("Parameters",'clLastGameDataID').value = int(sGameID[-4:]) -1
 		return "URL not found"
-	home_player_num_lookup,home_team, away_player_num_lookup,away_team = get_NHL_roster_data(sGameSeason,sGameID)
-	roster_team = 'home'
-	for team in json_data['rosters'].values(): #roster_team is a hackjob, need to clean this up
-		if roster_team == 'home':
-			player_num_lookup = home_player_num_lookup
-			player_team = home_team
-		elif roster_team == 'away':
-			player_num_lookup = away_player_num_lookup
-			player_team = away_team
-		for player_types in team.values():
-			for player_stats in player_types:
-				try:
-					player = player_num_lookup[player_stats['num']]
-				except KeyError:
-					print str(player_stats['num']) + " KeyError"
-					player = str(player_stats['num']) + " KeyError"
-				dbo.write_to_db('hist_player_data','Player, GameID, Team',[player,sGameID,player_team],player_stats)
-		roster_team = 'away'
-	return "Data Succesfully loaded"
-def get_NHL_roster_data(sGameSeason, sGameID):
-	home_player_num_lookup = {}
-	away_player_num_lookup = {}
-	sUrl = 'http://live.nhle.com/GameData/' + sGameSeason + '/' + sGameID + '/gc/gcsb.jsonp'
-	json_data = Uds.get_JSON_data(sUrl, ['GCSB.load(',')'])
-	HomeTeam = json_data['h']['ab']
-	AwayTeam = json_data['a']['ab']
-	HUrl = 'http://nhlwc.cdnak.neulion.com/fs1/nhl/league/teamroster/' + HomeTeam + '/iphone/clubroster.json'
-	AUrl = 'http://nhlwc.cdnak.neulion.com/fs1/nhl/league/teamroster/' + AwayTeam + '/iphone/clubroster.json'
-	home_roster_data = Uds.get_JSON_data(HUrl)
-	for position in home_roster_data.values()[1:]:
+	roster_data_Url = 'http://live.nhle.com/GameData/' + sGameSeason + '/' + sGameID + '/gc/gcsb.jsonp'
+	roster_data = Uds.get_JSON_data(roster_data_Url, ['GCSB.load(',')'])
+	HomeTeam = roster_data['h']['ab']
+	AwayTeam = roster_data['a']['ab']
+	print HomeTeam + " " + write_nhl_game_data(game_stats_data['rosters']['home'],HomeTeam,sGameID)
+	print AwayTeam + " " + write_nhl_game_data(game_stats_data['rosters']['away'],AwayTeam,sGameID)
+def write_nhl_game_data(team_data,player_team,sGameID):
+	player_num_lookup = get_NHL_team_players(player_team)
+	for player_types in team_data.values():
+		for player_stats in player_types:
+			try:
+				player = player_num_lookup[player_stats['num']]
+			except KeyError:
+				print str(player_stats['num']) + " KeyError"
+				player = str(player_stats['num']) + " KeyError"
+			dbo.write_to_db('hist_player_data','Player, GameID, Team',[player,sGameID,player_team],player_stats)
+	return 'data succesfully loaded'
+def get_NHL_team_players(team):
+	roster_data_url = 'http://nhlwc.cdnak.neulion.com/fs1/nhl/league/teamroster/' + team + '/iphone/clubroster.json'
+	roster_data = Uds.get_JSON_data(roster_data_url)
+	team_player_num_lookup = {}
+	for position in roster_data.values()[1:]:
 		for player in position:
 			try:
-				home_player_num_lookup[player['number']] = player['name']
+				team_player_num_lookup[player['number']] = player['name']
 			except KeyError:
 				print player['name'] + " num lookup failure"
-	away_roster_data = Uds.get_JSON_data(AUrl)
-	for position in away_roster_data.values()[1:]:
-		for player in position:
-			try:
-				away_player_num_lookup[player['number']] = player['name']
-			except KeyError:
-				print player['name'] + " num lookup failure"
-	return home_player_num_lookup, HomeTeam, away_player_num_lookup,AwayTeam
+	return team_player_num_lookup
 def get_starting_goalies():
 	goalie_list = []
 	response = urllib2.urlopen('http://www2.dailyfaceoff.com/starting-goalies/')
@@ -224,6 +206,6 @@ def output_best_contests():
 			Cell('Best Contests',rw,4).value = contest['entryFee']
 			Cell('Best Contests',rw,5).value = contest['entriesData']
 			rw = rw + 1
-print output_best_contests()
+#print output_best_contests()
 #print build_lineup_dict()['TOR']
 #os.system('pause')
