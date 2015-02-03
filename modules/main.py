@@ -61,7 +61,7 @@ def build_lineup_avg_goals_dict(player_data_dict):
 def build_full_player_dictionary():
 	player_map = player_mapping()
 	rw = 2
-	player_data_dict = database_operations.get_player_data_dict('nhl','2014020640')
+	player_data_dict = database_operations.get_player_data_dict('nhl','2014020680')
 	lineup_avg_goals_dict = build_lineup_avg_goals_dict(player_data_dict)
 	columns = ['G','C','LW','RW','D','Position','FD_name','Dummy1','TeamID','Dummy2','Salary','PPG','GamesPlayed','Dummy3','Dummy4','Injury','InjuryAge','Dummy5']
  	for player_data in data_scrapping.get_FD_playerlist().iteritems():
@@ -116,8 +116,8 @@ def optimum_roster():
 	player_data_dict = build_full_player_dictionary()
 	starting_goalies = data_scrapping.get_starting_goalies()
 	player_universe = build_player_universe(player_data_dict,starting_goalies)
-	losing_team_list =['NJD','CAR','NSH','ANA','CHI','BUF','COL']
-	ex_list = ['Nick Spaling']
+	losing_team_list =['FLA','CGY','EDM']
+	ex_list = ['Matt Nieto','James Sheppard','Melker Karlsson','Tomas Hertl','Adam Lowry','Chris Thorburn','Evander Kane','Logan Couture','Matt Tennyson','Barclay Goodrow']
 	items = [
          {
              'name': player,

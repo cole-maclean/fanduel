@@ -143,13 +143,12 @@ def get_best_contests(sport_list,game_type_list,size_range,entry_fee_list,percen
 			arr = numpy.array(user_wins_array[contest_sport.upper()])
 			top_player_count = math.ceil(0.25*contest['size'])
 			contest[contest_sport + '_avg_top_wins'] = numpy.mean(arr[arr.argsort()[-top_player_count:][::-1]])#Need to decide best stats for paticualar contest type
-			contest[contest_sport + '_avg_top_wins_weighted_avg'] = contest[contest_sport + '_avg_top_wins']*contest['entryFee']/Cell('Parameters','clEntryLimit').value
-		contest['game_url'] = 'https://www.fanduel.com/e/Game/' + contest['game_id'] + '?tableId=' + contest['contest_id'] + '&fromLobby=true'
+			contest['game_url'] = 'https://www.fanduel.com/e/Game/' + contest['game_id'] + '?tableId=' + contest['contest_id'] + '&fromLobby=true'
 	with open('C:/Users/Cole/Desktop/Fanduel/fanduel/userwinscache.txt',"w") as myfile:
 		myfile.write(str(user_wins_cache))
 	return sorted(potential_contests,key=operator.itemgetter('nhl_avg_top_wins'),reverse=False)
 def get_FD_playerlist():
- 	FD_list = ast.literal_eval(Uds.parse_html('https://www.fanduel.com/e/Game/11536?tableId=10178596&fromLobby=true',"FD.playerpicker.allPlayersFullData = ",";"))
+ 	FD_list = ast.literal_eval(Uds.parse_html('https://www.fanduel.com/e/Game/11550?tableId=10251744&fromLobby=true',"FD.playerpicker.allPlayersFullData = ",";"))
  	#for player_data in FD_list:
  		#rival_team = matchups[FD_list[player_data][3]][1]
  		#FD_list[player_data].append(rival_team)
@@ -206,6 +205,6 @@ def output_best_contests():
 			Cell('Best Contests',rw,4).value = contest['entryFee']
 			Cell('Best Contests',rw,5).value = contest['entriesData']
 			rw = rw + 1
-#print output_best_contests()
+print output_best_contests()
 #print build_lineup_dict()['TOR']
 #os.system('pause')
