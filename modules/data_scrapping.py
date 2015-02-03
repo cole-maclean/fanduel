@@ -148,7 +148,7 @@ def get_best_contests(sport_list,game_type_list,size_range,entry_fee_list,percen
 		myfile.write(str(user_wins_cache))
 	return sorted(potential_contests,key=operator.itemgetter('nhl_avg_top_wins'),reverse=False)
 def get_FD_playerlist():
- 	FD_list = ast.literal_eval(Uds.parse_html('https://www.fanduel.com/e/Game/11550?tableId=10251744&fromLobby=true',"FD.playerpicker.allPlayersFullData = ",";"))
+ 	FD_list = ast.literal_eval(Uds.parse_html('https://www.fanduel.com/e/Game/11556?tableId=10268692&fromLobby=true',"FD.playerpicker.allPlayersFullData = ",";"))
  	#for player_data in FD_list:
  		#rival_team = matchups[FD_list[player_data][3]][1]
  		#FD_list[player_data].append(rival_team)
@@ -159,6 +159,7 @@ def team_mapping():
 		team_map[Cell('Team Map',rw,1).value] = Cell('Team Map',rw,2).value
 	return team_map
 def build_lineup_dict():
+	rw = 2
 	if Cell('Parameters','clLineupsCache').value == None:
 		team_map = team_mapping()
 		team_lineups_dict = {}
@@ -176,18 +177,14 @@ def build_lineup_dict():
 					lines.append(line)
 					break
 				elif lineup.get('id')[-1] == line_id:
-					try:
-						line.append(str(lineup.get_text()).strip())
-					except:
-						print lineup.get_text()
+					clean_player_str = str(lineup.get_text()).rstrip()
+					line.append(clean_player_str)
 				else:
 					if line:
 						lines.append(line)
 					line = []
-					try:
-						line.append(str(lineup.get_text()).strip())
-					except:
-						print strlineup.get_text()
+					clean_player_str = str(lineup.get_text()).rstrip()
+					line.append(clean_player_str)
 					line_id = lineup.get('id')[-1]			
 			team_lineups_dict[team] = lines
 		Cell('Parameters','clLineupsCache').value = team_lineups_dict
@@ -205,6 +202,6 @@ def output_best_contests():
 			Cell('Best Contests',rw,4).value = contest['entryFee']
 			Cell('Best Contests',rw,5).value = contest['entriesData']
 			rw = rw + 1
-print output_best_contests()
+#print output_best_contests()
 #print build_lineup_dict()['TOR']
 #os.system('pause')

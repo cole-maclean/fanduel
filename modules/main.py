@@ -18,14 +18,17 @@ def build_player_universe(full_playerlist,goalie_list):
 	for key in delkeys:
 		full_playerlist.pop(key)
 	return full_playerlist
-def player_mapping():
+def player_mapping(key_col,map_col):
 	player_map = {}
-	for rw in range(2,1000):#This isnt great...
-		player_map[Cell('Player Map',rw,1).value] = Cell('Player Map',rw,2).value
+	rw = 2
+	while Cell('Player Map',rw,key_col).value != None:
+		player_map[Cell('Player Map',rw,key_col).value] = Cell('Player Map',rw,map_col).value
+		rw = rw + 1
 	return player_map
 def build_lineup_avg_goals_dict(player_data_dict):
+	rw = 2
 	team_lineups = data_scrapping.build_lineup_dict()
-	player_map = player_mapping()
+	player_map = player_mapping(3,2)
 	for team in team_lineups:
 		for lineup in team_lineups[team]:
 			lineup_goals = []
@@ -59,7 +62,7 @@ def build_lineup_avg_goals_dict(player_data_dict):
 					print mapped_name
 	return player_data_dict
 def build_full_player_dictionary():
-	player_map = player_mapping()
+	player_map = player_mapping(1,2)
 	rw = 2
 	player_data_dict = database_operations.get_player_data_dict('nhl','2014020680')
 	lineup_avg_goals_dict = build_lineup_avg_goals_dict(player_data_dict)
