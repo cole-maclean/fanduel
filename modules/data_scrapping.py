@@ -9,6 +9,7 @@ import operator
 import math
 import database_operations as dbo
 import data_scrapping_utils as Uds
+import re
 def update_gamedata(LastGameDataID): #TODO: add optional paramters for which tables to update, check team roster for player #s, consideration for other sports
 	print 'Only update game data when no games are currently in progress'
 	os.system('pause')
@@ -196,16 +197,18 @@ def build_lineup_dict():
 		team_lineups_dict = ast.literal_eval(Cell('Parameters','clLineupsCache').value)
 	return team_lineups_dict
 def output_best_contests():
-	rw = 2
-	all_contests = get_best_contests(['nhl'],[{"standard":1,"50_50":1}],[3,100],[1,2,5,10],0.5,'8:00')
+	rw = Cell('Parameters','clBCLastRow').value
+	all_contests = get_best_contests(['nhl'],[{"standard":1,"50_50":1}],[3,100],[1,2,5,10],0.5,'10:00')
 	for contest in all_contests:
 		if contest['nhl_avg_top_wins'] <=Cell('Parameters','clMaxAvgWins').value:
-			Cell('Best Contests',rw,1).value = contest['game_url']
-			Cell('Best Contests',rw,2).value = contest['nhl_avg_top_wins']
-			Cell('Best Contests',rw,3).value = contest['size']
-			Cell('Best Contests',rw,4).value = contest['entryFee']
-			Cell('Best Contests',rw,5).value = contest['entriesData']
+			Cell('Best Contests',rw,1).value = time.strftime("%d/%m/%Y")
+			Cell('Best Contests',rw,2).value = contest['game_url']
+			Cell('Best Contests',rw,3).value = re.findall('[0-9]{8,8}',contest['game_url'])[0]
+			Cell('Best Contests',rw,4).value = contest['nhl_avg_top_wins']
+			Cell('Best Contests',rw,5).value = contest['size']
+			Cell('Best Contests',rw,6).value = contest['entryFee']
+			Cell('Best Contests',rw,7).value = contest['entriesData']
 			rw = rw + 1
-#print output_best_contests()
+print output_best_contests()
 #print build_lineup_dict()['TOR']
 #os.system('pause')
