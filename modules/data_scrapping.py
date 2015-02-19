@@ -136,7 +136,7 @@ def get_best_contests(sport_list,game_type_list,size_range,entry_fee_list,percen
 						user_wins_cache[username][th.text] = 0
 						td = td.findNext('td')					
 					except KeyError:
-						print th.text	
+						pass	
 				time.sleep(1)
 		contest['user_wins_array'] = user_wins_array
 		for contest_sport in sport_list:
@@ -148,7 +148,7 @@ def get_best_contests(sport_list,game_type_list,size_range,entry_fee_list,percen
 		myfile.write(str(user_wins_cache))
 	return sorted(potential_contests,key=operator.itemgetter('nhl_avg_top_wins'),reverse=False)
 def get_FD_playerlist():
- 	FD_list = ast.literal_eval(Uds.parse_html('https://www.fanduel.com/e/Game/11556?tableId=10268692&fromLobby=true',"FD.playerpicker.allPlayersFullData = ",";"))
+ 	FD_list = ast.literal_eval(Uds.parse_html('https://www.fanduel.com/e/Game/11646?tableId=10582846&fromLobby=true',"FD.playerpicker.allPlayersFullData = ",";"))
  	#for player_data in FD_list:
  		#rival_team = matchups[FD_list[player_data][3]][1]
  		#FD_list[player_data].append(rival_team)
@@ -177,14 +177,18 @@ def build_lineup_dict():
 					lines.append(line)
 					break
 				elif lineup.get('id')[-1] == line_id:
-					clean_player_str = str(lineup.get_text()).rstrip()
-					line.append(clean_player_str)
+ 					try:
+ 						line.append(str(lineup.get_text()).strip())
+ 					except:
+ 						print lineup.get_text()
 				else:
 					if line:
 						lines.append(line)
 					line = []
-					clean_player_str = str(lineup.get_text()).rstrip()
-					line.append(clean_player_str)
+ 					try:
+ 						line.append(str(lineup.get_text()).strip())
+ 					except:
+ 						print lineup.get_text()
 					line_id = lineup.get('id')[-1]			
 			team_lineups_dict[team] = lines
 		Cell('Parameters','clLineupsCache').value = team_lineups_dict
@@ -193,7 +197,7 @@ def build_lineup_dict():
 	return team_lineups_dict
 def output_best_contests():
 	rw = 2
-	all_contests = get_best_contests(['nhl'],[{"standard":1,"50_50":1}],[3,100],[1,2,5,10],0.5,'7:00')
+	all_contests = get_best_contests(['nhl'],[{"standard":1,"50_50":1}],[3,100],[1,2,5,10],0.5,'8:00')
 	for contest in all_contests:
 		if contest['nhl_avg_top_wins'] <=Cell('Parameters','clMaxAvgWins').value:
 			Cell('Best Contests',rw,1).value = contest['game_url']

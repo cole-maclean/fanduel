@@ -42,6 +42,7 @@ def build_lineup_avg_goals_dict(player_data_dict):
 					Avg_Goals = numpy.mean(np_array)
 					lineup_goals.append(Avg_Goals)
 				except KeyError:
+					Cell('Player Map',5,5).value = mapped_name
 					print mapped_name
 			np_array = numpy.array(lineup_goals)
 			Avg_Goals = numpy.mean(np_array)
@@ -64,7 +65,7 @@ def build_lineup_avg_goals_dict(player_data_dict):
 def build_full_player_dictionary():
 	player_map = player_mapping(1,2)
 	rw = 2
-	player_data_dict = database_operations.get_player_data_dict('nhl','2014020680')
+	player_data_dict = database_operations.get_player_data_dict('nhl','2014020710')
 	lineup_avg_goals_dict = build_lineup_avg_goals_dict(player_data_dict)
 	columns = ['G','C','LW','RW','D','Position','FD_name','Dummy1','TeamID','Dummy2','Salary','PPG','GamesPlayed','Dummy3','Dummy4','Injury','InjuryAge','Dummy5']
  	for player_data in data_scrapping.get_FD_playerlist().iteritems():
@@ -119,8 +120,8 @@ def optimum_roster():
 	player_data_dict = build_full_player_dictionary()
 	starting_goalies = data_scrapping.get_starting_goalies()
 	player_universe = build_player_universe(player_data_dict,starting_goalies)
-	losing_team_list =['FLA','CGY','EDM']
-	ex_list = ['Matt Nieto','James Sheppard','Melker Karlsson','Tomas Hertl','Adam Lowry','Chris Thorburn','Evander Kane','Logan Couture','Matt Tennyson','Barclay Goodrow']
+	losing_team_list =[]
+	ex_list = []
 	items = [
          {
              'name': player,
@@ -150,7 +151,7 @@ def optimum_roster():
 	p = KSP(objective, items, goal = 'max', constraints=constraints)
 	r = p.solve('glpk',iprint = 0)
 	return r,player_universe,objective
-#data_scrapping.update_gamedata(Cell("Parameters",'clLastGameDataID').value)
+data_scrapping.update_gamedata(Cell("Parameters",'clLastGameDataID').value)
 rw = 2
 r,player_universe,objective = optimum_roster()
 for player in r.xf:
