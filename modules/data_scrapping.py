@@ -10,6 +10,7 @@ import math
 import database_operations as dbo
 import data_scrapping_utils as Uds
 import re
+import requests
 def update_gamedata(LastGameDataID): #TODO: add optional paramters for which tables to update, check team roster for player #s, consideration for other sports
 	print 'Only update game data when no games are currently in progress'
 	os.system('pause')
@@ -150,9 +151,6 @@ def get_best_contests(sport_list,game_type_list,size_range,entry_fee_list,percen
 	return sorted(potential_contests,key=operator.itemgetter('nhl_avg_top_wins'),reverse=False)
 def get_FD_playerlist():
  	FD_list = ast.literal_eval(Uds.parse_html('https://www.fanduel.com/e/Game/11646?tableId=10582846&fromLobby=true',"FD.playerpicker.allPlayersFullData = ",";"))
- 	#for player_data in FD_list:
- 		#rival_team = matchups[FD_list[player_data][3]][1]
- 		#FD_list[player_data].append(rival_team)
  	return FD_list
 def team_mapping():
 	team_map = {}
@@ -201,14 +199,31 @@ def output_best_contests():
 	all_contests = get_best_contests(['nhl'],[{"standard":1,"50_50":1}],[3,100],[1,2,5,10],0.5,'10:00')
 	for contest in all_contests:
 		if contest['nhl_avg_top_wins'] <=Cell('Parameters','clMaxAvgWins').value:
-			Cell('Best Contests',rw,1).value = time.strftime("%d/%m/%Y")
-			Cell('Best Contests',rw,2).value = contest['game_url']
-			Cell('Best Contests',rw,3).value = re.findall('[0-9]{8,8}',contest['game_url'])[0]
+			Cell('Best Contests',rw,2).value = time.strftime("%d/%m/%Y")
+			Cell('Best Contests',rw,3).value = contest['game_url']
+			Cell('Best Contests',rw,1).value = re.findall('[0-9]{8,8}',contest['game_url'])[0]
 			Cell('Best Contests',rw,4).value = contest['nhl_avg_top_wins']
 			Cell('Best Contests',rw,5).value = contest['size']
 			Cell('Best Contests',rw,6).value = contest['entryFee']
 			Cell('Best Contests',rw,7).value = contest['entriesData']
 			rw = rw + 1
-print output_best_contests()
+def get_fanduel_session():
+	with open('C:\Users\Cole\Desktop\Fanduel\Parameters.txt',"r") as myfile:
+	    passwd = myfile.read().split(',')[1]
+	s = requests.session()
+	r = s.get('https://www.fanduel.com/p/login')
+	soup = BeautifulSoup(r.text)
+	session_id = soup.find('input', {'name': 'cc_session_id'}).get('value')
+	data = {'cc_session_id':session_id,'cc_action':'cca_login','cc_failure_url':'https://www.fanduel.com/p/login','cc_success_url':'https://www.fanduel.com/p/home','email':'maclean.cole@gmail.com','password':passwd,'login':'Log in'}
+	s.post('https://www.fanduel.com/c/CCAuth',data)
+	return s
+def get_live_contest_ids():
+	s = get_fanduel_session()
+	r = s.get('https://www.fanduel.com/mycontests/162491/live?start=0&number=10000')
+	live_contest_dict = json.loads(r.text)
+	for contest in live_contest_dict['seats']:
+		dbo.write_to_db('FD_table_contests','table_id,contest_id',[str(contest[2].split(r'/')[2]),str(contest[0])])
+print get_live_contest_ids()
+#print output_best_contests()
 #print build_lineup_dict()['TOR']
 #os.system('pause')

@@ -4,7 +4,7 @@ import general_utils as Ugen
 import time
 def get_connection_cursor():
     with open('C:\Users\Cole\Desktop\Fanduel\Parameters.txt',"r") as myfile:
-        passwd = myfile.read()
+        passwd = myfile.read().split(',')[0]
     conn = MySQLdb.Connection(db="autotrader",host="localhost",user="root",passwd=passwd);
     cur = conn.cursor()
     return cur
@@ -41,9 +41,10 @@ def build_data_dict_structure(player_dict,column_names, rw_data, start_rw = 0): 
             player_dict[rw_data[0]] = d
         start_rw = start_rw + 1
     return player_dict
-def write_to_db(table,static_columns,static_data,write_data): #TODO: need to generalize (columns, placeholders, etc.)
+def write_to_db(table,static_columns,static_data,write_data={}): #TODO: need to generalize (columns, placeholders, etc.)
     row_data = [str(v) for v in write_data.values()]
-    static_data.extend(row_data)
+    if row_data != []:
+        static_data.extend(row_data)
     placeholders = ', '.join(['%s'] * (len(static_data)))
     columns = static_columns
     for i in range(1,len(row_data) + 1):
@@ -51,6 +52,7 @@ def write_to_db(table,static_columns,static_data,write_data): #TODO: need to gen
     insert_mysql(table,columns, placeholders, static_data)
 def insert_mysql(table, columns, placeholders, data):
     sql = "INSERT INTO " + table + " (%s) VALUES (%s)" % (columns, placeholders)
+    print sql
     cur = get_connection_cursor()
     cur.execute(sql, data)
     cur.execute('COMMIT')
