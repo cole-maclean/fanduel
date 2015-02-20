@@ -86,7 +86,7 @@ def get_FD_contests():
 	parsed_html = parsed_html.replace(':,',':0,')
 	contest_dict = ast.literal_eval(parsed_html)
 	return contest_dict['additions']
-def get_best_contests(sport_list,game_type_list,size_range,entry_fee_list,percent_full,game_start):
+def get_potential_contests(sport_list,game_type_list,size_range,entry_fee_list,percent_full,game_start):#Refactor: This needs cleanup
 	contest_dict = get_FD_contests()
 	with open('C:/Users/Cole/Desktop/Fanduel/fanduel/userwinscache.txt',"r") as myfile:
 		data = myfile.read()
@@ -107,46 +107,48 @@ def get_best_contests(sport_list,game_type_list,size_range,entry_fee_list,percen
           and contest['entryFee'] in entry_fee_list and  contest['flags'] in game_type_list and  game_start in contest['startString'] and \
            float(contest['entriesData'])/float(contest['size']) > percent_full and float(contest['entriesData'])/float(contest['size']) < 1
          ]
+    return potential_contests
 	for contest in potential_contests:
-		entry_url = 'https://www.fanduel.com/pg/Lobby/showTableEntriesJSON/' + contest['contest_id'] + '/0/10000'
-		response = urllib2.urlopen(entry_url)
-		shtml = response.read()
-		entry_dict = ast.literal_eval(shtml)
-		user_wins_array = {'Total':[],'NFL':[],'MLB':[],'NBA':[],'NHL':[],'CBB':[],'CFB':[]}
-		for entry_data in entry_dict['entries']:
-			user_html = entry_data['userHTML']
-			intStart = user_html.find("alt=''>")
-			intEnd = user_html.find('<',intStart)
-			username = user_html[intStart:intEnd].replace("alt=''>","")
-			if username in user_wins_cache.keys():
-				for sport,wins in user_wins_cache[username].iteritems():
-					user_wins_array[sport].append(wins)
-			else:
-				user_url = 'https://www.fanduel.com/users/'+username
-				response = urllib2.urlopen(user_url)
-				shtml = response.read()
-				soup = BeautifulSoup(shtml)
-				table = soup.find('table', {'class': 'condensed'})
-				td = table.find('th').findNext('td')
-				user_wins_cache[username] = {}
-				for th in table.findAll('th'):
-					try:
-						user_wins_array[th.text].append(int(td.text))
-						user_wins_cache[username][th.text] = int(td.text)
-						td = td.findNext('td')
-					except ValueError:
-						user_wins_array[th.text].append(0)
-						user_wins_cache[username][th.text] = 0
-						td = td.findNext('td')					
-					except KeyError:
-						pass	
-				time.sleep(1)
-		contest['user_wins_array'] = user_wins_array
-		for contest_sport in sport_list:
-			arr = numpy.array(user_wins_array[contest_sport.upper()])
-			top_player_count = math.ceil(0.25*contest['size'])
-			contest[contest_sport + '_avg_top_wins'] = numpy.mean(arr[arr.argsort()[-top_player_count:][::-1]])#Need to decide best stats for paticualar contest type
-			contest['game_url'] = 'https://www.fanduel.com/e/Game/' + contest['game_id'] + '?tableId=' + contest['contest_id'] + '&fromLobby=true'
+		if total_bet < bet_limit:
+			entry_url = 'https://www.fanduel.com/pg/Lobby/showTableEntriesJSON/' + contest['contest_id'] + '/0/10000'
+			response = urllib2.urlopen(entry_url)
+			shtml = response.read()
+			entry_dict = ast.literal_eval(shtml)
+			user_wins_array = {'Total':[],'NFL':[],'MLB':[],'NBA':[],'NHL':[],'CBB':[],'CFB':[]}
+			for entry_data in entry_dict['entries']:
+				user_html = entry_data['userHTML']
+				intStart = user_html.find("alt=''>")
+				intEnd = user_html.find('<',intStart)
+				username = user_html[intStart:intEnd].replace("alt=''>","")
+				if username in user_wins_cache.keys():
+					for sport,wins in user_wins_cache[username].iteritems():
+						user_wins_array[sport].append(wins)
+				else:
+					user_url = 'https://www.fanduel.com/users/'+username
+					response = urllib2.urlopen(user_url)
+					shtml = response.read()
+					soup = BeautifulSoup(shtml)
+					table = soup.find('table', {'class': 'condensed'})
+					td = table.find('th').findNext('td')
+					user_wins_cache[username] = {}
+					for th in table.findAll('th'):
+						try:
+							user_wins_array[th.text].append(int(td.text))
+							user_wins_cache[username][th.text] = int(td.text)
+							td = td.findNext('td')
+						except ValueError:
+							user_wins_array[th.text].append(0)
+							user_wins_cache[username][th.text] = 0
+							td = td.findNext('td')					
+						except KeyError:
+							pass	
+					time.sleep(1)
+			contest['user_wins_array'] = user_wins_array
+			for contest_sport in sport_list:
+				arr = numpy.array(user_wins_array[contest_sport.upper()])
+				top_player_count = math.ceil(0.25*contest['size'])
+				contest[contest_sport + '_avg_top_wins'] = numpy.mean(arr[arr.argsort()[-top_player_count:][::-1]])#Need to decide best stats for paticualar contest type
+				contest['game_url'] = 'https://www.fanduel.com/e/Game/' + contest['game_id'] + '?tableId=' + contest['contest_id'] + '&fromLobby=true'
 	with open('C:/Users/Cole/Desktop/Fanduel/fanduel/userwinscache.txt',"w") as myfile:
 		myfile.write(str(user_wins_cache))
 	return sorted(potential_contests,key=operator.itemgetter('nhl_avg_top_wins'),reverse=False)
