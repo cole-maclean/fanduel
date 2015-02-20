@@ -52,7 +52,6 @@ def write_to_db(table,static_columns,static_data,write_data={}): #TODO: need to 
     insert_mysql(table,columns, placeholders, static_data)
 def insert_mysql(table, columns, placeholders, data):
     sql = "INSERT INTO " + table + " (%s) VALUES (%s)" % (columns, placeholders)
-    print sql
     cur = get_connection_cursor()
     cur.execute(sql, data)
     cur.execute('COMMIT')

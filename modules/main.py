@@ -151,7 +151,7 @@ def optimum_roster():
 	p = KSP(objective, items, goal = 'max', constraints=constraints)
 	r = p.solve('glpk',iprint = 0)
 	return r,player_universe,objective
-data_scrapping.update_gamedata(Cell("Parameters",'clLastGameDataID').value)
+#data_scrapping.update_gamedata(Cell("Parameters",'clLastGameDataID').value)
 rw = 2
 r,player_universe,objective = optimum_roster()
 for player in r.xf:
