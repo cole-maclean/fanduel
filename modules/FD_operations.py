@@ -15,13 +15,14 @@ def get_fanduel_session():#Refactor - think this needs to be turned into a class
 	'cc_success_url':'https://www.fanduel.com/p/home','email':'maclean.cole@gmail.com','password':passwd,'login':'Log in'}
 	s.post('https://www.fanduel.com/c/CCAuth',data)
 	return s, session_id
-def enter_contest(contest_url,player_data):
+def enter_contest(s,session_id,contest_url,player_data):
 	game_id = re.findall('[0-9]{5,5}',contest_url)[0]
 	table_id = re.findall('[0-9]{8,8}',contest_url)[0]
-	s, session_id = get_fanduel_session()
 	data = {'cc_session_id':session_id,'cc_action':'cca_jointable','cc_failure_url':contest_url,\
 	'game_id':game_id,'playerData':player_data,'table_id':table_id,'tablespec_id':'','is_public':'1','currencytype':'1'}
 	r = s.post('https://www.fanduel.com/c/CCEntry',data)
+	print contest_url
+	print r.headers
 	if r.status_code == 200:
 		try:
 			entry_url = Ustr.find_between(r.headers['refresh'],'=','?')
@@ -37,9 +38,5 @@ def enter_contest(contest_url,player_data):
 		print 'entry failed with HTTP error ' + r.status_code
 		entry_id = 0
 		entry_status = 'failed'
+	os.system('pause')
 	return entry_id, entry_status
-player_data = ('[["LW","8980","87942","654"],["LW","8478","87945","663"],["RW","8442","95317","652"],'
-				'["RW","16969","87945","663"],["C","9279","87942","654"],["C","9992","87944","656"],'
-				'["D","8689","87941","666"],["D","12952","87942","676"],["G","8532","95317","668"]]')
-print enter_contest('https://www.fanduel.com/e/Game/11654?tableId=10609856&fromLobby=true',player_data)
-os.system('pause')
