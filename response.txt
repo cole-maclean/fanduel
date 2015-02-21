@@ -1,0 +1,776 @@
+<!DOCTYPE html><!--[if lt IE 7]><html class="lt-ie10 lt-ie9 lt-ie8 lt-ie7" xmlns:fb="http://www.facebook.com/2008/fbml"> <![endif]-->
+	<!--[if IE 7]><html class="lt-ie10 lt-ie9 lt-ie8" xmlns:fb="http://www.facebook.com/2008/fbml"> <![endif]-->
+	<!--[if IE 8]><html class="lt-ie10 lt-ie9" xmlns:fb="http://www.facebook.com/2008/fbml"> <![endif]-->
+	<!--[if IE 9]><html class="lt-ie10" xmlns:fb="http://www.facebook.com/2008/fbml"> <![endif]-->
+	<!--[if gt IE 9]><!--> <html xmlns:fb="http://www.facebook.com/2008/fbml"> <!--<![endif]--><head><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="google-site-verification" content="7bfPVLres-pmKiWuUbGn657RuKrQAPME6CG5Vkr60LI" /><title>Live scores for S137349200 | FanDuel</title><link rel="shortcut icon" href="//d17odppiik753x.cloudfront.net/images/global/favicon.ico" /><link rel="apple-touch-icon" href="//d17odppiik753x.cloudfront.net/images/global/apple-touch-icon.png" />		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+		
+		<meta name="verify-v1" content="vbfLsiyvxLXUSzzN3snByFobO5//gly16iy1x9usuIE=" >
+		<meta name="verify-v1" content="ok5reZ/WyUFmn+q1yYjYG4Mi3bniUsCZ8XwusHJ3K8A=" />
+		<meta name="verify-v1" content="wBjvmrKsgVNAwEzRqssUUOn/mtnPGCNv9XRSUlbyhNs=" >
+		<meta name="verify-v1" content="C/q1XayRb0mYQbGLN3nh8EFJBb5hefsuXTT9qZcbrq8=" >
+		<link rel="stylesheet" href="//d2avoc1xjbdrch.cloudfront.net/3.0.0/styles/desktop.css"/><link rel="stylesheet" href="https://www.fanduel.com/styles/compiled/seatview.base.f9111305f5a9c30daca8b7f233c9ee46.css"/><script src="//d2avoc1xjbdrch.cloudfront.net/3.0.0/scripts/core.js"></script><script src="https://www.fanduel.com/scripts/compiled/core.base.64a62b91ba27f6b5835b61eb39865c4e.js"></script><script src="https://www.fanduel.com/scripts/compiled/logging.base.223870e8c23a6e78a046745d311f3956.js"></script>		<script>
+			var sessionid="bcfp1n8ec3curo81ln08oic7n6";
+						user = new HDUser(162491, 0);
+					</script>
+		<!--[if lt IE 9]>
+			<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+		<![endif]-->
+		</head><body id="body" class="yui-skin-sam logged-in " ontouchstart><!-- Google Code for Deposit Funds Confirmation Page Remarketing List -->
+			<script type="text/javascript">
+			/* <![CDATA[ */
+			var google_conversion_id = 1042875555;
+			var google_conversion_language = "en";
+			var google_conversion_format = "3";
+			var google_conversion_color = "666666";
+			var google_conversion_label = "lkNOCMn_gwIQo4mk8QM";
+			var google_conversion_value = 0;
+			/* ]]> */
+			</script>
+							<script type="text/javascript" src="https://www.googleadservices.com/pagead/conversion.js">
+				</script>
+				<noscript>
+				<div style="display:inline;">
+				<img height="1" width="1" style="border-style:none;" alt="" src="https://www.googleadservices.com/pagead/conversion/1042875555/?label=yGdJCLmBhAIQo4mk8QM&amp;guid=ON&amp;script=0"/>
+				</div>
+				</noscript>
+					<header class="global-header">
+	<div class="global-header-container">
+		<section class="logo-container">
+			<h1><a href="/"><i class="icon logo-fanduel">&#xe000;</i><i class="icon logo-f">&#x26b9;</i></a></h1>
+		</section>
+
+					<nav class="navigation-logged-in" data-role="global-header-menu">
+				<header>
+					<a href="#" data-role="global-header-menu-trigger"><i class="icon">&#x2630;</i></a>
+				</header>
+				<ul class="navigation-logged-in-menu" data-role="global-header-menu-content">
+					<li><a href="https://www.fanduel.com/" class="link-lobby ">Lobby</a></li>
+					<li><a href="https://www.fanduel.com/upcoming" class="link-upcoming-contests ">Upcoming</a></li>
+					<li><a href="https://www.fanduel.com/p/MyLiveEntries" class="link-live-contests ">Live</a></li>
+					<li><a href="https://www.fanduel.com/p/MyEntryHistory" class="link-historical-contests ">History</a></li>
+					<li><a href="/support" class="link-support">Support</a></li>
+					<li><a href="https://www.fanduel.com/p/MyAccount" class="link-my-account">My Account</a></li>
+				</ul>
+			</nav>
+
+			<section class="logged-in-user">
+				<div class="support-menu-block" data-role="global-header-menu">
+					<header>
+						<a href="#" data-role="global-header-menu-trigger">
+							Help <i class="icon">&#x2193;</i>
+						</a>
+					</header>
+					<div class="support-menu" data-role="global-header-menu-content">
+						<nav>
+							<ul>
+								<li><a href="/support" class="link-support">Support</a></li>
+								<li><a href="/how-it-works" class="link-how-it-works">How it Works</a></li>
+								<li><a href="/rules" class="link-rules-and-scoring">Rules &amp; Scoring</a></li>
+							</ul>
+						</nav>
+					</div>
+				</div>
+				<div class="user-menu-block" data-role="global-header-menu">
+					<header>
+						<a href="#" data-role="global-header-menu-trigger">
+							<div class="avatar avatar-inline" style="background-image: url(https://www.fanduel.com/images/member_defaultpic.gif);">
+							</div>
+							<span class="username">cole_maclean </span><i class="icon">&#x2193;</i>
+						</a>
+					</header>
+					<div class="logged-in-user-menu" data-role="global-header-menu-content">
+						<section class="logged-in-user-profile">
+							<div class="avatar avatar-inline avatar-large" style="background-image: url(https://www.fanduel.com/images/member_defaultpic.gif);">
+							</div>
+							<span class="username">cole_maclean </span>
+							<ul class="user-balances">
+								<li class="user-account-balance">Balance <span>$0.58</span></li>
+								<li class="user-pending-bonus-balance">Pending Bonus <span>$0.00</span></li>
+								<li class="user-fdp-balance">FDP <span>3,220</span></li>
+							</ul>
+						</section>
+						<nav class="logged-in-user-navigation">
+							<ul>
+								<li><a href="https://www.fanduel.com/p/MyAccount" class="link-my-account">My Account</a></li>
+								<li><a href="https://www.fanduel.com/p/AddFunds" class="link-add-funds">Add Funds</a></li>
+								<li><a href="https://www.fanduel.com/users/cole_maclean/WithdrawalRequest" class="link-withdraw">Withdraw</a></li>
+								<li><a href="https://www.fanduel.com/p/MyTransactionHistory" class="link-transaction-history">Transaction History</a></li>
+								<li><a href="https://www.fanduel.com/p/ReferralCenter" class="link-referral-center">Referral Center</a></li>
+								<li><a href="/promos2" class="link-promos">Promos</a></li>
+																<li><a href="https://www.fanduel.com/c/CCAuth?cc_action=cca_logout&cc_success_url=https%3A%2F%2Fwww.fanduel.com%2F&cc_failure_url=https%3A%2F%2Fwww.fanduel.com%2F" class="link-logout">Log out</a></li>
+							</ul>
+						</nav>
+						<nav class="logged-in-user-navigation-mobile">
+							<ul>
+								<li><a href="https://www.fanduel.com/p/AddFunds" class="link-add-funds">Add Funds</a></li>
+								<li><a href="https://www.fanduel.com/users/cole_maclean/WithdrawalRequest" class="link-withdraw">Withdraw</a></li>
+								<li><a href="https://www.fanduel.com/p/MyTransactionHistory" class="link-transaction-history">Transaction History</a></li>
+								<hr class="divider">
+								<li><a href="/how-it-works" class="link-how-it-works">How it Works</a></li>
+								<li><a href="/about-us" class="link-about-us">About Us</a></li>
+								<li><a href="/support" class="link-support">Support</a></li>
+								<hr class="divider">
+								<li><a href="https://www.fanduel.com/p/ReferralCenter" class="link-referral-center">Referral Center</a></li>
+								<li><a href="/promos2" class="link-promos">Promos</a></li>
+								<hr class="divider">
+																<li><a href="https://www.fanduel.com/c/CCAuth?cc_action=cca_logout&cc_success_url=https%3A%2F%2Fwww.fanduel.com%2F&cc_failure_url=https%3A%2F%2Fwww.fanduel.com%2F" class="link-logout">Log out</a></li>
+							</ul>
+						</nav>
+					</div>
+				</div>
+									<div class="user-balance-block">
+						<span id="balance" class="user-balance">$0.58</span>
+						<a href="https://www.fanduel.com/p/AddFunds" class="button primary tiny link-add-funds">Add Funds</a>
+					</div>
+							</section>
+			</div>
+</header>
+
+<style>
+    nav.global {margin-top:0;}
+</style>
+
+<!--[if lte IE 9]>
+	<div class="alert warning text-align-center">
+		It appears that you are using an out of date browser which may not fully support the features required for this page. We recommend you <a href="http://browsehappy.com/" target="_self">update your browser</a>.
+	</div>
+<![endif]-->
+<section class="container"><div id="usermessage" class="usermessage"><div class="alert success"><i class="icon">&#10004;</i> Success! Your line-up has been entered<span class='fdpValue' style='margin-left:20px;'>+10 FDP</span> on settlement.</div></div>		<script>
+			$(function() {
+				$('#usermessage div').prepend("<a href='#close' class='close'><i class='icon close'>&#x2717;</i></a>");
+				$('#usermessage a.close').on("click", function(){$(this).parent().slideToggle('550');});
+			});
+		</script>
+		<div class="column-12 row">		<style>
+			.rostertop.row { margin-top: 0; padding-top: 0;}
+			.rosterdiv { background: #ddddff; float:left; width: 45%; }
+			.tableSide { background: white; padding: 0px 4px; margin: 2px; width: 95%; -moz-border-radius: 2px; cursor: pointer }
+			.tableSide { font-size: 8pt !important; }
+			table#seatlist img.userthumb, .tableSide img.userthumb { height: 15px; vertical-align:middle }
+			table#seatlist tr { cursor: pointer; }
+			table#seatlist tr.myseat { background: #ffffcc; }
+			.seatlistdivHidden { display: none}
+			.seatlistdiv.scrolling { overflow-x: hidden; overflow-y: scroll; height: 180px;}
+			#whatnext { margin-left: 13%; padding-top: 20px; }
+			#whatnext .button { margin-bottom: 15px; }
+			@media (max-width: 640px) { #whatnext {clear: both;} }
+			.button-container { margin: 5px -30px 0 0; float: right; }
+			.enter-this-team-again-container { padding: 0; }
+
+			div.lightbox div.entries div.col3, div.lightbox div.prizes div.col3 { float: left; width: 32%; margin: 6px 4px 6px 0px; }
+			div.lightbox span.number { font-weight: bold; display: block; float: left; margin: 0px 4px; width: 32px; text-align: right; }
+			div.lightbox div.prizes { overflow: hidden; padding-bottom: 8px; }
+			div.lightbox div.pager { background: #363636; background: -moz-linear-gradient(top, #474747 0%, #363636 100%); background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#474747), color-stop(100%,#363636)); background: -webkit-linear-gradient(top, #474747 0%,#363636 100%); background: -o-linear-gradient(top, #474747 0%,#363636 100%); background: -ms-linear-gradient(top, #474747 0%,#363636 100%); background: linear-gradient(to bottom, #474747 0%,#363636 100%); filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#474747', endColorstr='#363636',GradientType=0 ); border-radius: 0 0 3px 3px; background-clip:padding-box; height:33px; padding-right: 3px; border-top: 1px solid #333; position: relative; z-index:500; top: -13px; clear: both; }
+			* html div.pager { margin-left: -172px; }
+			div.lightbox div.pager a { background:#ffffff none repeat scroll 0%;border:1px solid #5b8eb6;display:inline;margin-right:0.3em; padding:0.25em 0.5em;font-size:90%; }
+			div.lightbox div.pager { clear: both; padding: 12px; background: #eee; text-align: center; }
+			div.lightbox div.pager div.prev { float: left; margin: 0px 8px; }
+			div.lightbox div.pager div.next { float: right; margin: 0px 8px; }
+			div.lightbox div.pager div.pages { margin: 0px auto; }
+			div.lightbox div.pager div.prev span, div.lightbox div.pager div.next span { border: 1px solid #b6b6b6; color: #b6b6b6; padding: 0.25em 0.5em; }
+
+			div.lightbox div.description { padding: 8px; }
+
+			.link { color: #0b73a4; cursor: pointer; }
+			.link:hover { text-decoration: underline; }
+			#gametitle_current { clear: both; }
+			</style>
+		<div style='float:right;'><h1 id='seatid_current' style='color: #999;'>S137349200</h1></div><h1 id='gametitle_current'>NHL 50/50 League</h1>		<div id="league-info" class="clearfix">
+			<div id="league-info-size" class="column-4">80 Player League <span class="entries">(33 entries so far)</span></div>
+				<div id="league-info-stake" class="column-2">Entry fee:
+									$1							</div>
+			<div id="league-info-prizes" class="column-6 text-align-right">
+				Prizes: 1st: $1.80, 2nd: $1.80 			<a href='#' class='showAllPrizes'>Show All</a>
+			<script>
+			function TableSpec(element) { }
+			TableSpec.PrizeBreakdownFromTableSpec = function(nelement, tableSpecId) {
+				var element = nelement;
+				var container;
+
+				var lightbox;
+
+				element.addClass('clickable');
+				element.click(function(e) {
+					if (!lightbox)
+						lightbox = Lightbox.createFromGobbet(
+							'pg/Lobby/showTableSpecPrizeBreakdownLightbox/' + tableSpecId, null);
+					lightbox.show();
+					if (e.preventDefault)
+						e.preventDefault();
+					return false;
+				});
+			};
+
+			$(function (){
+				TableSpec.PrizeBreakdownFromTableSpec($(".showAllPrizes"), 33626) ;
+			});
+			</script>
+				</div>
+		</div>
+
+	<script src="https://www.fanduel.com/scripts/countdown.js"></script><div class="gamestatus gamestatus_open">Game starts in <script>var c = Countdown.make(2991, "Game started! Refresh browser for live scores");c.draw();</script></div></div><div class="rostertop row"><div class="player"><div class="opponent"><div id='thisroster' class='seatroster'><table class='roster' cellspacing='2'><thead><tr><th colspan='2' class='username' style='font-size:12px'><div class='button-container'><a class="button mini text-grey1" style="font-weight:normal;" href="https://www.fanduel.com/e/Game/NHL_Salary_Cap_11655/view?edit_seat_id=137349200">Edit</a>			<a class="button mini text-grey1" style="font-weight:normal;" href="https://www.fanduel.com/entry/BIBEWTHJJ/export">Export</a>
+		</div><a href='https://www.fanduel.com/users/cole_maclean'><div class='avatar small' style='background-image:url(https://www.fanduel.com/images/member_defaultpic.gif)'></div>cole_maclean</a></th><th class='username'></th></thead><tbody><tr class='pregame no-scoring'><td class='position'>LW</td><td class='player'><div class='name'>Zach Parise</div><div class='fixture'><strong>MIN</strong> @ EDM</div></td><td class='score'></td></tr><tr class='pregame no-scoring'><td class='position'>LW</td><td class='player'><div class='name'>Brandon Saad</div><div class='fixture'><strong>CHI</strong> v COL</div></td><td class='score'></td></tr><tr class='pregame no-scoring'><td class='position'>RW</td><td class='player'><div class='name'>Marian Hossa</div><div class='fixture'><strong>CHI</strong> v COL</div></td><td class='score'></td></tr><tr class='pregame no-scoring'><td class='position'>RW</td><td class='player'><div class='name'>Jordan Eberle</div><div class='fixture'><strong>EDM</strong> v MIN</div></td><td class='score'></td></tr><tr class='pregame no-scoring'><td class='position'>C</td><td class='player'><div class='name'>Jonathan Toews</div><div class='fixture'><strong>CHI</strong> v COL</div></td><td class='score'></td></tr><tr class='pregame no-scoring'><td class='position'>C</td><td class='player'><div class='name'>Ryan Nugent-Hopkins</div><div class='fixture'><strong>EDM</strong> v MIN</div></td><td class='score'></td></tr><tr class='pregame no-scoring'><td class='position'>D</td><td class='player'><div class='name'>Brent Seabrook</div><div class='fixture'><strong>CHI</strong> v COL</div></td><td class='score'></td></tr><tr class='pregame no-scoring'><td class='position'>D</td><td class='player'><div class='name'>Justin Schultz</div><div class='fixture'><strong>EDM</strong> v MIN</div></td><td class='score'></td></tr><tr class='pregame no-scoring'><td class='position'>G</td><td class='player'><div class='name'>Jonas Hiller</div><div class='fixture'><strong>CGY</strong> v ANH</div></td><td class='score'></td></tr></tbody></table></div>		<div id="whatnext" class="column-3 text-align-center">
+			<h2>What next?</h2>
+					<div id="invitePane">
+				<input type="button" id="challengebutton" class="button primary fullwidth" value="Challenge friends" style="width:100%" data-launch-new-referral-lb="nolaunch" />
+			</div>
+		<a href="#" class="showMultipleEntryLB button fullwidth">Enter other contests</a><script src="https://www.fanduel.com/scripts/jquery/jquery.tablesorter.min.js"></script>		<script>
+			$(function() {
+				$(".availableLobbyItemList").tablesorter();
+				$(".availableLobbyItemList tr").data("sortdir", true).bind("click", function() {
+				/*	$(this).data("sortdir", !$(this).data("sortdir"));
+			        var sorting = [[0,$(this).data("sortdir")]];
+			        $(".availableLobbyItemList").trigger("sorton",[sorting]);
+			        return false; */
+				}) ;
+
+				var multipleEntryLB = Lightbox.createFromNode("Success! You've submitted your lineup. What now?", $('#multipleEntryLB'));
+				multipleEntryLB.setWidth(650);
+
+				
+				$(".closeMultipleEntryLB").live("click", function() {
+					multipleEntryLB.hide();
+					return false;
+				});
+
+				$(".showMultipleEntryLB").bind("click", function() {
+					multipleEntryLB.show();
+					return false;
+				});
+
+				$("#offerMultipleEntryLB").bind("click", function() {
+					if(!$(this).is(':checked')) {
+						Ajax.send([{type: 'c',
+							serverhandler: '/CCUserPreference',
+							data: { cc_action: 'cca_set_site_preference',preference:'101',value:'0' },
+							clienthandler: function(data) { }
+						}]);
+						multipleEntryLB.hide();
+					} else {
+						Ajax.send([{type: 'c',
+							serverhandler: '/CCUserPreference',
+							data: { cc_action: 'cca_set_site_preference',preference:'101',value:'1' },
+							clienthandler: function(data) { }
+						}]);
+					}
+				});
+			});
+		</script>
+
+		<div style='display:none;'>
+			<div id='multipleEntryLB'>
+				
+			<style>
+				.availableLobbyItemListHeaders .titleField { width:176px; }
+				.paidprompt { width: 70%; margin: 0 auto 20px; padding-right: 70px; background: url('/images/edition/pp/paid-prompt-arrow.png') no-repeat center right; }
+				.paidprompt p { margin: 0 auto; color: #7b9800; font-size: 20px; line-height: 1.1; text-align: center; }
+			</style>
+
+			
+			<h5>Enter this lineup into other contests:</h5>
+			<div class="table-container">
+				<table class="availableLobbyItemList condensed">
+					<thead data-role="scrollable-header">
+						<tr>
+							<th class="title">Game</th>
+							<th class="cap">Cap</th>
+							<th class="seats">Size</th>
+							<th class="entries">Entries</th>
+							<th class="stake">Entry</th>
+							<th class="prizes">Prizes</th>
+							<th class="link">&nbsp;</th>
+						</tr>
+					</thead>
+					<tbody data-role="scrollable-body">
+									<tr>
+							<td class="title">$1500 Fri NHL Blue Line (Late Night)</td>
+							<td class="cap num">$55k</td>
+							<td class="seats num">344</td>
+							<td class="entries num">300</td>
+							<td class="stake num">$5</td>
+							<td class="prizes num">$1,500.00</td>
+							<td class="link"><a href="/e/Game/11655?tableId=10623003&fromLobby=true&amp;copy_seat_id=137349200" class="button tiny primary">Enter</a></td>
+						</tr>
+										<tr>
+							<td class="title">$2K Fri NHL Goal (Late Night)</td>
+							<td class="cap num">$55k</td>
+							<td class="seats num">91</td>
+							<td class="entries num">71</td>
+							<td class="stake num">$25</td>
+							<td class="prizes num">$2,000.00</td>
+							<td class="link"><a href="/e/Game/11655?tableId=10623035&fromLobby=true&amp;copy_seat_id=137349200" class="button tiny primary">Enter</a></td>
+						</tr>
+										<tr>
+							<td class="title">$7500 Fri NHL Breakaway (Late Night)</td>
+							<td class="cap num">$55k</td>
+							<td class="seats num">4190</td>
+							<td class="entries num">2888</td>
+							<td class="stake num">$2</td>
+							<td class="prizes num">$7,500.00</td>
+							<td class="link"><a href="/e/Game/11655?tableId=10622973&fromLobby=true&amp;copy_seat_id=137349200" class="button tiny primary">Enter</a></td>
+						</tr>
+										<tr>
+							<td class="title">NHL Head-to-Head</td>
+							<td class="cap num">$55k</td>
+							<td class="seats num">2</td>
+							<td class="entries num">0</td>
+							<td class="stake num">$1</td>
+							<td class="prizes num">$1.80</td>
+							<td class="link"><a href="https://www.fanduel.com/e/Game/NHL_Salary_Cap_11655?table_spec_id=1079&amp;copy_seat_id=137349200" class="button tiny primary">Enter</a></td>
+						</tr>
+										<tr>
+							<td class="title">NHL Head-to-Head</td>
+							<td class="cap num">$55k</td>
+							<td class="seats num">2</td>
+							<td class="entries num">0</td>
+							<td class="stake num">$2</td>
+							<td class="prizes num">$3.60</td>
+							<td class="link"><a href="https://www.fanduel.com/e/Game/NHL_Salary_Cap_11655?table_spec_id=5553&amp;copy_seat_id=137349200" class="button tiny primary">Enter</a></td>
+						</tr>
+										<tr>
+							<td class="title">NHL Head-to-Head</td>
+							<td class="cap num">$55k</td>
+							<td class="seats num">2</td>
+							<td class="entries num">0</td>
+							<td class="stake num">$5</td>
+							<td class="prizes num">$9.00</td>
+							<td class="link"><a href="https://www.fanduel.com/e/Game/NHL_Salary_Cap_11655?table_spec_id=2&amp;copy_seat_id=137349200" class="button tiny primary">Enter</a></td>
+						</tr>
+										<tr>
+							<td class="title">NHL Head-to-Head</td>
+							<td class="cap num">$55k</td>
+							<td class="seats num">2</td>
+							<td class="entries num">0</td>
+							<td class="stake num">$10</td>
+							<td class="prizes num">$18.00</td>
+							<td class="link"><a href="https://www.fanduel.com/e/Game/NHL_Salary_Cap_11655?table_spec_id=3&amp;copy_seat_id=137349200" class="button tiny primary">Enter</a></td>
+						</tr>
+										<tr>
+							<td class="title">NHL Head-to-Head</td>
+							<td class="cap num">$55k</td>
+							<td class="seats num">2</td>
+							<td class="entries num">0</td>
+							<td class="stake num">$25</td>
+							<td class="prizes num">$45.00</td>
+							<td class="link"><a href="https://www.fanduel.com/e/Game/NHL_Salary_Cap_11655?table_spec_id=4&amp;copy_seat_id=137349200" class="button tiny primary">Enter</a></td>
+						</tr>
+										<tr>
+							<td class="title">NHL Head-to-Head</td>
+							<td class="cap num">$55k</td>
+							<td class="seats num">2</td>
+							<td class="entries num">0</td>
+							<td class="stake num">$50</td>
+							<td class="prizes num">$90.00</td>
+							<td class="link"><a href="https://www.fanduel.com/e/Game/NHL_Salary_Cap_11655?table_spec_id=5&amp;copy_seat_id=137349200" class="button tiny primary">Enter</a></td>
+						</tr>
+										<tr>
+							<td class="title">NHL Head-to-Head</td>
+							<td class="cap num">$55k</td>
+							<td class="seats num">2</td>
+							<td class="entries num">0</td>
+							<td class="stake num">$109</td>
+							<td class="prizes num">$200.00</td>
+							<td class="link"><a href="https://www.fanduel.com/e/Game/NHL_Salary_Cap_11655?table_spec_id=370&amp;copy_seat_id=137349200" class="button tiny primary">Enter</a></td>
+						</tr>
+										<tr>
+							<td class="title">NHL Salary Cap 55k Fri Feb 20th (Late Night)</td>
+							<td class="cap num">$55k</td>
+							<td class="seats num">5</td>
+							<td class="entries num">0</td>
+							<td class="stake num">$25</td>
+							<td class="prizes num">$112.50</td>
+							<td class="link"><a href="/e/Game/11655?tableId=10623175&fromLobby=true&amp;copy_seat_id=137349200" class="button tiny primary">Enter</a></td>
+						</tr>
+										<tr>
+							<td class="title">NHL Salary Cap 55k Fri Feb 20th (Late Night)</td>
+							<td class="cap num">$55k</td>
+							<td class="seats num">5</td>
+							<td class="entries num">0</td>
+							<td class="stake num">$10</td>
+							<td class="prizes num">$45.00</td>
+							<td class="link"><a href="/e/Game/11655?tableId=10633020&fromLobby=true&amp;copy_seat_id=137349200" class="button tiny primary">Enter</a></td>
+						</tr>
+										<tr>
+							<td class="title">NHL Salary Cap 55k Fri Feb 20th (Late Night)</td>
+							<td class="cap num">$55k</td>
+							<td class="seats num">5</td>
+							<td class="entries num">1</td>
+							<td class="stake num">$1</td>
+							<td class="prizes num">$4.50</td>
+							<td class="link"><a href="/e/Game/11655?tableId=10629273&fromLobby=true&amp;copy_seat_id=137349200" class="button tiny primary">Enter</a></td>
+						</tr>
+										<tr>
+							<td class="title">NHL Salary Cap 55k Fri Feb 20th (Late Night)</td>
+							<td class="cap num">$55k</td>
+							<td class="seats num">5</td>
+							<td class="entries num">1</td>
+							<td class="stake num">$2</td>
+							<td class="prizes num">$9.00</td>
+							<td class="link"><a href="/e/Game/11655?tableId=10634231&fromLobby=true&amp;copy_seat_id=137349200" class="button tiny primary">Enter</a></td>
+						</tr>
+										<tr>
+							<td class="title">NHL Salary Cap 55k Fri Feb 20th (Late Night)</td>
+							<td class="cap num">$55k</td>
+							<td class="seats num">5</td>
+							<td class="entries num">2</td>
+							<td class="stake num">$5</td>
+							<td class="prizes num">$22.50</td>
+							<td class="link"><a href="/e/Game/11655?tableId=10627350&fromLobby=true&amp;copy_seat_id=137349200" class="button tiny primary">Enter</a></td>
+						</tr>
+										<tr>
+							<td class="title">NHL Salary Cap 55k Fri Feb 20th (Late Night)</td>
+							<td class="cap num">$55k</td>
+							<td class="seats num">5</td>
+							<td class="entries num">0</td>
+							<td class="stake num">$50</td>
+							<td class="prizes num">$225.00</td>
+							<td class="link"><a href="/e/Game/11655?tableId=10623176&fromLobby=true&amp;copy_seat_id=137349200" class="button tiny primary">Enter</a></td>
+						</tr>
+										<tr>
+							<td class="title">NHL Salary Cap 55k Fri Feb 20th (Late Night)</td>
+							<td class="cap num">$55k</td>
+							<td class="seats num">5</td>
+							<td class="entries num">0</td>
+							<td class="stake num">$109</td>
+							<td class="prizes num">$500.00</td>
+							<td class="link"><a href="/e/Game/11655?tableId=10623178&fromLobby=true&amp;copy_seat_id=137349200" class="button tiny primary">Enter</a></td>
+						</tr>
+										<tr>
+							<td class="title">NHL Salary Cap 55k Fri Feb 20th (Late Night)</td>
+							<td class="cap num">$55k</td>
+							<td class="seats num">10</td>
+							<td class="entries num">7</td>
+							<td class="stake num">$2</td>
+							<td class="prizes num">$18.00</td>
+							<td class="link"><a href="/e/Game/11655?tableId=10623187&fromLobby=true&amp;copy_seat_id=137349200" class="button tiny primary">Enter</a></td>
+						</tr>
+										<tr>
+							<td class="title">NHL Salary Cap 55k Fri Feb 20th (Late Night)</td>
+							<td class="cap num">$55k</td>
+							<td class="seats num">10</td>
+							<td class="entries num">0</td>
+							<td class="stake num">$109</td>
+							<td class="prizes num">$1,000.00</td>
+							<td class="link"><a href="/e/Game/11655?tableId=10623198&fromLobby=true&amp;copy_seat_id=137349200" class="button tiny primary">Enter</a></td>
+						</tr>
+										<tr>
+							<td class="title">NHL Salary Cap 55k Fri Feb 20th (Late Night)</td>
+							<td class="cap num">$55k</td>
+							<td class="seats num">10</td>
+							<td class="entries num">0</td>
+							<td class="stake num">$50</td>
+							<td class="prizes num">$450.00</td>
+							<td class="link"><a href="/e/Game/11655?tableId=10623196&fromLobby=true&amp;copy_seat_id=137349200" class="button tiny primary">Enter</a></td>
+						</tr>
+										<tr>
+							<td class="title">NHL Salary Cap 55k Fri Feb 20th (Late Night)</td>
+							<td class="cap num">$55k</td>
+							<td class="seats num">10</td>
+							<td class="entries num">2</td>
+							<td class="stake num">$1</td>
+							<td class="prizes num">$9.00</td>
+							<td class="link"><a href="/e/Game/11655?tableId=10623185&fromLobby=true&amp;copy_seat_id=137349200" class="button tiny primary">Enter</a></td>
+						</tr>
+										<tr>
+							<td class="title">NHL Salary Cap 55k Fri Feb 20th (Late Night)</td>
+							<td class="cap num">$55k</td>
+							<td class="seats num">10</td>
+							<td class="entries num">0</td>
+							<td class="stake num">$5</td>
+							<td class="prizes num">$45.00</td>
+							<td class="link"><a href="/e/Game/11655?tableId=10623190&fromLobby=true&amp;copy_seat_id=137349200" class="button tiny primary">Enter</a></td>
+						</tr>
+										<tr>
+							<td class="title">NHL Salary Cap 55k Fri Feb 20th (Late Night)</td>
+							<td class="cap num">$55k</td>
+							<td class="seats num">10</td>
+							<td class="entries num">0</td>
+							<td class="stake num">$25</td>
+							<td class="prizes num">$225.00</td>
+							<td class="link"><a href="/e/Game/11655?tableId=10623194&fromLobby=true&amp;copy_seat_id=137349200" class="button tiny primary">Enter</a></td>
+						</tr>
+										<tr>
+							<td class="title">NHL Salary Cap 55k Fri Feb 20th (Late Night)</td>
+							<td class="cap num">$55k</td>
+							<td class="seats num">10</td>
+							<td class="entries num">0</td>
+							<td class="stake num">$10</td>
+							<td class="prizes num">$90.00</td>
+							<td class="link"><a href="/e/Game/11655?tableId=10623193&fromLobby=true&amp;copy_seat_id=137349200" class="button tiny primary">Enter</a></td>
+						</tr>
+									</tbody>
+				</table>
+			</div>
+	
+		<div class="row column-12">
+			<label class="checkbox-label column-6">
+			<input id="offerMultipleEntryLB" type="checkbox" checked /> Always show this</label>
+			<a class="closeMultipleEntryLB column-6 text-align-right" href="#">No thanks, go to my lineup</a>
+		</div>
+
+				</div>
+		</div>
+			</div>
+		</div></div></div><script src="https://www.fanduel.com/scripts/countdown-plain.js"></script><script type="text/javascript">if (!FD) FD = {};
+FD.breakdown = {order: {"300":[["P",3],["A",2],["+-",1],["PM",0.5],["PPG",1],["PPA",1],["S",0.4],["G",[["W",4],["SO",2],["SV",0.2],["G",-1]]]],"301":[["P",3],["A",2],["+-",1],["PM",0.25],["PPG",0.5],["PPA",0.5],["S",0.4]],"302":[["G",[["W",3],["SO",2],["SV",0.2],["G",-1]]]],"200":[["RU",[["Y",0.1],["TD",6]]],["PA",[["Y",0.04],["TD",4],["I",-1]]],["RE",[["Y",0.1],["TD",6],["R",0.5]]],["KR",[["TD",6]]],["PR",[["TD",6]]],["FU",[["L",-2],["TD",6]]],["2PC",[["S",2],["P",2]]],["FG",[["U20",3],["U30",3],["U40",3],["U50",4],["O50",5]]],["PAT",[["P",1]]]],"201":[["DE",[["S",1],["FR",2],["RTD",6],["FRTD",6],["SF",2],["B",2],["I",2],["PA0",10],["PA1-6",7],["PA7-13",4],["PA14-20",1],["PA28-34",-1],["PA35+",-4]]]],"400":[["P",1],["R",1.2],["A",1.5],["B",2],["S",2],["T",-1]],"500":[["1B",1],["2B",2],["3B",3],["HR",4],["RBI",1],["R",1],["BB",1],["SB",2],["O",-0.25],["HBP",1]],"501":[["P",[["W",4],["IP",1],["O",0.331],["SO",1],["ER",-1]]]],"600":[["P",1],["R",1.2],["A",1.5],["B",2],["S",2],["T",-1]],"700":[["RU",[["Y",0.1],["TD",6]]],["PA",[["Y",0.04],["TD",4],["I",-1]]],["RE",[["Y",0.1],["TD",6],["R",0.5]]],["KR",[["TD",6]]],["PR",[["TD",6]]],["FU",[["L",-2],["TD",6]]],["2PC",[["S",2],["P",2]]]]},
+descs: {"200":{"PD":"games","TD":"touchdowns","PTS":"points","RU":{"A":"rushing attempts","Y":"rushing yards made","L":"longest rush","TD":"rushing touchdowns"},"PA":{"A":"passing attempts","C":"completed passes","I":"interceptions","Y":"passing yards","YL":"sacked yards-lost","S":"times sacked","L":"longest pass","TD":"passing touchdowns"},"RE":{"R":"receptions","Y":"receiving yards","L":"longest reception","TD":"receiving touchdowns"},"PU":{"P":"punts","B":"punts blocked","R":"punt returns","L":"longest return yards","Y":"yards punted","RY":"punt-return yards"},"KR":{"R":"kick returns","Y":"kick-return yards","L":"longest kick return yards","TD":"kickoff return touchdowns"},"PR":{"R":"punt returns","Y":"punt-return yards","L":"longest punt-return yards","TD":"punt return touchdowns"},"FU":{"F":"fumbles","L":"fumbles lost","TD":"own fumbles recovered touchdowns","OR":"own fumbles recovered","OY":"own fumbles recovered yards"},"FG":{"F":"field goals","A":"field goal attempts","U20":"field-goals from 0-19 yards","U30":"field-goals from 20-29 yards","U40":"field-goals from 30-39 yards","U50":"field-goals from 40-49 yards","O50":"field-goals from 50+ yards"},"PAT":{"P":"extra-point conversions","A":"extra-point conversion attempts"},"2PC":{"S":"two-point conversions scored","P":"two-point conversion passes","A":"two-point conversion attempts"},"DE":{"T":"tackles","A":"assists","S":"sacks","SY":"sack-yards","P":"passes-defensed","F":"forced-fumbles","FR":"opponent-fumbles recovered","FRTD":"fumble return touchdowns","IRA":"interception return attempts","I":"interceptions made","SF":"safeties","RTD":"return touchdowns","B":"blocked kicks","PA0":"0 points allowed","PA1-6":"1-6 points allowed","PA7-13":"7-13 points allowed","PA14-20":"14-20 points allowed","PA28-34":"28-34 points allowed","PA35+":"35+ points allowed"}},"201":{"PD":"games","TD":"touchdowns","PTS":"points","RU":{"A":"rushing attempts","Y":"rushing yards made","L":"longest rush","TD":"rushing touchdowns"},"PA":{"A":"passing attempts","C":"completed passes","I":"interceptions","Y":"passing yards","YL":"sacked yards-lost","S":"times sacked","L":"longest pass","TD":"passing touchdowns"},"RE":{"R":"receptions","Y":"receiving yards","L":"longest reception","TD":"receiving touchdowns"},"PU":{"P":"punts","B":"punts blocked","R":"punt returns","L":"longest return yards","Y":"yards punted","RY":"punt-return yards"},"KR":{"R":"kick returns","Y":"kick-return yards","L":"longest kick return yards","TD":"kickoff return touchdowns"},"PR":{"R":"punt returns","Y":"punt-return yards","L":"longest punt-return yards","TD":"punt return touchdowns"},"FU":{"F":"fumbles","L":"fumbles lost","TD":"own fumbles recovered touchdowns","OR":"own fumbles recovered","OY":"own fumbles recovered yards"},"FG":{"F":"field goals","A":"field goal attempts","U20":"field-goals from 0-19 yards","U30":"field-goals from 20-29 yards","U40":"field-goals from 30-39 yards","U50":"field-goals from 40-49 yards","O50":"field-goals from 50+ yards"},"PAT":{"P":"extra-point conversions","A":"extra-point conversion attempts"},"2PC":{"S":"two-point conversions scored","P":"two-point conversion passes","A":"two-point conversion attempts"},"DE":{"T":"tackles","A":"assists","S":"sacks","SY":"sack-yards","P":"passes-defensed","F":"forced-fumbles","FR":"opponent-fumbles recovered","FRTD":"fumble return touchdowns","IRA":"interception return attempts","I":"interceptions made","SF":"safeties","RTD":"return touchdowns","B":"blocked kicks","PA0":"0 points allowed","PA1-6":"1-6 points allowed","PA7-13":"7-13 points allowed","PA14-20":"14-20 points allowed","PA28-34":"28-34 points allowed","PA35+":"35+ points allowed"}},"500":{"P":{"O":"Fractional Innings"}},"501":{"P":{"O":"Fractional Innings"}},"400":{"PD":"games","FGA":"Field Goal Attempted","FG":"Field Goal Made","FTA":"Free Throw Attempted","FT":"Free Throw Made","3PA":"3-point Shot Attempted","3P":"3-point Shot Made","P":"Points Scored","R":"Rebounds","A":"Assists","S":"Steals","T":"Turnovers","B":"Blocked Shots"},"301":{"PD":"games","P":"goals","A":"assists","+-":"plus-minus","PM":"penalty minutes","PPG":"power play goals","PPA":"power play assists","S":"shots on goal","G":{"W":"wins","L":"losses","SO":"shutouts","SV":"saves","G":"goals against"}},"302":{"PD":"games","P":"goals","A":"assists","+-":"plus-minus","PM":"penalty minutes","PPG":"power play goals","PPA":"power play assists","S":"shots on goal","G":{"W":"wins","L":"losses","SO":"shutouts","SV":"saves","G":"goals against"}},"600":{"PD":"games","FGA":"Field Goal Attempted","FG":"Field Goal Made","FTA":"Free Throw Attempted","FT":"Free Throw Made","3PA":"3-point Shot Attempted","3P":"3-point Shot Made","P":"Points Scored","R":"Rebounds","A":"Assists","S":"Steals","T":"Turnovers","B":"Blocked Shots"},"700":{"PD":"games","TD":"touchdowns","PTS":"points","RU":{"A":"rushing attempts","Y":"rushing yards made","L":"longest rush","TD":"rushing touchdowns"},"PA":{"A":"passing attempts","C":"completed passes","I":"interceptions","Y":"passing yards","YL":"sacked yards-lost","S":"times sacked","L":"longest pass","TD":"passing touchdowns"},"RE":{"R":"receptions","Y":"receiving yards","L":"longest reception","TD":"receiving touchdowns"},"PU":{"P":"punts","B":"punts blocked","R":"punt returns","L":"longest return yards","Y":"yards punted","RY":"punt-return yards"},"KR":{"R":"kick returns","Y":"kick-return yards","L":"longest kick return yards","TD":"kickoff return touchdowns"},"PR":{"R":"punt returns","Y":"punt-return yards","L":"longest punt-return yards","TD":"punt return touchdowns"},"FU":{"F":"fumbles","L":"fumbles lost","TD":"own fumbles recovered touchdowns","OR":"own fumbles recovered","OY":"own fumbles recovered yards"},"2PC":{"S":"two-point conversions scored","P":"two-point conversion passes","A":"two-point conversion attempts"}}},
+fractional: {"301":true,"302":true,"200":true,"201":true,"500":true,"501":true,"700":true,"400":true,"600":true}};
+</script><script type="text/javascript" src="https://www.fanduel.com/scripts/yui-animation.js"></script><script src="https://www.fanduel.com/scripts/compiled/seatview.base.80cb7793d1b23cdcf801a63d06cfa963.js"></script><script>sendAjax([])</script><div class='row column-3'><form action="https://www.fanduel.com/c/CCEntry?cc_action=cca_cancel&seat_id=137349200&cc_success_url=https%3A%2F%2Fwww.fanduel.com%2F" method="post"><button class="button text text-red fullwidth" onClick="return confirm('Are you sure you want to cancel this entry to NHL 50/50 League (Late Night)? (cannot be undone)');">Cancel entry</button></form></div>		<script type="text/javascript" src="https://www.fanduel.com/scripts/seatview.js"></script>
+				<script>
+			if (window.Countdown) Countdown.tickAll();
+						window.seatAdditionalData = {
+				size: 33,
+				id: 10623220			};
+					</script>
+	<script src="https://www.fanduel.com/scripts/compiled/core.backbone1.6d00a5aad685c05f9c85948a6f47347e.js"></script>			<script src="https://www.fanduel.com/scripts/compiled/zeroclipboard.base.c988f144df7bceb0c3405ecea53da5d3.js"></script>			<script type="text/javascript">
+				ZeroClipboard.setDefaults({
+					moviePath: "/flash/ZeroClipboard.swf",
+					useNoCache: false,
+					hoverClass: "hover",
+					activeClass: "is-active"
+				});
+			</script>
+		<script>window.FD.FBId = 138595969509233;</script> <script src="https://www.fanduel.com/scripts/compiled/facebook.share.6802f512c96af478c15d70daec6ebb5f.js"></script><script src="https://www.fanduel.com/scripts/compiled/referral.newlightbox.8057525e8ca152211e783a004379b7d3.js"></script><link rel="stylesheet" href="https://www.fanduel.com/styles/compiled/referral.newlightbox.59591fa62d266cd1c5c0383c428a26a1.css"/><script type="text/javascript">
+	window.FDNewReferralSettings = {
+		lightboxParent: "challenge"
+	}
+</script>
+<div style="display: none;">
+	<div class="newreferpromptLB">
+		<div class="refer-prompt-header">
+			<div class="image-header">
+				<img src="/images/edition/pp/refer-bg-2x.jpg" width="783" height="157">
+			</div>
+			<div class="header-text">
+				<h2>Refer friends &amp; earn cash each time they play</h2>
+				<h4>The more you refer the more you earn!</h4>
+			</div>
+		</div>
+		<div class="refer-prompt-tab-buttons">
+			<div>
+				<a href="#" data-tab-name="link" class="is-active">
+					<div>
+						<i class="icon">
+							&#x270e;
+						</i>
+						<div class="title">
+							Link
+						</div>
+					</div>
+				</a>
+			</div>
+			<div>
+				<a href="#" data-tab-name="email">
+					<div>
+						<i class="icon">
+							&#x2709;
+						</i>
+						<div class="title">
+							Email
+						</div>
+					</div>
+				</a>
+			</div>
+			<div>
+				<a href="#" data-tab-name="facebook">
+					<div>
+						<i class="icon">
+							&#x26b5;
+						</i>
+						<div class="title">
+							Facebook
+						</div>
+					</div>
+				</a>
+			</div>
+			<div>
+				<a href="#" data-tab-name="twitter">
+					<div>
+						<i class="icon">
+							&#x26b4;
+						</i>
+						<div class="title">
+							Twitter
+						</div>
+					</div>
+				</a>
+			</div>
+			<span class="stretcher"></span>
+		</div>
+
+		<div class="refer-prompt-tabs">
+			<div data-tab-name="link" class="is-active">
+				<h4>Copy the link below and invite your friends</h4>
+				<div class="clipboard-success">
+					<i class="icon">&#x2714;</i>
+					Your link has been copied to your clipboard.
+				</div>
+				<div class="refer-link">
+					<input type="text" value="https://www.fanduel.com/entry/BIBEWTHJJ?invitedby=cole_maclean&cnl=ea" readonly><button data-copy-ref-link-button class="button mini primary" data-clipboard-text="https://www.fanduel.com/entry/BIBEWTHJJ?invitedby=cole_maclean&cnl=ea">Copy Link</button>
+				</div>
+			</div>
+			<div data-tab-name="email">
+				<div>
+					<h4 class="import-links">
+						<div class="email-import-title">Click to import contact list from</div>
+						<a href="#" data-email-import-link="gmail">
+							<img src="/images/edition/pp/referralmailicons/gmail-regular.png" width="75" height="79">
+							<button type="button" class="email-import-extra-button button primary">Import from Gmail</button>
+							<div class="loading" style="display: none;">
+								<div id="circleG">
+									<div id="circleG_1" class="circleG"></div>
+									<div id="circleG_2" class="circleG"></div>
+									<div id="circleG_3" class="circleG"></div>
+								</div>
+							</div>
+						</a>
+					</h4>
+					<h4>
+						<span class="manual-email-import-title">Or, enter email addresses/FanDuel usernames</span>
+						<span class="select-contacts-title" style="display: none;">Select contacts</span>
+					</h4>
+					<form class="manual-email-form">
+						<div class="email-form-field manual-email-field">
+							<input type="text" placeholder="Separate invitees with a comma">
+						</div>
+						<div data-contact-picker-form-element class="email-form-field" style="display: none;">
+							<div class="contact-picker-form-header">
+								<div class="contact-picker-form-left">
+									<span class="contact-picker-form-summary">
+										<strong data-contact-picker-form-selected>0</strong>
+										of
+										<strong data-contact-picker-form-total>0</strong>
+										selected
+									</span>
+									<button class="button mini" data-contact-picker-form-deselect-all-button>Deselect all</button>
+								</div>
+								<input data-contact-picker-form-search type="text" placeholder="Search">
+							</div>
+							<div data-contact-picker-form-contacts>
+							</div>
+						</div>
+						<div class="email-form-field">
+							<textarea name="message" rows="3" placeholder="Enter a message here (optional)"></textarea>
+						</div>
+						<div class="manual-email-form-button">
+							<div class="alert email-form-banner" style="display: none;"></div>
+							<div class="loading" style="display: none;">
+								<div id="circleG">
+									<div id="circleG_1" class="circleG"></div>
+									<div id="circleG_2" class="circleG"></div>
+									<div id="circleG_3" class="circleG"></div>
+								</div>
+							</div>
+							<button type="button" class="button primary">Send</button>
+						</div>
+					</form>
+				</div>
+			</div>
+			<div data-tab-name="facebook">
+				<h4>Click below to share your referral link on Facebook</h4>
+				<div class="fb-share-button" data-href="https://www.fanduel.com/entry/BIBEWTHJJ?invitedby=cole_maclean&cnl=ec" data-type="button" data-width="200"></div>
+			</div>
+			<div data-tab-name="twitter">
+				<h4>Click below to share your referral link on Twitter</h4>
+				<a
+					href="https://twitter.com/share"
+					class="twitter-share-button"
+					data-lang="en"
+					data-url="https://www.fanduel.com/entry/BIBEWTHJJ?invitedby=cole_maclean&cnl=ed"
+					data-text="I'm playing new daily fantasy leagues at FanDuel.com - come and join me!"
+					data-related="FanDuel"
+					data-hashtags="FanDuel"
+					data-count="vertical"
+					data-size="large"
+					data-counturl="fanduel.com"
+				>
+					Tweet
+				</a>
+			</div>
+		</div>
+					<div class="challenge-opt-out">
+				<label>
+					<input type="checkbox" checked>
+					Always ask me if I want to challenge my friends
+				</label>
+			</div>
+			</div>
+</div>
+
+<script>
+				if (window.saleTrack) {
+					saleTrack.addSaleItem(1, 1, 'Entry', 'NHL', 'Salary Cap', '');
+					saleTrack.orderid = 'S137349200';
+					saleTrack.logSale(1);
+				}
+			</script>	<script src="https://za.offerforge.com/i_sale_third/415/0.10/137349200/162491+cur=USD&sale_status=1"></script>
+					<noscript><IMG SRC="https://za.offerforge.com/i_track_sale/415/0.10/137349200/162491+cur=USD&sale_status=1"></noscript>		<img src="https://altfarm.mediaplex.com/ad/bk/21507-158562-3840-0?EnteredContest=1&amp;stake=1&amp;tableId=10623220&amp;mpuid=" height="1" width="1" alt="Mediaplex_tag" />
+	</section><footer class="global-footer">
+				<div class="row">
+					<nav class="footer-navigation">
+						<ul>
+							<li><a href="/about">About</a></li>
+							<li><a href="/how-it-works">How it works</a></li>
+							<li><a href="/promos">Promos</a></li>
+							<li><a href="//www.fanduel.com/support">Support</a></li>
+							<li><a href="/careers">Careers</a></li>
+							<li><a href="/affiliates">Affiliates</a></li>
+							<li><a href="/legal">Legal</a></li>
+							<li><a href="/insider">FanDuel Insider</a></li>
+							<li><a href="/pg/Switcher/toMobile" onclick="document.cookie='renderMode=Smartphone;path=/;domain=.fanduel.com;expires=Mon, 17 Feb 2025 16:40:10 UTC';window.location='/';return false;" class="mobile">Mobile site</a></li>
+						</ul>
+					</nav>
+					<ul class="footer-contact-details">
+						<li class="support"><a href="mailto:support@fanduel.com">support@fanduel.com</a></li>
+					</ul>
+				</div>
+				<div class="row">
+					<ul class="footer-copyright">
+						<li>&copy; 2009&mdash;2015 FanDuel Inc. All Rights Reserved</li>
+						<li><a href="/terms">Terms of Use</a></li>
+						<li><a href="/privacy">Privacy Policy</a></li>
+						<li><a href="//twitter.com/fanduel" class="social-button social-button-twitter" target="_blank"><i class="icon">&#x26b4;</i></a></li>
+						<li><a href="//facebook.com/fanduel" class="social-button social-button-facebook" target="_blank"><i class="icon">&#x26b5;</i></a></li>
+					</ul>
+					<ul class="footer-partner-logos">
+						<li class="payment-logo paypal">PayPal</li>
+						<li class="payment-logo visa">Visa</li>
+						<li class="payment-logo discover">Discover</li>
+						<li class="payment-logo mastercard">MasterCard</li>
+						<li><a href="http://www.stats.com" target="_blank" class="partner stats">STATS</a></li>
+						<li><a href="http://www.fsta.org" target="_blank" class="partner fsta">FSTA</a></li>
+						<li><span class="partner nbc">NBC Sports Official Partner</span></li>
+					</ul>
+				</div>
+				<div class="row footer-company-address">
+					FanDuel, Inc. New York City
+				</div>
+			</footer>			<script type="text/javascript">
+				var _adblock = true;
+			</script>
+			<script type="text/javascript" src="/scripts/advertising.js"></script>
+			<script type="text/javascript">
+				var _gaq = _gaq || [];
+				_gaq.push(['_setAccount', 'UA-3384372-6']);
+				_gaq.push(['_setDomainName', 'fanduel.com']);
+				_gaq.push(['_setCustomVar', 1, 'Render mode', 'Default', 3]);
+				_gaq.push(['_setCustomVar', 2, 'Is a mobile device', false, 1]);
+				_gaq.push(['_setCustomVar', 3, 'renderMode cookie', '', 3]);
+				_gaq.push(['_setCustomVar', 4, 'AdBlocked', _adblock, 3]);
+				_gaq.push(['_setCustomVar', 5, 'Navigation header style', 'new']);
+				_gaq.push(['_trackPageview']);
+
+				(function() {
+					var url;
+					if (_adblock) {
+						url = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+					} else {
+						url = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'stats.g.doubleclick.net/dc.js';
+					}
+
+					var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+					ga.src = url;
+					var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+				})();
+			</script>
+		</body></html>

@@ -95,7 +95,7 @@ def get_potential_contests(s,sport_list,game_type_list,size_range,entry_fee_list
 	         'startTime': contest['startTime'], 
 	         'entryFee': int(contest['entryFee']),
 	         'size':  int(contest['size']), 
-	         'gameType': contest['flags'],
+	         'gameType': str(contest['flags']),
 	         'entriesData': int(contest['entriesData']),
 	         'startString': str(contest['startString'])
 	     } 
@@ -104,11 +104,14 @@ def get_potential_contests(s,sport_list,game_type_list,size_range,entry_fee_list
 	       float(contest['entriesData'])/float(contest['size']) > percent_full and float(contest['entriesData'])/float(contest['size']) < 1
 	     ]
 	return potential_contests
-def enter_best_contests(s,session_id,sport,wins_threshold,max_bet,player_data,potential_contests):
+def enter_best_contests(s,session_id,sport,wins_threshold,max_bet,potential_contests):
 	current_bet = 0
 	with open('C:/Users/Cole/Desktop/Fanduel/fanduel/userwinscache.txt',"r") as myfile:
 		data = myfile.read()
 	user_wins_cache = ast.literal_eval(data)
+	with open('C:/Users/Cole/Desktop/Fanduel/fanduel/roster.txt',"r") as myfile:
+		data = myfile.read()
+	strategy_data = ast.literal_eval(data)
 	for contest in potential_contests:
 		if current_bet < max_bet:
 			entry_url = 'https://www.fanduel.com/pg/Lobby/showTableEntriesJSON/' + contest['contest_id'] + '/0/10000'
@@ -147,22 +150,25 @@ def enter_best_contests(s,session_id,sport,wins_threshold,max_bet,player_data,po
 			arr = numpy.array(user_wins_array[sport])
 			top_player_count = math.ceil(0.25*contest['size'])
 			avg_top_wins = numpy.mean(arr[arr.argsort()[-top_player_count:][::-1]])#Need to decide best stats for paticualar contest type
+			print avg_top_wins
 			if avg_top_wins <= wins_threshold and current_bet < max_bet and contest['entryFee']<=(max_bet - current_bet):
 				print 'entry attempt'
+				player_data = str(strategy_data['player_data'])
 				entry_id,entry_status = fdo.enter_contest(s,session_id,'https://www.fanduel.com/e/Game/' + contest['game_id'] + '?tableId=' + contest['contest_id'] + '&fromLobby=true',player_data)
 				print entry_status
 				contest['avg_top_wins'] = avg_top_wins
 				contest['entry_id'] = entry_id
+				contest['strat_params'] = str(strategy_data['strat_params'])
 				if entry_status == 'success':
 					current_bet = current_bet + contest['entryFee']
 					placeholders = ', '.join(['%s'] * len(contest))
 					columns = ', '.join(contest.keys())
-					#dbo.insert_mysql('FD_table_contests',columns,placeholders,contest.values())
+					dbo.insert_mysql('FD_table_contests',columns,placeholders,contest.values())
 	with open('C:/Users/Cole/Desktop/Fanduel/fanduel/userwinscache.txt',"w") as myfile:
 		myfile.write(str(user_wins_cache))
 	return current_bet
 def get_FD_playerlist():
- 	FD_list = ast.literal_eval(Uds.parse_html('https://www.fanduel.com/e/Game/11649?tableId=10594871&fromLobby=true',"FD.playerpicker.allPlayersFullData = ",";"))
+ 	FD_list = ast.literal_eval(Uds.parse_html('https://www.fanduel.com/e/Game/11655?tableId=10623217&fromLobby=true',"FD.playerpicker.allPlayersFullData = ",";"))
  	return FD_list
 def team_mapping():
 	team_map = {}
@@ -206,32 +212,9 @@ def build_lineup_dict():
 	else:
 		team_lineups_dict = ast.literal_eval(Cell('Parameters','clLineupsCache').value)
 	return team_lineups_dict
-def output_best_contests():
-	rw = Cell('Parameters','clBCLastRow').value
-	all_contests = get_best_contests(['nhl'],[{"standard":1,"50_50":1}],[3,100],[1,2,5,10],0.5,'7:00')
-	for contest in all_contests:
-		if contest['nhl_avg_top_wins'] <=Cell('Parameters','clMaxAvgWins').value:
-			Cell('Best Contests',rw,2).value = time.strftime("%d/%m/%Y")
-			Cell('Best Contests',rw,3).value = contest['game_url']
-			Cell('Best Contests',rw,1).value = re.findall('[0-9]{8,8}',contest['game_url'])[0]
-			Cell('Best Contests',rw,4).value = contest['nhl_avg_top_wins']
-			Cell('Best Contests',rw,5).value = contest['size']
-			Cell('Best Contests',rw,6).value = contest['entryFee']
-			Cell('Best Contests',rw,7).value = contest['entriesData']
-			rw = rw + 1
 def get_live_contest_ids():
 	s, session_id = fdo.get_fanduel_session()
 	r = s.get('https://www.fanduel.com/mycontests/162491/live?start=0&number=10000')
 	live_contest_dict = json.loads(r.text)
 	for contest in live_contest_dict['seats']:
 		dbo.write_to_db('FD_table_contests','table_id,contest_id',[str(contest[2].split(r'/')[2]),str(contest[0])])
-s,session_id = fdo.get_fanduel_session()
-potential_contests = get_potential_contests(s,['nhl'],[{"standard":1,"50_50":1}],[3,100],[1,2,5,10],0.1,'7:00')
-player_data = ('[["LW","8980","87942","654"],["LW","8478","87945","663"],["RW","8442","95317","652"],'
-				'["RW","16969","87945","663"],["C","9279","87942","654"],["C","9992","87944","656"],'
-				'["D","8689","87941","666"],["D","12952","87942","676"],["G","8532","95317","668"]]')
-print enter_best_contests(s,session_id,'NHL',5000,5,player_data,potential_contests)
-os.system('pause')
-#print output_best_contests()
-#print build_lineup_dict()['TOR']
-#os.system('pause')

@@ -6,6 +6,8 @@ import difflib
 import numpy
 from openopt import *
 import general_utils as Ugen
+import FD_operations as fdo
+import operator
 def build_player_universe(full_playerlist,goalie_list):
 	delkeys = []
 	for key,data in full_playerlist.iteritems():
@@ -65,27 +67,27 @@ def build_lineup_avg_goals_dict(player_data_dict):
 def build_full_player_dictionary():
 	player_map = player_mapping(1,2)
 	rw = 2
-	player_data_dict = database_operations.get_player_data_dict('nhl','2014020710')
+	player_data_dict = database_operations.get_player_data_dict('nhl','2014020800')
 	lineup_avg_goals_dict = build_lineup_avg_goals_dict(player_data_dict)
-	columns = ['G','C','LW','RW','D','Position','FD_name','Dummy1','TeamID','Dummy2','Salary','PPG','GamesPlayed','Dummy3','Dummy4','Injury','InjuryAge','Dummy5']
- 	for player_data in data_scrapping.get_FD_playerlist().iteritems():
+	columns = ['PlayerID','G','C','LW','RW','D','Position','FD_name','MatchupID','TeamID','Dummy2','Salary','PPG','GamesPlayed','Dummy3','Dummy4','Injury','InjuryAge','Dummy5','PlayerID']
+ 	for player_id,player_data in data_scrapping.get_FD_playerlist().iteritems():
  		d = None
  		d = collections.OrderedDict()
- 		for i in range(0,5):
+ 		d[columns[0]] = player_id
+ 		for i in range(1,6):
  			column_index = i
- 			if columns[column_index] == player_data[1][0]: #Player position
+ 			if columns[column_index] == player_data[0]: #Player position
  				d[columns[column_index]] = 1
  			else:
  				d[columns[column_index]] = 0
-  		for data in player_data[1]:
+  		for data in player_data:
   			column_index = column_index + 1
  			d[columns[column_index]] = data
- 		d['pid'] = 0 #sets up pid field for player uniqueness constraint
  		try:
- 			if player_data[1][1] in player_map.keys():
- 				mapped_name = player_map[player_data[1][1]]
+ 			if player_data[1] in player_map.keys():
+ 				mapped_name = player_map[player_data[1]]
  			else:
- 				mapped_name = player_data[1][1]
+ 				mapped_name = player_data[1]
  			player_data_dict[mapped_name].update(d)
  			d = None
  			d = collections.OrderedDict()
@@ -102,10 +104,10 @@ def build_full_player_dictionary():
 				d['Avg_ToI'] = Avg_ToI
 			player_data_dict[mapped_name].update(d)
 		except KeyError: #need to map names
-			if int(player_data[1][6]) > 0 and int(player_data[1][5]) >3000 :
- 				print player_data[1][1] + " not in player_data_dict"
- 				Cell('Player Mapping',rw,1).value = player_data[1][1]
- 				close_matches = difflib.get_close_matches(player_data[1][1],player_data_dict.keys(),10)
+			if int(player_data[6]) > 0 and int(player_data[5]) >3000 :
+ 				print player_data[1] + " not in player_data_dict"
+ 				Cell('Player Mapping',rw,1).value = player_data[1]
+ 				close_matches = difflib.get_close_matches(player_data[1],player_data_dict.keys(),10)
  				col = 2
  				for close_player in close_matches:
  					Cell('Player Mapping',rw,col).value = close_player
@@ -151,16 +153,33 @@ def optimum_roster():
 	p = KSP(objective, items, goal = 'max', constraints=constraints)
 	r = p.solve('glpk',iprint = 0)
 	return r,player_universe,objective
+def output_final_roster():
+	r,player_universe,objective = optimum_roster()
+	strategy_data = {}
+	roster_data = []
+	strategy_data['strat_params'] = {'objective':objective}
+	for player in r.xf:
+		roster_data.append([player_universe[player]['Position'],player_universe[player]['PlayerID'],player_universe[player]['MatchupID'],player_universe[player]['TeamID']])
+	strategy_data['player_data'] = sorted(roster_data, key=get_sort_key)
+	with open('C:/Users/Cole/Desktop/Fanduel/fanduel/roster.txt',"w") as myfile:
+		myfile.write(str(strategy_data).replace(' ',''))
+	return strategy_data
+def get_sort_key(sort_list):
+	sort_keys = {'LW':1,'RW':2,'C':3,'D':4,'G':5}
+	return sort_keys[sort_list[0]]
+def run_enter_best_contests():
+	s, session_id = fdo.get_fanduel_session()
+	potential_contests = data_scrapping.get_potential_contests(s,['nhl'],[{"standard":1,"50_50":1}],[3,100],[1,2,5,10],0.1,'8:30')
+	print potential_contests
+	total_bet = data_scrapping.enter_best_contests(s,session_id,'NHL',100000,1,potential_contests)
+	fdo.end_fanduel_session(s)
+	return total_bet
 #data_scrapping.update_gamedata(Cell("Parameters",'clLastGameDataID').value)
-rw = 2
-r,player_universe,objective = optimum_roster()
-for player in r.xf:
-	Cell("Roster",rw,1).value = player
-	Cell("Roster",rw,2).value = player_universe[player]['Team']
-	Cell("Roster",rw,3).value = player_universe[player]['Position']
-	Cell("Roster",rw,4).value = float(player_universe[player]['Avg_Line_Goals'])*float(player_universe[player]['Avg_ToI'])
-	Cell("Roster",rw,5).value = player_universe[player]['Salary']
-	Cell("Roster",rw,6).value = player_universe[player]['Avg_ToI']
-	Cell("Roster",rw,7).value = player_universe[player]['Avg_Line_Goals']
-	rw = rw + 1
+#print output_final_roster()
+print run_enter_best_contests()
+#with open('C:/Users/Cole/Desktop/Fanduel/fanduel/roster.txt',"r") as myfile:
+	#data = myfile.read()
+#player_data = str(ast.literal_eval(data)['player_data']).replace(' ','')
+#Cell('Parameters',10,10).value = player_data
+#print player_data
 os.system('pause')
