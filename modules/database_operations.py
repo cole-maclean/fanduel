@@ -56,6 +56,3 @@ def insert_mysql(table, columns, placeholders, data):
     cur.execute(sql, data)
     cur.execute('COMMIT')
     time.sleep(.1)
-#def compute_avg_toi(player_data_dict,game_limit):
-#Cell(1,2).value = get_player_data_dict('2014020001')['Marc-Andre Fleury']
-#os.system("pause")

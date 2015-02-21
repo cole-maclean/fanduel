@@ -8,6 +8,8 @@ from openopt import *
 import general_utils as Ugen
 import FD_operations as fdo
 import operator
+from datetime import datetime
+import time
 def build_player_universe(full_playerlist,goalie_list):
 	delkeys = []
 	for key,data in full_playerlist.iteritems():
@@ -113,10 +115,6 @@ def build_full_player_dictionary():
  					Cell('Player Mapping',rw,col).value = close_player
  					col = col + 1
  				rw = rw + 1
- 	#rw = 1
- 	#for chk_player in player_data_dict:
- 		#Cell(rw,2).value = chk_player
- 		#rw = rw + 1
  	return player_data_dict
 def optimum_roster():
 	player_data_dict = build_full_player_dictionary()
@@ -167,19 +165,18 @@ def output_final_roster():
 def get_sort_key(sort_list):
 	sort_keys = {'LW':1,'RW':2,'C':3,'D':4,'G':5}
 	return sort_keys[sort_list[0]]
-def run_enter_best_contests():
-	s, session_id = fdo.get_fanduel_session()
-	potential_contests = data_scrapping.get_potential_contests(s,['nhl'],[{"standard":1,"50_50":1}],[3,100],[1,2,5,10],0.1,'8:30')
-	print potential_contests
-	total_bet = data_scrapping.enter_best_contests(s,session_id,'NHL',100000,1,potential_contests)
-	fdo.end_fanduel_session(s)
+def run_enter_best_contests(daily_bet):
+	contest_time = datetime.strptime('17:00','%H:%M').time()
+	total_bet = 0
+	while total_bet < daily_bet:# and datetime.now().time() <= contest_time:
+		s, session_id = fdo.get_fanduel_session()
+		potential_contests = data_scrapping.get_potential_contests(s,['nhl'],[{"standard":1}],[3,5],[1,2,5,10],0.8,'12:30')
+		print potential_contests
+		total_bet = total_bet + data_scrapping.enter_best_contests(s,session_id,'NHL',40,(daily_bet - total_bet),potential_contests)
+		fdo.end_fanduel_session(s)
+		time.sleep(1800)
 	return total_bet
 #data_scrapping.update_gamedata(Cell("Parameters",'clLastGameDataID').value)
 #print output_final_roster()
-print run_enter_best_contests()
-#with open('C:/Users/Cole/Desktop/Fanduel/fanduel/roster.txt',"r") as myfile:
-	#data = myfile.read()
-#player_data = str(ast.literal_eval(data)['player_data']).replace(' ','')
-#Cell('Parameters',10,10).value = player_data
-#print player_data
+print run_enter_best_contests(1)
 os.system('pause')

@@ -87,7 +87,8 @@ def get_FD_contests(s):
 	return contest_dict['additions']
 def get_potential_contests(s,sport_list,game_type_list,size_range,entry_fee_list,percent_full,game_start):#Refactor: This needs cleanup
 	contest_dict = get_FD_contests(s)
-	potential_contests = [
+	if size_range == [2,2]:
+			potential_contests = [
 	     {
 	         'contest_id': str(contest['uniqueId']),
 	         'game_id': str(contest['gameId']),
@@ -96,13 +97,29 @@ def get_potential_contests(s,sport_list,game_type_list,size_range,entry_fee_list
 	         'entryFee': int(contest['entryFee']),
 	         'size':  int(contest['size']), 
 	         'gameType': str(contest['flags']),
-	         'entriesData': int(contest['entriesData']),
+	         'entriesData': 1,
 	         'startString': str(contest['startString'])
 	     } 
 	     for contest in contest_dict if contest['sport'] in sport_list and size_range[0] <= int(contest['size']) <=size_range[1] \
-	      and contest['entryFee'] in entry_fee_list and  contest['flags'] in game_type_list and  game_start in contest['startString'] and \
-	       float(contest['entriesData'])/float(contest['size']) > percent_full and float(contest['entriesData'])/float(contest['size']) < 1
+	      and contest['entryFee'] in entry_fee_list and  contest['flags'] in game_type_list and  game_start in contest['startString']	       
 	     ]
+	else:
+		potential_contests = [
+		     {
+		         'contest_id': str(contest['uniqueId']),
+		         'game_id': str(contest['gameId']),
+		         'sport': contest['sport'],
+		         'startTime': contest['startTime'], 
+		         'entryFee': int(contest['entryFee']),
+		         'size':  int(contest['size']), 
+		         'gameType': str(contest['flags']),
+		         'entriesData': int(contest['entriesData']),
+		         'startString': str(contest['startString'])
+		     } 
+		     for contest in contest_dict if contest['sport'] in sport_list and size_range[0] <= int(contest['size']) <=size_range[1] \
+		      and contest['entryFee'] in entry_fee_list and  contest['flags'] in game_type_list and  game_start in contest['startString'] and \
+		       float(contest['entriesData'])/float(contest['size']) > percent_full and float(contest['entriesData'])/float(contest['size']) < 1
+		     ]
 	return potential_contests
 def enter_best_contests(s,session_id,sport,wins_threshold,max_bet,potential_contests):
 	current_bet = 0
@@ -148,7 +165,7 @@ def enter_best_contests(s,session_id,sport,wins_threshold,max_bet,potential_cont
 							pass	
 					time.sleep(1)
 			arr = numpy.array(user_wins_array[sport])
-			top_player_count = math.ceil(0.25*contest['size'])
+			top_player_count = math.ceil(0.67*contest['size'])
 			avg_top_wins = numpy.mean(arr[arr.argsort()[-top_player_count:][::-1]])#Need to decide best stats for paticualar contest type
 			print avg_top_wins
 			if avg_top_wins <= wins_threshold and current_bet < max_bet and contest['entryFee']<=(max_bet - current_bet):
@@ -168,7 +185,7 @@ def enter_best_contests(s,session_id,sport,wins_threshold,max_bet,potential_cont
 		myfile.write(str(user_wins_cache))
 	return current_bet
 def get_FD_playerlist():
- 	FD_list = ast.literal_eval(Uds.parse_html('https://www.fanduel.com/e/Game/11655?tableId=10623217&fromLobby=true',"FD.playerpicker.allPlayersFullData = ",";"))
+ 	FD_list = ast.literal_eval(Uds.parse_html('https://www.fanduel.com/e/Game/11664?tableId=10624399&fromLobby=true',"FD.playerpicker.allPlayersFullData = ",";"))
  	return FD_list
 def team_mapping():
 	team_map = {}
