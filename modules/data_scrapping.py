@@ -63,14 +63,14 @@ def get_starting_goalies():
 		goalie_table = goalie_data.find('dt')
 		goalie_heading = goalie_data.find('h5')
 		if goalie_table and goalie_heading:
-			if goalie_table.get_text() == 'Confirmed' or goalie_table.get_text() == 'Likely':
+			if goalie_table.get_text() == 'Confirmed':
 				goalie = goalie_heading.get_text()
 				goalie_list.append(goalie)
 	for goalie_data in soup.findAll("div", { "class":"goalie away" }):
 		goalie_table = goalie_data.find('dt')
 		goalie_heading = goalie_data.find('h5')
 		if goalie_table and goalie_heading:
-			if goalie_table.get_text() == 'Confirmed' or goalie_table.get_text() == 'Likely':
+			if goalie_table.get_text() == 'Confirmed':
 				goalie = goalie_heading.get_text()
 				goalie_list.append(goalie)
 	return goalie_list
@@ -121,7 +121,7 @@ def get_potential_contests(s,sport_list,game_type_list,size_range,entry_fee_list
 		       float(contest['entriesData'])/float(contest['size']) > percent_full and float(contest['entriesData'])/float(contest['size']) < 1
 		     ]
 	return potential_contests
-def enter_best_contests(s,session_id,sport,wins_threshold,max_bet,potential_contests):
+def enter_best_contests(s,session_id,bet_sport,max_bet,potential_contests,time_remaining):
 	current_bet = 0
 	with open('C:/Users/Cole/Desktop/Fanduel/fanduel/userwinscache.txt',"r") as myfile:
 		data = myfile.read()
@@ -164,11 +164,13 @@ def enter_best_contests(s,session_id,sport,wins_threshold,max_bet,potential_cont
 						except KeyError:
 							pass	
 					time.sleep(1)
-			arr = numpy.array(user_wins_array[sport])
-			top_player_count = math.ceil(0.67*contest['size'])
-			avg_top_wins = numpy.mean(arr[arr.argsort()[-top_player_count:][::-1]])#Need to decide best stats for paticualar contest type
+			arr = numpy.array(user_wins_array[bet_sport])
+			print arr
+			avg_top_wins = numpy.mean(arr)#Need to decide best stats for paticualar contest type
 			print avg_top_wins
-			if avg_top_wins <= wins_threshold and current_bet < max_bet and contest['entryFee']<=(max_bet - current_bet):
+			contest_utility,future_utility = get_contest_utlity(avg_top_wins,time_remaining)
+			print (contest_utility, future_utility)
+			if contest_utility > future_utility and current_bet < max_bet and contest['entryFee']<=(max_bet - current_bet):
 				print 'entry attempt'
 				player_data = str(strategy_data['player_data'])
 				entry_id,entry_status = fdo.enter_contest(s,session_id,'https://www.fanduel.com/e/Game/' + contest['game_id'] + '?tableId=' + contest['contest_id'] + '&fromLobby=true',player_data)
@@ -185,7 +187,7 @@ def enter_best_contests(s,session_id,sport,wins_threshold,max_bet,potential_cont
 		myfile.write(str(user_wins_cache))
 	return current_bet
 def get_FD_playerlist():
- 	FD_list = ast.literal_eval(Uds.parse_html('https://www.fanduel.com/e/Game/11664?tableId=10624399&fromLobby=true',"FD.playerpicker.allPlayersFullData = ",";"))
+ 	FD_list = ast.literal_eval(Uds.parse_html('https://www.fanduel.com/e/Game/11671?tableId=10659473&fromLobby=true',"FD.playerpicker.allPlayersFullData = ",";"))
  	return FD_list
 def team_mapping():
 	team_map = {}
@@ -235,3 +237,25 @@ def get_live_contest_ids():
 	live_contest_dict = json.loads(r.text)
 	for contest in live_contest_dict['seats']:
 		dbo.write_to_db('FD_table_contests','table_id,contest_id',[str(contest[2].split(r'/')[2]),str(contest[0])])
+def build_pWins_vs_topwins_dict():
+	hist_performance = [(x,1) for x in range(100)]#tempory hist performance until dataset is made, currently says win if <100, else 0
+	Pwins_dict = {}
+	for x,y in hist_performance:
+		try: 
+			Pwins_dict[bin_mapping(x,5)].append(y)
+		except KeyError:
+			Pwins_dict[bin_mapping(x,5)] = [y]
+	for key,win_data in Pwins_dict.iteritems():
+		Pwins_dict[key].append(numpy.mean(numpy.array(win_data)))
+	return Pwins_dict
+def bin_mapping(x,bin_size):
+	return math.trunc(x) - math.trunc(x)%bin_size
+def get_contest_utlity(avg_top_wins,time_remaining):
+	wins_data = build_pWins_vs_topwins_dict()
+	future_utility = 0.0008*time_remaining + 0.4992 #predicting future utility, currently assumes 0.9 at T-600mins and 0.5 at T-1 min. Needs more rigourous stats
+	try:
+		contest_utility = wins_data[bin_mapping(avg_top_wins,5)][-1]
+	except KeyError:
+		print 'wins data bin for ' + str(avg_top_wins) + ' does not exist'
+		contest_utility = 0
+	return contest_utility,future_utility
