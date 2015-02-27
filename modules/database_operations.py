@@ -41,6 +41,16 @@ def build_data_dict_structure(player_dict,column_names, rw_data, start_rw = 0): 
             player_dict[rw_data[0]] = d
         start_rw = start_rw + 1
     return player_dict
+def read_from_db(sql,primary_key_col = 0):
+    cur = get_connection_cursor()
+    cur.execute(sql)
+    resultset = cur.fetchall()
+    query_dict = collections.OrderedDict()
+    for rw in resultset:
+        query_dict[rw[primary_key_col]] = []
+        for col in rw:
+            query_dict[rw[primary_key_col]].append(col)
+    return query_dict
 def write_to_db(table,static_columns,static_data,write_data={}): #TODO: need to generalize (columns, placeholders, etc.)
     row_data = [str(v) for v in write_data.values()]
     if row_data != []:
@@ -54,5 +64,11 @@ def insert_mysql(table, columns, placeholders, data):
     sql = "INSERT INTO " + table + " (%s) VALUES (%s)" % (columns, placeholders)
     cur = get_connection_cursor()
     cur.execute(sql, data)
+    cur.execute('COMMIT')
+    time.sleep(.1)
+def load_csv_into_db(csv_file,table):
+    sql = "LOAD DATA INFILE '" + csv_file + "' IGNORE INTO TABLE " + table + " FIELDS TERMINATED BY ',' IGNORE 1 LINES"
+    cur = get_connection_cursor()
+    cur.execute(sql)
     cur.execute('COMMIT')
     time.sleep(.1)

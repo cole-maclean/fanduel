@@ -12,7 +12,7 @@ def get_fanduel_session():#Refactor - think this needs to be turned into a class
 	soup = BeautifulSoup(r.text)
 	session_id = soup.find('input', {'name': 'cc_session_id'}).get('value')
 	data = {'cc_session_id':session_id,'cc_action':'cca_login','cc_failure_url':'https://www.fanduel.com/p/login',\
-	'cc_success_url':'https://www.fanduel.com/p/home','email':'maclean.cole@gmail.com','password':passwd,'login':'Log in'}
+	'cc_success_url':'https://www.fanduel.com/p/home','email':'cole__maclean@hotmail.com','password':passwd,'login':'Log in'}
 	s.post('https://www.fanduel.com/c/CCAuth',data)
 	return s, session_id
 def end_fanduel_session(s):

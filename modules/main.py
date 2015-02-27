@@ -1,4 +1,4 @@
-import database_operations
+import database_operations as dbo
 import ast
 import data_scrapping
 import collections
@@ -69,7 +69,7 @@ def build_lineup_avg_goals_dict(player_data_dict):
 def build_full_player_dictionary():
 	player_map = player_mapping(1,2)
 	rw = 2
-	player_data_dict = database_operations.get_player_data_dict('nhl','2014020750')
+	player_data_dict = dbo.get_player_data_dict('nhl','2014020800')
 	lineup_avg_goals_dict = build_lineup_avg_goals_dict(player_data_dict)
 	columns = ['PlayerID','G','C','LW','RW','D','Position','FD_name','MatchupID','TeamID','Dummy2','Salary','PPG','GamesPlayed','Dummy3','Dummy4','Injury','InjuryAge','Dummy5','PlayerID']
  	for player_id,player_data in data_scrapping.get_FD_playerlist().iteritems():
@@ -120,7 +120,7 @@ def optimum_roster():
 	player_data_dict = build_full_player_dictionary()
 	starting_goalies = data_scrapping.get_starting_goalies()
 	player_universe = build_player_universe(player_data_dict,starting_goalies)
-	losing_team_list =['MIN','DAL','CBJ']
+	losing_team_list =['OTT','WPG','CBJ']
 	ex_list = []
 	items = [
          {
@@ -155,7 +155,7 @@ def output_final_roster():
 	r,player_universe,objective = optimum_roster()
 	strategy_data = {}
 	roster_data = []
-	strategy_data['strat_params'] = {'objective':objective,'vegas':True}
+	strategy_data['strat_params'] = {'objective':objective,'vegas':'Partial','slate_size':9}
 	rw = 2
 	for player in r.xf:
 		roster_data.append([player_universe[player]['Position'],player_universe[player]['PlayerID'],player_universe[player]['MatchupID'],player_universe[player]['TeamID']])
@@ -174,22 +174,55 @@ def output_final_roster():
 def get_sort_key(sort_list):
 	sort_keys = {'LW':1,'RW':2,'C':3,'D':4,'G':5}
 	return sort_keys[sort_list[0]]
-def run_enter_best_contests(daily_bet):
+def run_enter_best_contests(daily_bet,bin_size):
 	s, session_id = fdo.get_fanduel_session()
-	contest_time = datetime.strptime('16:00','%H:%M')
-	current_time = datetime.strptime(str(datetime.now().hour) + ':' + str(datetime.now().minute),'%H:%M')
-	tdelta = contest_time - current_time
 	total_bet = 0
-	time_remaining = tdelta.total_seconds()/60
+	time_remaining = 600
+	wins_data = build_pWins_vs_topwins_dict(bin_size)
+	print wins_data
 	while total_bet < daily_bet and time_remaining > 0:
 		tmp_total_bet = total_bet
-		potential_contests = data_scrapping.get_potential_contests(s,['nhl'],[{"standard":1}],[3,5],[1,2,5,10],0.6,'6:00')
+		potential_contests = data_scrapping.get_potential_contests(s,['nhl'],[{"standard":1}],[3,5],[1,2,5,10],0.6,'7:00')
 		print potential_contests
-		total_bet = total_bet + data_scrapping.enter_best_contests(s,session_id,'NHL',(daily_bet - total_bet),potential_contests,time_remaining)
+		total_bet = total_bet + data_scrapping.enter_best_contests(s,session_id,'NHL',(daily_bet - total_bet),potential_contests,time_remaining,wins_data,bin_size)
 		time.sleep(180)
+		contest_time = datetime.strptime('17:00','%H:%M')
+		current_time = datetime.strptime(str(datetime.now().hour) + ':' + str(datetime.now().minute),'%H:%M')
+		tdelta = contest_time - current_time
+		if contest_time > current_time:
+			time_remaining = tdelta.total_seconds()/60
+		else:
+			time_remaining = -1
+		print time_remaining
 	fdo.end_fanduel_session(s)
 	return total_bet
+def build_pWins_vs_topwins_dict(bin_size):
+	hist_performance = build_hist_win_tuples()
+	Pwins_dict = {}
+	for x,y in hist_performance:
+		try: 
+			Pwins_dict[Ugen.bin_mapping(x,bin_size)].append(y)
+		except KeyError:
+			Pwins_dict[Ugen.bin_mapping(x,bin_size)] = [y]
+	for key,win_data in Pwins_dict.iteritems():
+		Pwins_dict[key].append(numpy.mean(numpy.array(win_data)))
+	return Pwins_dict
+def build_hist_win_tuples():
+	hist_perf_tuples = []
+	sql = ('SELECT fd_table_contests.avg_top_wins, hist_performance.Winnings'
+	' FROM autotrader.fd_table_contests'
+	' INNER JOIN autotrader.hist_performance'
+	' ON autotrader.fd_table_contests.entry_id = hist_performance.Entry_Id')
+	result_set = dbo.read_from_db(sql)
+	for key,rw in result_set.iteritems():
+		if rw[1] > 0: #should change this to mapping
+			hist_perf_tuples.append((rw[0],1))
+		else:
+			hist_perf_tuples.append((rw[0],0))
+	return hist_perf_tuples
 #data_scrapping.update_gamedata(Cell("Parameters",'clLastGameDataID').value)
 #print output_final_roster()
-print run_enter_best_contests(6)
+#print run_enter_best_contests(20,25)#paramter passing getting out of hand, need to figure out how refactor. Classes?
+#dbo.load_csv_into_db('C:/Users/Cole/Desktop/FanDuel/fanduel entry history.csv','hist_performance')
+print build_pWins_vs_topwins_dict(25)
 os.system('pause')
