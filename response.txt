@@ -2,14 +2,14 @@
 	<!--[if IE 7]><html class="lt-ie10 lt-ie9 lt-ie8" xmlns:fb="http://www.facebook.com/2008/fbml"> <![endif]-->
 	<!--[if IE 8]><html class="lt-ie10 lt-ie9" xmlns:fb="http://www.facebook.com/2008/fbml"> <![endif]-->
 	<!--[if IE 9]><html class="lt-ie10" xmlns:fb="http://www.facebook.com/2008/fbml"> <![endif]-->
-	<!--[if gt IE 9]><!--> <html xmlns:fb="http://www.facebook.com/2008/fbml"> <!--<![endif]--><head><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="google-site-verification" content="7bfPVLres-pmKiWuUbGn657RuKrQAPME6CG5Vkr60LI" /><title>Live scores for S140628524 | FanDuel</title><link rel="shortcut icon" href="//d17odppiik753x.cloudfront.net/images/global/favicon.ico" /><link rel="apple-touch-icon" href="//d17odppiik753x.cloudfront.net/images/global/apple-touch-icon.png" />		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+	<!--[if gt IE 9]><!--> <html xmlns:fb="http://www.facebook.com/2008/fbml"> <!--<![endif]--><head><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="google-site-verification" content="7bfPVLres-pmKiWuUbGn657RuKrQAPME6CG5Vkr60LI" /><title>Live scores for S149575196 | FanDuel</title><link rel="shortcut icon" href="//d17odppiik753x.cloudfront.net/images/global/favicon.ico" /><link rel="apple-touch-icon" href="//d17odppiik753x.cloudfront.net/images/global/apple-touch-icon.png" />		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 		
 		<meta name="verify-v1" content="vbfLsiyvxLXUSzzN3snByFobO5//gly16iy1x9usuIE=" >
 		<meta name="verify-v1" content="ok5reZ/WyUFmn+q1yYjYG4Mi3bniUsCZ8XwusHJ3K8A=" />
 		<meta name="verify-v1" content="wBjvmrKsgVNAwEzRqssUUOn/mtnPGCNv9XRSUlbyhNs=" >
 		<meta name="verify-v1" content="C/q1XayRb0mYQbGLN3nh8EFJBb5hefsuXTT9qZcbrq8=" >
-		<link rel="stylesheet" href="//d2avoc1xjbdrch.cloudfront.net/3.0.0/styles/desktop.css"/><link rel="stylesheet" href="https://www.fanduel.com/styles/compiled/seatview.base.f9111305f5a9c30daca8b7f233c9ee46.css"/><script src="//d2avoc1xjbdrch.cloudfront.net/3.0.0/scripts/core.js"></script><script src="https://www.fanduel.com/scripts/compiled/core.base.64a62b91ba27f6b5835b61eb39865c4e.js"></script><script src="https://www.fanduel.com/scripts/compiled/logging.base.223870e8c23a6e78a046745d311f3956.js"></script>		<script>
-			var sessionid="7okk5s5nqc74iaukjmmudk69u3";
+		<link rel="stylesheet" href="//d2avoc1xjbdrch.cloudfront.net/3.1.3/styles/desktop.css"/><link rel="stylesheet" href="https://www.fanduel.com/styles/compiled/seatview.base.f9111305f5a9c30daca8b7f233c9ee46.css"/><script src="//d2avoc1xjbdrch.cloudfront.net/3.1.3/scripts/core.js"></script><script src="https://www.fanduel.com/scripts/compiled/core.base.64a62b91ba27f6b5835b61eb39865c4e.js"></script><script src="https://www.fanduel.com/scripts/compiled/logging.base.223870e8c23a6e78a046745d311f3956.js"></script>		<script>
+			var sessionid="gd38afdkajbl83fj93td70pir0";
 						user = new HDUser(403637, 0);
 					</script>
 		<!--[if lt IE 9]>
@@ -84,9 +84,9 @@
 							</div>
 							<span class="username">hamofgobelgope </span>
 							<ul class="user-balances">
-								<li class="user-account-balance">Balance <span>$75.10</span></li>
-								<li class="user-pending-bonus-balance">Pending Bonus <span>$10.00</span></li>
-								<li class="user-fdp-balance">FDP <span>2,500</span></li>
+								<li class="user-account-balance">Balance <span>$280.90</span></li>
+								<li class="user-pending-bonus-balance">Pending Bonus <span>$0.00</span></li>
+								<li class="user-fdp-balance">FDP <span>11,320</span></li>
 							</ul>
 						</section>
 						<nav class="logged-in-user-navigation">
@@ -119,7 +119,7 @@
 					</div>
 				</div>
 									<div class="user-balance-block">
-						<span id="balance" class="user-balance">$75.10</span>
+						<span id="balance" class="user-balance">$280.90</span>
 						<a href="https://www.fanduel.com/p/AddFunds" class="button primary tiny link-add-funds">Add Funds</a>
 					</div>
 							</section>
@@ -135,7 +135,7 @@
 		It appears that you are using an out of date browser which may not fully support the features required for this page. We recommend you <a href="http://browsehappy.com/" target="_self">update your browser</a>.
 	</div>
 <![endif]-->
-<section class="container"><div id="usermessage" class="usermessage"><div class="alert success"><i class="icon">&#10004;</i> Success! Your line-up has been entered<span class='fdpValue' style='margin-left:20px;'>+20 FDP</span><span class='bonusValue'>$0.08 of <a href='http://www.fanduel.com/pending-bonus'>Pending Bonus</a> released</span> on settlement.</div></div>		<script>
+<section class="container"><div id="usermessage" class="usermessage"><div class="alert success"><i class="icon">&#10004;</i> Success! Your line-up has been entered<span class='fdpValue' style='margin-left:20px;'>+100 FDP</span> on settlement.</div></div>		<script>
 			$(function() {
 				$('#usermessage div').prepend("<a href='#close' class='close'><i class='icon close'>&#x2717;</i></a>");
 				$('#usermessage a.close').on("click", function(){$(this).parent().slideToggle('550');});
@@ -175,12 +175,12 @@
 			.link:hover { text-decoration: underline; }
 			#gametitle_current { clear: both; }
 			</style>
-		<div style='float:right;'><h1 id='seatid_current' style='color: #999;'>S140628524</h1></div><h1 id='gametitle_current'>NHL Salary Cap 55k Thu Feb 26th</h1>		<div id="league-info" class="clearfix">
-			<div id="league-info-size" class="column-4">3 Player League <span class="entries">(3 entries so far)</span></div>
+		<div style='float:right;'><h1 id='seatid_current' style='color: #999;'>S149575196</h1></div><h1 id='gametitle_current'>NHL Salary Cap 55k Sat Mar 14th</h1>		<div id="league-info" class="clearfix">
+			<div id="league-info-size" class="column-4">3 Player League <span class="entries">(2 entries so far)</span></div>
 				<div id="league-info-stake" class="column-2">Entry fee:
-									$2							</div>
+									$10							</div>
 			<div id="league-info-prizes" class="column-6 text-align-right">
-				Prize: 1st: $5.40 			<a href='#' class='showAllPrizes'>Show All</a>
+				Prize: 1st: $27 			<a href='#' class='showAllPrizes'>Show All</a>
 			<script>
 			function TableSpec(element) { }
 			TableSpec.PrizeBreakdownFromTableSpec = function(nelement, tableSpecId) {
@@ -202,14 +202,14 @@
 			};
 
 			$(function (){
-				TableSpec.PrizeBreakdownFromTableSpec($(".showAllPrizes"), 5776) ;
+				TableSpec.PrizeBreakdownFromTableSpec($(".showAllPrizes"), 2098) ;
 			});
 			</script>
 				</div>
 		</div>
 
-	<script src="https://www.fanduel.com/scripts/countdown.js"></script><div class="gamestatus gamestatus_open">Game starts in <script>var c = Countdown.make(7415, "Game started! Refresh browser for live scores");c.draw();</script></div></div><div class="rostertop row"><div class="player"><div class="opponent"><div id='thisroster' class='seatroster'><table class='roster' cellspacing='2'><thead><tr><th colspan='2' class='username' style='font-size:12px'><div class='button-container'><a class="button mini text-grey1" style="font-weight:normal;" href="https://www.fanduel.com/e/Game/NHL_Salary_Cap_11695/view?edit_seat_id=140628524">Edit</a>			<a class="button mini text-grey1" style="font-weight:normal;" href="https://www.fanduel.com/entry/AOGTUMBBX/export">Export</a>
-		</div><a href='https://www.fanduel.com/users/hamofgobelgope'><div class='avatar small' style='background-image:url(https://www.fanduel.com/images/member_defaultpic.gif)'></div>hamofgobelgope</a></th><th class='username'></th></thead><tbody><tr class='pregame no-scoring'><td class='position'>LW</td><td class='player'><div class='name'>Darren Helm</div><div class='fixture'><strong>DET</strong> @ SJ</div></td><td class='score'></td></tr><tr class='pregame no-scoring'><td class='position'>LW</td><td class='player'><div class='name'>Patrick Marleau</div><div class='fixture'><strong>SJ</strong> v DET</div></td><td class='score'></td></tr><tr class='pregame no-scoring'><td class='position'>RW</td><td class='player'><div class='name'>Joe Pavelski</div><div class='fixture'><strong>SJ</strong> v DET</div></td><td class='score'></td></tr><tr class='pregame no-scoring'><td class='position'>RW</td><td class='player'><div class='name'>Tyler Toffoli</div><div class='fixture'><strong>LA</strong> v OTT</div></td><td class='score'></td></tr><tr class='pregame no-scoring'><td class='position'>C</td><td class='player'><div class='name'>David Desharnais</div><div class='fixture'><strong>MON</strong> @ CLS</div></td><td class='score'></td></tr><tr class='pregame no-scoring'><td class='position'>C</td><td class='player'><div class='name'>Jeff Carter</div><div class='fixture'><strong>LA</strong> v OTT</div></td><td class='score'></td></tr><tr class='pregame no-scoring'><td class='position'>D</td><td class='player'><div class='name'>Daniel Girardi</div><div class='fixture'><strong>NYR</strong> v ARI</div></td><td class='score'></td></tr><tr class='pregame no-scoring'><td class='position'>D</td><td class='player'><div class='name'>Ryan McDonagh</div><div class='fixture'><strong>NYR</strong> v ARI</div></td><td class='score'></td></tr><tr class='pregame no-scoring'><td class='position'>G</td><td class='player'><div class='name'>Carey Price</div><div class='fixture'><strong>MON</strong> @ CLS</div></td><td class='score'></td></tr></tbody></table></div>		<div id="whatnext" class="column-3 text-align-center">
+	<script src="https://www.fanduel.com/scripts/countdown.js"></script><div class="gamestatus gamestatus_open">Game starts in <script>var c = Countdown.make(13442, "Game started! Refresh browser for live scores");c.draw();</script></div></div><div class="rostertop row"><div class="player"><div class="opponent"><div id='thisroster' class='seatroster'><table class='roster' cellspacing='2'><thead><tr><th colspan='2' class='username' style='font-size:12px'><div class='button-container'><a class="button mini text-grey1" style="font-weight:normal;" href="https://www.fanduel.com/e/Game/NHL_Salary_Cap_11829/view?edit_seat_id=149575196">Edit</a>			<a class="button mini text-grey1" style="font-weight:normal;" href="https://www.fanduel.com/entry/AQYGRMMEF/export">Export</a>
+		</div><a href='https://www.fanduel.com/users/hamofgobelgope'><div class='avatar small' style='background-image:url(https://www.fanduel.com/images/member_defaultpic.gif)'></div>hamofgobelgope</a></th><th class='username'></th></thead><tbody><tr class='pregame no-scoring'><td class='position'>LW</td><td class='player'><div class='name'>Anders Lee</div><div class='fixture'><strong>NYI</strong> v MON</div></td><td class='score'></td></tr><tr class='pregame no-scoring'><td class='position'>LW</td><td class='player'><div class='name'>Johnny Gaudreau</div><div class='fixture'><strong>CGY</strong> @ COL</div></td><td class='score'></td></tr><tr class='pregame no-scoring'><td class='position'>RW</td><td class='player'><div class='name'>Ryan Callahan</div><div class='fixture'><strong>TB</strong> v WPG</div></td><td class='score'></td></tr><tr class='pregame no-scoring'><td class='position'>RW</td><td class='player'><div class='name'>Jiri Hudler</div><div class='fixture'><strong>CGY</strong> @ COL</div></td><td class='score'></td></tr><tr class='pregame no-scoring'><td class='position'>C</td><td class='player'><div class='name'>Steven Stamkos</div><div class='fixture'><strong>TB</strong> v WPG</div></td><td class='score'></td></tr><tr class='pregame no-scoring'><td class='position'>C</td><td class='player'><div class='name'>John Tavares</div><div class='fixture'><strong>NYI</strong> v MON</div></td><td class='score'></td></tr><tr class='pregame no-scoring'><td class='position'>D</td><td class='player'><div class='name'>Anton Stralman</div><div class='fixture'><strong>TB</strong> v WPG</div></td><td class='score'></td></tr><tr class='pregame no-scoring'><td class='position'>D</td><td class='player'><div class='name'>Drew Doughty</div><div class='fixture'><strong>LA</strong> v NSH</div></td><td class='score'></td></tr><tr class='pregame no-scoring'><td class='position'>G</td><td class='player'><div class='name'>MacKenzie Skapski</div><div class='fixture'><strong>NYR</strong> @ BUF</div></td><td class='score'></td></tr></tbody></table></div>		<div id="whatnext" class="column-3 text-align-center">
 			<h2>What next?</h2>
 					<div id="invitePane">
 				<input type="button" id="challengebutton" class="button primary fullwidth" value="Challenge friends" style="width:100%" data-launch-new-referral-lb="nolaunch" />
@@ -283,355 +283,220 @@
 					</thead>
 					<tbody data-role="scrollable-body">
 									<tr>
-							<td class="title">$600 Thu NHL Quintuple Up - 5X ($2)</td>
+							<td class="title">$2500 Sat NHL One Timer</td>
 							<td class="cap num">$55k</td>
-							<td class="seats num">335</td>
-							<td class="entries num">326</td>
-							<td class="stake num">$2</td>
-							<td class="prizes num">$600.00</td>
-							<td class="link"><a href="/e/Game/11695?tableId=10788512&fromLobby=true&amp;copy_seat_id=140628524" class="button tiny primary">Enter</a></td>
-						</tr>
-										<tr>
-							<td class="title">$3K Thu NHL Deke</td>
-							<td class="cap num">$55k</td>
-							<td class="seats num">33</td>
-							<td class="entries num">26</td>
-							<td class="stake num">$100</td>
-							<td class="prizes num">$3,000.00</td>
-							<td class="link"><a href="/e/Game/11695?tableId=10767844&fromLobby=true&amp;copy_seat_id=140628524" class="button tiny primary">Enter</a></td>
-						</tr>
-										<tr>
-							<td class="title">$600 Thu NHL Triple Up ($5)</td>
-							<td class="cap num">$55k</td>
-							<td class="seats num">136</td>
-							<td class="entries num">128</td>
-							<td class="stake num">$5</td>
-							<td class="prizes num">$600.00</td>
-							<td class="link"><a href="/e/Game/11695?tableId=10768028&fromLobby=true&amp;copy_seat_id=140628524" class="button tiny primary">Enter</a></td>
-						</tr>
-										<tr>
-							<td class="title">$2 Satellite to $250K NHL King of the Ice (3 seats)</td>
-							<td class="cap num">$55k</td>
-							<td class="seats num">344</td>
-							<td class="entries num">33</td>
-							<td class="stake num">$2</td>
-							<td class="prizes num">$0.00</td>
-							<td class="link"><a href="/e/Game/11695?tableId=10794017&fromLobby=true&amp;copy_seat_id=140628524" class="button tiny primary">Enter</a></td>
-						</tr>
-										<tr>
-							<td class="title">$600 Thu NHL Triple Up ($10)</td>
-							<td class="cap num">$55k</td>
-							<td class="seats num">68</td>
-							<td class="entries num">63</td>
-							<td class="stake num">$10</td>
-							<td class="prizes num">$600.00</td>
-							<td class="link"><a href="/e/Game/11695?tableId=10768034&fromLobby=true&amp;copy_seat_id=140628524" class="button tiny primary">Enter</a></td>
-						</tr>
-										<tr>
-							<td class="title">$500 Thu NHL Double Up ($5)</td>
-							<td class="cap num">$55k</td>
-							<td class="seats num">112</td>
-							<td class="entries num">94</td>
-							<td class="stake num">$5</td>
-							<td class="prizes num">$500.00</td>
-							<td class="link"><a href="/e/Game/11695?tableId=10767983&fromLobby=true&amp;copy_seat_id=140628524" class="button tiny primary">Enter</a></td>
-						</tr>
-										<tr>
-							<td class="title">$10K Thu NHL Blue Line</td>
-							<td class="cap num">$55k</td>
-							<td class="seats num">2298</td>
-							<td class="entries num">1753</td>
-							<td class="stake num">$5</td>
-							<td class="prizes num">$10,000.00</td>
-							<td class="link"><a href="/e/Game/11695?tableId=10767950&fromLobby=true&amp;copy_seat_id=140628524" class="button tiny primary">Enter</a></td>
-						</tr>
-										<tr>
-							<td class="title">$4K Thu NHL One Timer</td>
-							<td class="cap num">$55k</td>
-							<td class="seats num">4597</td>
-							<td class="entries num">3482</td>
+							<td class="seats num">2873</td>
+							<td class="entries num">2079</td>
 							<td class="stake num">$1</td>
-							<td class="prizes num">$4,000.00</td>
-							<td class="link"><a href="/e/Game/11695?tableId=10767867&fromLobby=true&amp;copy_seat_id=140628524" class="button tiny primary">Enter</a></td>
+							<td class="prizes num">$2,500.00</td>
+							<td class="link"><a href="/e/Game/11829?tableId=11160133&fromLobby=true&amp;copy_seat_id=149575196" class="button tiny primary">Enter</a></td>
 						</tr>
 										<tr>
-							<td class="title">$500 Thu NHL Double Up ($5)</td>
-							<td class="cap num">$55k</td>
-							<td class="seats num">112</td>
-							<td class="entries num">108</td>
-							<td class="stake num">$5</td>
-							<td class="prizes num">$500.00</td>
-							<td class="link"><a href="/e/Game/11695?tableId=10767982&fromLobby=true&amp;copy_seat_id=140628524" class="button tiny primary">Enter</a></td>
-						</tr>
-										<tr>
-							<td class="title">$5 Satellite to $250K NHL King of the Ice (3 seats)</td>
-							<td class="cap num">$55k</td>
-							<td class="seats num">137</td>
-							<td class="entries num">28</td>
-							<td class="stake num">$5</td>
-							<td class="prizes num">$0.00</td>
-							<td class="link"><a href="/e/Game/11695?tableId=10794021&fromLobby=true&amp;copy_seat_id=140628524" class="button tiny primary">Enter</a></td>
-						</tr>
-										<tr>
-							<td class="title">$500 Thu NHL Double Up ($2)</td>
-							<td class="cap num">$55k</td>
-							<td class="seats num">284</td>
-							<td class="entries num">231</td>
-							<td class="stake num">$2</td>
-							<td class="prizes num">$500.00</td>
-							<td class="link"><a href="/e/Game/11695?tableId=10767967&fromLobby=true&amp;copy_seat_id=140628524" class="button tiny primary">Enter</a></td>
-						</tr>
-										<tr>
-							<td class="title">$20K Thu NHL Goal</td>
-							<td class="cap num">$55k</td>
-							<td class="seats num">919</td>
-							<td class="entries num">754</td>
-							<td class="stake num">$25</td>
-							<td class="prizes num">$20,000.00</td>
-							<td class="link"><a href="/e/Game/11695?tableId=10766785&fromLobby=true&amp;copy_seat_id=140628524" class="button tiny primary">Enter</a></td>
-						</tr>
-										<tr>
-							<td class="title">$1K Thu NHL Double Up ($25)</td>
-							<td class="cap num">$55k</td>
-							<td class="seats num">45</td>
-							<td class="entries num">33</td>
-							<td class="stake num">$25</td>
-							<td class="prizes num">$1,000.00</td>
-							<td class="link"><a href="/e/Game/11695?tableId=10768009&fromLobby=true&amp;copy_seat_id=140628524" class="button tiny primary">Enter</a></td>
-						</tr>
-										<tr>
-							<td class="title">$1K Thu NHL Quintuple Up - 5X ($10)</td>
-							<td class="cap num">$55k</td>
-							<td class="seats num">112</td>
-							<td class="entries num">85</td>
-							<td class="stake num">$10</td>
-							<td class="prizes num">$1,000.00</td>
-							<td class="link"><a href="/e/Game/11695?tableId=10768057&fromLobby=true&amp;copy_seat_id=140628524" class="button tiny primary">Enter</a></td>
-						</tr>
-										<tr>
-							<td class="title">$1K Thu NHL Double Up ($25)</td>
-							<td class="cap num">$55k</td>
-							<td class="seats num">45</td>
-							<td class="entries num">41</td>
-							<td class="stake num">$25</td>
-							<td class="prizes num">$1,000.00</td>
-							<td class="link"><a href="/e/Game/11695?tableId=10768002&fromLobby=true&amp;copy_seat_id=140628524" class="button tiny primary">Enter</a></td>
-						</tr>
-										<tr>
-							<td class="title">$2K Thu NHL Top Shelf</td>
-							<td class="cap num">$55k</td>
-							<td class="seats num">45</td>
-							<td class="entries num">32</td>
-							<td class="stake num">$50</td>
-							<td class="prizes num">$2,000.00</td>
-							<td class="link"><a href="/e/Game/11695?tableId=10767826&fromLobby=true&amp;copy_seat_id=140628524" class="button tiny primary">Enter</a></td>
-						</tr>
-										<tr>
-							<td class="title">$500 Thu NHL Double Up ($2)</td>
-							<td class="cap num">$55k</td>
-							<td class="seats num">284</td>
-							<td class="entries num">163</td>
-							<td class="stake num">$2</td>
-							<td class="prizes num">$500.00</td>
-							<td class="link"><a href="/e/Game/11695?tableId=10767970&fromLobby=true&amp;copy_seat_id=140628524" class="button tiny primary">Enter</a></td>
-						</tr>
-										<tr>
-							<td class="title">$5K Thu NHL BIG Double Up ($5)</td>
-							<td class="cap num">$55k</td>
-							<td class="seats num">1136</td>
-							<td class="entries num">760</td>
-							<td class="stake num">$5</td>
-							<td class="prizes num">$5,000.00</td>
-							<td class="link"><a href="/e/Game/11695?tableId=10767945&fromLobby=true&amp;copy_seat_id=140628524" class="button tiny primary">Enter</a></td>
-						</tr>
-										<tr>
-							<td class="title">$500 Thu NHL Double Up ($2)</td>
-							<td class="cap num">$55k</td>
-							<td class="seats num">284</td>
-							<td class="entries num">191</td>
-							<td class="stake num">$2</td>
-							<td class="prizes num">$500.00</td>
-							<td class="link"><a href="/e/Game/11695?tableId=10767971&fromLobby=true&amp;copy_seat_id=140628524" class="button tiny primary">Enter</a></td>
-						</tr>
-										<tr>
-							<td class="title">$1K Thu NHL Quintuple Up - 5X ($5)</td>
-							<td class="cap num">$55k</td>
-							<td class="seats num">223</td>
-							<td class="entries num">183</td>
-							<td class="stake num">$5</td>
-							<td class="prizes num">$1,000.00</td>
-							<td class="link"><a href="/e/Game/11695?tableId=10768046&fromLobby=true&amp;copy_seat_id=140628524" class="button tiny primary">Enter</a></td>
-						</tr>
-										<tr>
-							<td class="title">$25 Satellite to $250K NHL King of the Ice (5 seats)</td>
-							<td class="cap num">$55k</td>
-							<td class="seats num">45</td>
-							<td class="entries num">28</td>
-							<td class="stake num">$25</td>
-							<td class="prizes num">$0.00</td>
-							<td class="link"><a href="/e/Game/11695?tableId=10794025&fromLobby=true&amp;copy_seat_id=140628524" class="button tiny primary">Enter</a></td>
-						</tr>
-										<tr>
-							<td class="title">$900 Thu NHL Triple Up ($25)</td>
-							<td class="cap num">$55k</td>
-							<td class="seats num">40</td>
-							<td class="entries num">32</td>
-							<td class="stake num">$25</td>
-							<td class="prizes num">$900.00</td>
-							<td class="link"><a href="/e/Game/11695?tableId=10768038&fromLobby=true&amp;copy_seat_id=140628524" class="button tiny primary">Enter</a></td>
-						</tr>
-										<tr>
-							<td class="title">$500 Thu NHL Double Up ($2)</td>
-							<td class="cap num">$55k</td>
-							<td class="seats num">284</td>
-							<td class="entries num">162</td>
-							<td class="stake num">$2</td>
-							<td class="prizes num">$500.00</td>
-							<td class="link"><a href="/e/Game/11695?tableId=10767969&fromLobby=true&amp;copy_seat_id=140628524" class="button tiny primary">Enter</a></td>
-						</tr>
-										<tr>
-							<td class="title">$1K Thu NHL Double Up ($25)</td>
-							<td class="cap num">$55k</td>
-							<td class="seats num">45</td>
-							<td class="entries num">30</td>
-							<td class="stake num">$25</td>
-							<td class="prizes num">$1,000.00</td>
-							<td class="link"><a href="/e/Game/11695?tableId=10768004&fromLobby=true&amp;copy_seat_id=140628524" class="button tiny primary">Enter</a></td>
-						</tr>
-										<tr>
-							<td class="title">$1K Thu NHL Quintuple Up - 5X ($25)</td>
+							<td class="title">$1K Sat NHL Double Up ($25)</td>
 							<td class="cap num">$55k</td>
 							<td class="seats num">44</td>
 							<td class="entries num">35</td>
 							<td class="stake num">$25</td>
 							<td class="prizes num">$1,000.00</td>
-							<td class="link"><a href="/e/Game/11695?tableId=10768059&fromLobby=true&amp;copy_seat_id=140628524" class="button tiny primary">Enter</a></td>
+							<td class="link"><a href="/e/Game/11829?tableId=11160634&fromLobby=true&amp;copy_seat_id=149575196" class="button tiny primary">Enter</a></td>
 						</tr>
 										<tr>
-							<td class="title">$500 Thu NHL Double Up ($5)</td>
+							<td class="title">$3K Sat NHL BIG Double Up ($5)</td>
 							<td class="cap num">$55k</td>
-							<td class="seats num">112</td>
-							<td class="entries num">72</td>
+							<td class="seats num">681</td>
+							<td class="entries num">399</td>
 							<td class="stake num">$5</td>
-							<td class="prizes num">$500.00</td>
-							<td class="link"><a href="/e/Game/11695?tableId=10767984&fromLobby=true&amp;copy_seat_id=140628524" class="button tiny primary">Enter</a></td>
+							<td class="prizes num">$3,000.00</td>
+							<td class="link"><a href="/e/Game/11829?tableId=11160661&fromLobby=true&amp;copy_seat_id=149575196" class="button tiny primary">Enter</a></td>
 						</tr>
 										<tr>
-							<td class="title">$500 Thu NHL Double Up ($10)</td>
+							<td class="title">$25 Satellite to $250K NHL King of the Ice (5 seats)</td>
 							<td class="cap num">$55k</td>
-							<td class="seats num">56</td>
-							<td class="entries num">47</td>
-							<td class="stake num">$10</td>
-							<td class="prizes num">$500.00</td>
-							<td class="link"><a href="/e/Game/11695?tableId=10767993&fromLobby=true&amp;copy_seat_id=140628524" class="button tiny primary">Enter</a></td>
-						</tr>
-										<tr>
-							<td class="title">$500 Thu NHL Double Up ($10)</td>
-							<td class="cap num">$55k</td>
-							<td class="seats num">56</td>
-							<td class="entries num">49</td>
-							<td class="stake num">$10</td>
-							<td class="prizes num">$500.00</td>
-							<td class="link"><a href="/e/Game/11695?tableId=10767991&fromLobby=true&amp;copy_seat_id=140628524" class="button tiny primary">Enter</a></td>
-						</tr>
-										<tr>
-							<td class="title">$500 Thu NHL Double Up ($5)</td>
-							<td class="cap num">$55k</td>
-							<td class="seats num">112</td>
-							<td class="entries num">73</td>
-							<td class="stake num">$5</td>
-							<td class="prizes num">$500.00</td>
-							<td class="link"><a href="/e/Game/11695?tableId=10767979&fromLobby=true&amp;copy_seat_id=140628524" class="button tiny primary">Enter</a></td>
-						</tr>
-										<tr>
-							<td class="title">$500 Thu NHL Double Up ($5)</td>
-							<td class="cap num">$55k</td>
-							<td class="seats num">112</td>
-							<td class="entries num">74</td>
-							<td class="stake num">$5</td>
-							<td class="prizes num">$500.00</td>
-							<td class="link"><a href="/e/Game/11695?tableId=10767978&fromLobby=true&amp;copy_seat_id=140628524" class="button tiny primary">Enter</a></td>
-						</tr>
-										<tr>
-							<td class="title">$10 Satellite to $250K NHL King of the Ice(1 seat)</td>
-							<td class="cap num">$55k</td>
-							<td class="seats num">22</td>
-							<td class="entries num">4</td>
-							<td class="stake num">$10</td>
+							<td class="seats num">45</td>
+							<td class="entries num">44</td>
+							<td class="stake num">$25</td>
 							<td class="prizes num">$0.00</td>
-							<td class="link"><a href="/e/Game/11695?tableId=10794010&fromLobby=true&amp;copy_seat_id=140628524" class="button tiny primary">Enter</a></td>
+							<td class="link"><a href="/e/Game/11829?tableId=11160648&fromLobby=true&amp;copy_seat_id=149575196" class="button tiny primary">Enter</a></td>
 						</tr>
 										<tr>
-							<td class="title">$50K Thu NHL Breakaway</td>
+							<td class="title">$30K Sat NHL Breakaway</td>
 							<td class="cap num">$55k</td>
-							<td class="seats num">28735</td>
-							<td class="entries num">18318</td>
+							<td class="seats num">17241</td>
+							<td class="entries num">11797</td>
 							<td class="stake num">$2</td>
-							<td class="prizes num">$50,000.00</td>
-							<td class="link"><a href="/e/Game/11695?tableId=10767856&fromLobby=true&amp;copy_seat_id=140628524" class="button tiny primary">Enter</a></td>
+							<td class="prizes num">$30,000.00</td>
+							<td class="link"><a href="/e/Game/11829?tableId=11160163&fromLobby=true&amp;copy_seat_id=149575196" class="button tiny primary">Enter</a></td>
 						</tr>
 										<tr>
-							<td class="title">$5K Thu NHL Slapshot</td>
+							<td class="title">$10K Sat NHL Monster</td>
 							<td class="cap num">$55k</td>
-							<td class="seats num">574</td>
-							<td class="entries num">500</td>
-							<td class="stake num">$10</td>
-							<td class="prizes num">$5,000.00</td>
-							<td class="link"><a href="/e/Game/11695?tableId=10766810&fromLobby=true&amp;copy_seat_id=140628524" class="button tiny primary">Enter</a></td>
+							<td class="seats num">55</td>
+							<td class="entries num">44</td>
+							<td class="stake num">$200</td>
+							<td class="prizes num">$10,000.00</td>
+							<td class="link"><a href="/e/Game/11829?tableId=11160571&fromLobby=true&amp;copy_seat_id=149575196" class="button tiny primary">Enter</a></td>
 						</tr>
 										<tr>
-							<td class="title">$1K Thu NHL Double Up ($25)</td>
+							<td class="title">$1K Sat NHL Double Up ($25)</td>
+							<td class="cap num">$55k</td>
+							<td class="seats num">44</td>
+							<td class="entries num">43</td>
+							<td class="stake num">$25</td>
+							<td class="prizes num">$1,000.00</td>
+							<td class="link"><a href="/e/Game/11829?tableId=11160632&fromLobby=true&amp;copy_seat_id=149575196" class="button tiny primary">Enter</a></td>
+						</tr>
+										<tr>
+							<td class="title">$1K Sat NHL Triple Double ($25)</td>
 							<td class="cap num">$55k</td>
 							<td class="seats num">45</td>
 							<td class="entries num">36</td>
 							<td class="stake num">$25</td>
 							<td class="prizes num">$1,000.00</td>
-							<td class="link"><a href="/e/Game/11695?tableId=10768008&fromLobby=true&amp;copy_seat_id=140628524" class="button tiny primary">Enter</a></td>
+							<td class="link"><a href="/e/Game/11829?tableId=11160647&fromLobby=true&amp;copy_seat_id=149575196" class="button tiny primary">Enter</a></td>
 						</tr>
 										<tr>
-							<td class="title">$1K Thu NHL Double Up ($25)</td>
+							<td class="title">$500 Sat NHL Double Up ($10)</td>
 							<td class="cap num">$55k</td>
-							<td class="seats num">45</td>
-							<td class="entries num">29</td>
-							<td class="stake num">$25</td>
+							<td class="seats num">56</td>
+							<td class="entries num">54</td>
+							<td class="stake num">$10</td>
+							<td class="prizes num">$500.00</td>
+							<td class="link"><a href="/e/Game/11829?tableId=11160625&fromLobby=true&amp;copy_seat_id=149575196" class="button tiny primary">Enter</a></td>
+						</tr>
+										<tr>
+							<td class="title">$600 Sat NHL Triple Up ($10)</td>
+							<td class="cap num">$55k</td>
+							<td class="seats num">67</td>
+							<td class="entries num">57</td>
+							<td class="stake num">$10</td>
+							<td class="prizes num">$600.00</td>
+							<td class="link"><a href="/e/Game/11829?tableId=11160638&fromLobby=true&amp;copy_seat_id=149575196" class="button tiny primary">Enter</a></td>
+						</tr>
+										<tr>
+							<td class="title">$1K Sat NHL Triple Double ($2)</td>
+							<td class="cap num">$55k</td>
+							<td class="seats num">558</td>
+							<td class="entries num">411</td>
+							<td class="stake num">$2</td>
 							<td class="prizes num">$1,000.00</td>
-							<td class="link"><a href="/e/Game/11695?tableId=10768010&fromLobby=true&amp;copy_seat_id=140628524" class="button tiny primary">Enter</a></td>
+							<td class="link"><a href="/e/Game/11829?tableId=11160642&fromLobby=true&amp;copy_seat_id=149575196" class="button tiny primary">Enter</a></td>
 						</tr>
 										<tr>
-							<td class="title">$500 Thu NHL Double Up ($5)</td>
+							<td class="title">$525 Sat NHL Triple Up ($5)</td>
 							<td class="cap num">$55k</td>
-							<td class="seats num">112</td>
-							<td class="entries num">82</td>
+							<td class="seats num">117</td>
+							<td class="entries num">97</td>
 							<td class="stake num">$5</td>
-							<td class="prizes num">$500.00</td>
-							<td class="link"><a href="/e/Game/11695?tableId=10767974&fromLobby=true&amp;copy_seat_id=140628524" class="button tiny primary">Enter</a></td>
+							<td class="prizes num">$525.00</td>
+							<td class="link"><a href="/e/Game/11829?tableId=11160635&fromLobby=true&amp;copy_seat_id=149575196" class="button tiny primary">Enter</a></td>
 						</tr>
 										<tr>
-							<td class="title">$500 Thu NHL Double Up ($5)</td>
+							<td class="title">$13K Sat NHL Goal</td>
 							<td class="cap num">$55k</td>
-							<td class="seats num">112</td>
-							<td class="entries num">72</td>
-							<td class="stake num">$5</td>
-							<td class="prizes num">$500.00</td>
-							<td class="link"><a href="/e/Game/11695?tableId=10767981&fromLobby=true&amp;copy_seat_id=140628524" class="button tiny primary">Enter</a></td>
+							<td class="seats num">597</td>
+							<td class="entries num">438</td>
+							<td class="stake num">$25</td>
+							<td class="prizes num">$13,000.00</td>
+							<td class="link"><a href="/e/Game/11829?tableId=11160563&fromLobby=true&amp;copy_seat_id=149575196" class="button tiny primary">Enter</a></td>
 						</tr>
 										<tr>
-							<td class="title">$500 Thu NHL Double Up ($5)</td>
-							<td class="cap num">$55k</td>
-							<td class="seats num">112</td>
-							<td class="entries num">71</td>
-							<td class="stake num">$5</td>
-							<td class="prizes num">$500.00</td>
-							<td class="link"><a href="/e/Game/11695?tableId=10767980&fromLobby=true&amp;copy_seat_id=140628524" class="button tiny primary">Enter</a></td>
-						</tr>
-										<tr>
-							<td class="title">$1K Thu NHL Save</td>
+							<td class="title">$1K Sat NHL Save</td>
 							<td class="cap num">$55k</td>
 							<td class="seats num">229</td>
-							<td class="entries num">164</td>
+							<td class="entries num">143</td>
 							<td class="stake num">$5</td>
 							<td class="prizes num">$1,000.00</td>
-							<td class="link"><a href="/e/Game/11695?tableId=10766968&fromLobby=true&amp;copy_seat_id=140628524" class="button tiny primary">Enter</a></td>
+							<td class="link"><a href="/e/Game/11829?tableId=11160534&fromLobby=true&amp;copy_seat_id=149575196" class="button tiny primary">Enter</a></td>
+						</tr>
+										<tr>
+							<td class="title">$750 Sat NHL Triple Up ($25)</td>
+							<td class="cap num">$55k</td>
+							<td class="seats num">33</td>
+							<td class="entries num">26</td>
+							<td class="stake num">$25</td>
+							<td class="prizes num">$750.00</td>
+							<td class="link"><a href="/e/Game/11829?tableId=11160641&fromLobby=true&amp;copy_seat_id=149575196" class="button tiny primary">Enter</a></td>
+						</tr>
+										<tr>
+							<td class="title">$500 Sat NHL Double Up ($5)</td>
+							<td class="cap num">$55k</td>
+							<td class="seats num">112</td>
+							<td class="entries num">89</td>
+							<td class="stake num">$5</td>
+							<td class="prizes num">$500.00</td>
+							<td class="link"><a href="/e/Game/11829?tableId=11160623&fromLobby=true&amp;copy_seat_id=149575196" class="button tiny primary">Enter</a></td>
+						</tr>
+										<tr>
+							<td class="title">$500 Sat NHL Double Up ($10)</td>
+							<td class="cap num">$55k</td>
+							<td class="seats num">56</td>
+							<td class="entries num">39</td>
+							<td class="stake num">$10</td>
+							<td class="prizes num">$500.00</td>
+							<td class="link"><a href="/e/Game/11829?tableId=11160630&fromLobby=true&amp;copy_seat_id=149575196" class="button tiny primary">Enter</a></td>
+						</tr>
+										<tr>
+							<td class="title">$4K Sat NHL Slapshot</td>
+							<td class="cap num">$55k</td>
+							<td class="seats num">459</td>
+							<td class="entries num">336</td>
+							<td class="stake num">$10</td>
+							<td class="prizes num">$4,000.00</td>
+							<td class="link"><a href="/e/Game/11829?tableId=11160561&fromLobby=true&amp;copy_seat_id=149575196" class="button tiny primary">Enter</a></td>
+						</tr>
+										<tr>
+							<td class="title">$500 Sat NHL Double Up ($5)</td>
+							<td class="cap num">$55k</td>
+							<td class="seats num">112</td>
+							<td class="entries num">104</td>
+							<td class="stake num">$5</td>
+							<td class="prizes num">$500.00</td>
+							<td class="link"><a href="/e/Game/11829?tableId=11160621&fromLobby=true&amp;copy_seat_id=149575196" class="button tiny primary">Enter</a></td>
+						</tr>
+										<tr>
+							<td class="title">$7K Sat NHL Blue Line</td>
+							<td class="cap num">$55k</td>
+							<td class="seats num">1564</td>
+							<td class="entries num">956</td>
+							<td class="stake num">$5</td>
+							<td class="prizes num">$7,000.00</td>
+							<td class="link"><a href="/e/Game/11829?tableId=11160387&fromLobby=true&amp;copy_seat_id=149575196" class="button tiny primary">Enter</a></td>
+						</tr>
+										<tr>
+							<td class="title">$1K Sat NHL Triple Double ($5)</td>
+							<td class="cap num">$55k</td>
+							<td class="seats num">227</td>
+							<td class="entries num">131</td>
+							<td class="stake num">$5</td>
+							<td class="prizes num">$1,000.00</td>
+							<td class="link"><a href="/e/Game/11829?tableId=11160643&fromLobby=true&amp;copy_seat_id=149575196" class="button tiny primary">Enter</a></td>
+						</tr>
+										<tr>
+							<td class="title">$500 Sat NHL Double Up ($10)</td>
+							<td class="cap num">$55k</td>
+							<td class="seats num">56</td>
+							<td class="entries num">39</td>
+							<td class="stake num">$10</td>
+							<td class="prizes num">$500.00</td>
+							<td class="link"><a href="/e/Game/11829?tableId=11160628&fromLobby=true&amp;copy_seat_id=149575196" class="button tiny primary">Enter</a></td>
+						</tr>
+										<tr>
+							<td class="title">$1K Sat NHL Double Up ($25)</td>
+							<td class="cap num">$55k</td>
+							<td class="seats num">44</td>
+							<td class="entries num">37</td>
+							<td class="stake num">$25</td>
+							<td class="prizes num">$1,000.00</td>
+							<td class="link"><a href="/e/Game/11829?tableId=11160633&fromLobby=true&amp;copy_seat_id=149575196" class="button tiny primary">Enter</a></td>
+						</tr>
+										<tr>
+							<td class="title">$1K Sat NHL Triple Double ($10)</td>
+							<td class="cap num">$55k</td>
+							<td class="seats num">113</td>
+							<td class="entries num">59</td>
+							<td class="stake num">$10</td>
+							<td class="prizes num">$1,000.00</td>
+							<td class="link"><a href="/e/Game/11829?tableId=11160645&fromLobby=true&amp;copy_seat_id=149575196" class="button tiny primary">Enter</a></td>
 						</tr>
 										<tr>
 							<td class="title">NHL Head-to-Head</td>
@@ -640,7 +505,7 @@
 							<td class="entries num">0</td>
 							<td class="stake num">$1</td>
 							<td class="prizes num">$1.80</td>
-							<td class="link"><a href="https://www.fanduel.com/e/Game/NHL_Salary_Cap_11695?table_spec_id=1079&amp;copy_seat_id=140628524" class="button tiny primary">Enter</a></td>
+							<td class="link"><a href="https://www.fanduel.com/e/Game/NHL_Salary_Cap_11829?table_spec_id=1079&amp;copy_seat_id=149575196" class="button tiny primary">Enter</a></td>
 						</tr>
 										<tr>
 							<td class="title">NHL Head-to-Head</td>
@@ -649,7 +514,7 @@
 							<td class="entries num">0</td>
 							<td class="stake num">$2</td>
 							<td class="prizes num">$3.60</td>
-							<td class="link"><a href="https://www.fanduel.com/e/Game/NHL_Salary_Cap_11695?table_spec_id=5553&amp;copy_seat_id=140628524" class="button tiny primary">Enter</a></td>
+							<td class="link"><a href="https://www.fanduel.com/e/Game/NHL_Salary_Cap_11829?table_spec_id=5553&amp;copy_seat_id=149575196" class="button tiny primary">Enter</a></td>
 						</tr>
 										<tr>
 							<td class="title">NHL Head-to-Head</td>
@@ -658,7 +523,7 @@
 							<td class="entries num">0</td>
 							<td class="stake num">$5</td>
 							<td class="prizes num">$9.00</td>
-							<td class="link"><a href="https://www.fanduel.com/e/Game/NHL_Salary_Cap_11695?table_spec_id=2&amp;copy_seat_id=140628524" class="button tiny primary">Enter</a></td>
+							<td class="link"><a href="https://www.fanduel.com/e/Game/NHL_Salary_Cap_11829?table_spec_id=2&amp;copy_seat_id=149575196" class="button tiny primary">Enter</a></td>
 						</tr>
 										<tr>
 							<td class="title">NHL Head-to-Head</td>
@@ -667,7 +532,7 @@
 							<td class="entries num">0</td>
 							<td class="stake num">$10</td>
 							<td class="prizes num">$18.00</td>
-							<td class="link"><a href="https://www.fanduel.com/e/Game/NHL_Salary_Cap_11695?table_spec_id=3&amp;copy_seat_id=140628524" class="button tiny primary">Enter</a></td>
+							<td class="link"><a href="https://www.fanduel.com/e/Game/NHL_Salary_Cap_11829?table_spec_id=3&amp;copy_seat_id=149575196" class="button tiny primary">Enter</a></td>
 						</tr>
 										<tr>
 							<td class="title">NHL Head-to-Head</td>
@@ -676,7 +541,7 @@
 							<td class="entries num">0</td>
 							<td class="stake num">$25</td>
 							<td class="prizes num">$45.00</td>
-							<td class="link"><a href="https://www.fanduel.com/e/Game/NHL_Salary_Cap_11695?table_spec_id=4&amp;copy_seat_id=140628524" class="button tiny primary">Enter</a></td>
+							<td class="link"><a href="https://www.fanduel.com/e/Game/NHL_Salary_Cap_11829?table_spec_id=4&amp;copy_seat_id=149575196" class="button tiny primary">Enter</a></td>
 						</tr>
 										<tr>
 							<td class="title">NHL Head-to-Head</td>
@@ -685,7 +550,7 @@
 							<td class="entries num">0</td>
 							<td class="stake num">$50</td>
 							<td class="prizes num">$90.00</td>
-							<td class="link"><a href="https://www.fanduel.com/e/Game/NHL_Salary_Cap_11695?table_spec_id=5&amp;copy_seat_id=140628524" class="button tiny primary">Enter</a></td>
+							<td class="link"><a href="https://www.fanduel.com/e/Game/NHL_Salary_Cap_11829?table_spec_id=5&amp;copy_seat_id=149575196" class="button tiny primary">Enter</a></td>
 						</tr>
 										<tr>
 							<td class="title">NHL Head-to-Head</td>
@@ -694,133 +559,133 @@
 							<td class="entries num">0</td>
 							<td class="stake num">$109</td>
 							<td class="prizes num">$200.00</td>
-							<td class="link"><a href="https://www.fanduel.com/e/Game/NHL_Salary_Cap_11695?table_spec_id=370&amp;copy_seat_id=140628524" class="button tiny primary">Enter</a></td>
+							<td class="link"><a href="https://www.fanduel.com/e/Game/NHL_Salary_Cap_11829?table_spec_id=370&amp;copy_seat_id=149575196" class="button tiny primary">Enter</a></td>
 						</tr>
 										<tr>
-							<td class="title">NHL Salary Cap 55k Thu Feb 26th</td>
+							<td class="title">NHL Salary Cap 55k Sat Mar 14th</td>
 							<td class="cap num">$55k</td>
 							<td class="seats num">5</td>
-							<td class="entries num">1</td>
+							<td class="entries num">2</td>
+							<td class="stake num">$25</td>
+							<td class="prizes num">$112.50</td>
+							<td class="link"><a href="/e/Game/11829?tableId=11187888&fromLobby=true&amp;copy_seat_id=149575196" class="button tiny primary">Enter</a></td>
+						</tr>
+										<tr>
+							<td class="title">NHL Salary Cap 55k Sat Mar 14th</td>
+							<td class="cap num">$55k</td>
+							<td class="seats num">5</td>
+							<td class="entries num">3</td>
 							<td class="stake num">$2</td>
 							<td class="prizes num">$9.00</td>
-							<td class="link"><a href="/e/Game/11695?tableId=10793803&fromLobby=true&amp;copy_seat_id=140628524" class="button tiny primary">Enter</a></td>
+							<td class="link"><a href="/e/Game/11829?tableId=11187252&fromLobby=true&amp;copy_seat_id=149575196" class="button tiny primary">Enter</a></td>
 						</tr>
 										<tr>
-							<td class="title">NHL Salary Cap 55k Thu Feb 26th</td>
-							<td class="cap num">$55k</td>
-							<td class="seats num">5</td>
-							<td class="entries num">0</td>
-							<td class="stake num">$10</td>
-							<td class="prizes num">$45.00</td>
-							<td class="link"><a href="/e/Game/11695?tableId=10794046&fromLobby=true&amp;copy_seat_id=140628524" class="button tiny primary">Enter</a></td>
-						</tr>
-										<tr>
-							<td class="title">NHL Salary Cap 55k Thu Feb 26th</td>
+							<td class="title">NHL Salary Cap 55k Sat Mar 14th</td>
 							<td class="cap num">$55k</td>
 							<td class="seats num">5</td>
 							<td class="entries num">0</td>
 							<td class="stake num">$1</td>
 							<td class="prizes num">$4.50</td>
-							<td class="link"><a href="/e/Game/11695?tableId=10794988&fromLobby=true&amp;copy_seat_id=140628524" class="button tiny primary">Enter</a></td>
+							<td class="link"><a href="/e/Game/11829?tableId=11189327&fromLobby=true&amp;copy_seat_id=149575196" class="button tiny primary">Enter</a></td>
 						</tr>
 										<tr>
-							<td class="title">NHL Salary Cap 55k Thu Feb 26th</td>
+							<td class="title">NHL Salary Cap 55k Sat Mar 14th</td>
 							<td class="cap num">$55k</td>
 							<td class="seats num">5</td>
 							<td class="entries num">1</td>
+							<td class="stake num">$10</td>
+							<td class="prizes num">$45.00</td>
+							<td class="link"><a href="/e/Game/11829?tableId=11161463&fromLobby=true&amp;copy_seat_id=149575196" class="button tiny primary">Enter</a></td>
+						</tr>
+										<tr>
+							<td class="title">NHL Salary Cap 55k Sat Mar 14th</td>
+							<td class="cap num">$55k</td>
+							<td class="seats num">5</td>
+							<td class="entries num">2</td>
 							<td class="stake num">$5</td>
 							<td class="prizes num">$22.50</td>
-							<td class="link"><a href="/e/Game/11695?tableId=10794433&fromLobby=true&amp;copy_seat_id=140628524" class="button tiny primary">Enter</a></td>
+							<td class="link"><a href="/e/Game/11829?tableId=11161460&fromLobby=true&amp;copy_seat_id=149575196" class="button tiny primary">Enter</a></td>
 						</tr>
 										<tr>
-							<td class="title">NHL Salary Cap 55k Thu Feb 26th</td>
-							<td class="cap num">$55k</td>
-							<td class="seats num">5</td>
-							<td class="entries num">0</td>
-							<td class="stake num">$25</td>
-							<td class="prizes num">$112.50</td>
-							<td class="link"><a href="/e/Game/11695?tableId=10794546&fromLobby=true&amp;copy_seat_id=140628524" class="button tiny primary">Enter</a></td>
-						</tr>
-										<tr>
-							<td class="title">NHL Salary Cap 55k Thu Feb 26th</td>
-							<td class="cap num">$55k</td>
-							<td class="seats num">5</td>
-							<td class="entries num">3</td>
-							<td class="stake num">$109</td>
-							<td class="prizes num">$500.00</td>
-							<td class="link"><a href="/e/Game/11695?tableId=10776582&fromLobby=true&amp;copy_seat_id=140628524" class="button tiny primary">Enter</a></td>
-						</tr>
-										<tr>
-							<td class="title">NHL Salary Cap 55k Thu Feb 26th</td>
+							<td class="title">NHL Salary Cap 55k Sat Mar 14th</td>
 							<td class="cap num">$55k</td>
 							<td class="seats num">5</td>
 							<td class="entries num">2</td>
 							<td class="stake num">$50</td>
 							<td class="prizes num">$225.00</td>
-							<td class="link"><a href="/e/Game/11695?tableId=10791131&fromLobby=true&amp;copy_seat_id=140628524" class="button tiny primary">Enter</a></td>
+							<td class="link"><a href="/e/Game/11829?tableId=11187909&fromLobby=true&amp;copy_seat_id=149575196" class="button tiny primary">Enter</a></td>
 						</tr>
 										<tr>
-							<td class="title">NHL Salary Cap 55k Thu Feb 26th</td>
+							<td class="title">NHL Salary Cap 55k Sat Mar 14th</td>
 							<td class="cap num">$55k</td>
-							<td class="seats num">10</td>
-							<td class="entries num">0</td>
-							<td class="stake num">$25</td>
-							<td class="prizes num">$225.00</td>
-							<td class="link"><a href="/e/Game/11695?tableId=10793762&fromLobby=true&amp;copy_seat_id=140628524" class="button tiny primary">Enter</a></td>
+							<td class="seats num">5</td>
+							<td class="entries num">1</td>
+							<td class="stake num">$109</td>
+							<td class="prizes num">$500.00</td>
+							<td class="link"><a href="/e/Game/11829?tableId=11161469&fromLobby=true&amp;copy_seat_id=149575196" class="button tiny primary">Enter</a></td>
 						</tr>
 										<tr>
-							<td class="title">NHL Salary Cap 55k Thu Feb 26th</td>
-							<td class="cap num">$55k</td>
-							<td class="seats num">10</td>
-							<td class="entries num">3</td>
-							<td class="stake num">$2</td>
-							<td class="prizes num">$18.00</td>
-							<td class="link"><a href="/e/Game/11695?tableId=10794970&fromLobby=true&amp;copy_seat_id=140628524" class="button tiny primary">Enter</a></td>
-						</tr>
-										<tr>
-							<td class="title">NHL Salary Cap 55k Thu Feb 26th</td>
+							<td class="title">NHL Salary Cap 55k Sat Mar 14th</td>
 							<td class="cap num">$55k</td>
 							<td class="seats num">10</td>
 							<td class="entries num">6</td>
-							<td class="stake num">$50</td>
-							<td class="prizes num">$450.00</td>
-							<td class="link"><a href="/e/Game/11695?tableId=10776604&fromLobby=true&amp;copy_seat_id=140628524" class="button tiny primary">Enter</a></td>
+							<td class="stake num">$25</td>
+							<td class="prizes num">$225.00</td>
+							<td class="link"><a href="/e/Game/11829?tableId=11161486&fromLobby=true&amp;copy_seat_id=149575196" class="button tiny primary">Enter</a></td>
 						</tr>
 										<tr>
-							<td class="title">NHL Salary Cap 55k Thu Feb 26th</td>
+							<td class="title">NHL Salary Cap 55k Sat Mar 14th</td>
 							<td class="cap num">$55k</td>
 							<td class="seats num">10</td>
-							<td class="entries num">9</td>
+							<td class="entries num">2</td>
 							<td class="stake num">$10</td>
 							<td class="prizes num">$90.00</td>
-							<td class="link"><a href="/e/Game/11695?tableId=10790050&fromLobby=true&amp;copy_seat_id=140628524" class="button tiny primary">Enter</a></td>
+							<td class="link"><a href="/e/Game/11829?tableId=11161484&fromLobby=true&amp;copy_seat_id=149575196" class="button tiny primary">Enter</a></td>
 						</tr>
 										<tr>
-							<td class="title">NHL Salary Cap 55k Thu Feb 26th</td>
+							<td class="title">NHL Salary Cap 55k Sat Mar 14th</td>
 							<td class="cap num">$55k</td>
 							<td class="seats num">10</td>
-							<td class="entries num">9</td>
+							<td class="entries num">5</td>
 							<td class="stake num">$1</td>
 							<td class="prizes num">$9.00</td>
-							<td class="link"><a href="/e/Game/11695?tableId=10792613&fromLobby=true&amp;copy_seat_id=140628524" class="button tiny primary">Enter</a></td>
+							<td class="link"><a href="/e/Game/11829?tableId=11187889&fromLobby=true&amp;copy_seat_id=149575196" class="button tiny primary">Enter</a></td>
 						</tr>
 										<tr>
-							<td class="title">NHL Salary Cap 55k Thu Feb 26th</td>
+							<td class="title">NHL Salary Cap 55k Sat Mar 14th</td>
 							<td class="cap num">$55k</td>
 							<td class="seats num">10</td>
-							<td class="entries num">3</td>
+							<td class="entries num">5</td>
+							<td class="stake num">$50</td>
+							<td class="prizes num">$450.00</td>
+							<td class="link"><a href="/e/Game/11829?tableId=11161487&fromLobby=true&amp;copy_seat_id=149575196" class="button tiny primary">Enter</a></td>
+						</tr>
+										<tr>
+							<td class="title">NHL Salary Cap 55k Sat Mar 14th</td>
+							<td class="cap num">$55k</td>
+							<td class="seats num">10</td>
+							<td class="entries num">1</td>
+							<td class="stake num">$2</td>
+							<td class="prizes num">$18.00</td>
+							<td class="link"><a href="/e/Game/11829?tableId=11189232&fromLobby=true&amp;copy_seat_id=149575196" class="button tiny primary">Enter</a></td>
+						</tr>
+										<tr>
+							<td class="title">NHL Salary Cap 55k Sat Mar 14th</td>
+							<td class="cap num">$55k</td>
+							<td class="seats num">10</td>
+							<td class="entries num">1</td>
 							<td class="stake num">$109</td>
 							<td class="prizes num">$1,000.00</td>
-							<td class="link"><a href="/e/Game/11695?tableId=10776607&fromLobby=true&amp;copy_seat_id=140628524" class="button tiny primary">Enter</a></td>
+							<td class="link"><a href="/e/Game/11829?tableId=11161490&fromLobby=true&amp;copy_seat_id=149575196" class="button tiny primary">Enter</a></td>
 						</tr>
 										<tr>
-							<td class="title">NHL Salary Cap 55k Thu Feb 26th</td>
+							<td class="title">NHL Salary Cap 55k Sat Mar 14th</td>
 							<td class="cap num">$55k</td>
 							<td class="seats num">10</td>
-							<td class="entries num">0</td>
+							<td class="entries num">2</td>
 							<td class="stake num">$5</td>
 							<td class="prizes num">$45.00</td>
-							<td class="link"><a href="/e/Game/11695?tableId=10793978&fromLobby=true&amp;copy_seat_id=140628524" class="button tiny primary">Enter</a></td>
+							<td class="link"><a href="/e/Game/11829?tableId=11187890&fromLobby=true&amp;copy_seat_id=149575196" class="button tiny primary">Enter</a></td>
 						</tr>
 									</tbody>
 				</table>
@@ -839,12 +704,12 @@
 FD.breakdown = {order: {"300":[["P",3],["A",2],["+-",1],["PM",0.5],["PPG",1],["PPA",1],["S",0.4],["G",[["W",4],["SO",2],["SV",0.2],["G",-1]]]],"301":[["P",3],["A",2],["+-",1],["PM",0.25],["PPG",0.5],["PPA",0.5],["S",0.4]],"302":[["G",[["W",3],["SO",2],["SV",0.2],["G",-1]]]],"200":[["RU",[["Y",0.1],["TD",6]]],["PA",[["Y",0.04],["TD",4],["I",-1]]],["RE",[["Y",0.1],["TD",6],["R",0.5]]],["KR",[["TD",6]]],["PR",[["TD",6]]],["FU",[["L",-2],["TD",6]]],["2PC",[["S",2],["P",2]]],["FG",[["U20",3],["U30",3],["U40",3],["U50",4],["O50",5]]],["PAT",[["P",1]]]],"201":[["DE",[["S",1],["FR",2],["RTD",6],["FRTD",6],["SF",2],["B",2],["I",2],["PA0",10],["PA1-6",7],["PA7-13",4],["PA14-20",1],["PA28-34",-1],["PA35+",-4]]]],"400":[["P",1],["R",1.2],["A",1.5],["B",2],["S",2],["T",-1]],"500":[["1B",1],["2B",2],["3B",3],["HR",4],["RBI",1],["R",1],["BB",1],["SB",2],["O",-0.25],["HBP",1]],"501":[["P",[["W",4],["IP",1],["O",0.331],["SO",1],["ER",-1]]]],"600":[["P",1],["R",1.2],["A",1.5],["B",2],["S",2],["T",-1]],"700":[["RU",[["Y",0.1],["TD",6]]],["PA",[["Y",0.04],["TD",4],["I",-1]]],["RE",[["Y",0.1],["TD",6],["R",0.5]]],["KR",[["TD",6]]],["PR",[["TD",6]]],["FU",[["L",-2],["TD",6]]],["2PC",[["S",2],["P",2]]]]},
 descs: {"200":{"PD":"games","TD":"touchdowns","PTS":"points","RU":{"A":"rushing attempts","Y":"rushing yards made","L":"longest rush","TD":"rushing touchdowns"},"PA":{"A":"passing attempts","C":"completed passes","I":"interceptions","Y":"passing yards","YL":"sacked yards-lost","S":"times sacked","L":"longest pass","TD":"passing touchdowns"},"RE":{"R":"receptions","Y":"receiving yards","L":"longest reception","TD":"receiving touchdowns"},"PU":{"P":"punts","B":"punts blocked","R":"punt returns","L":"longest return yards","Y":"yards punted","RY":"punt-return yards"},"KR":{"R":"kick returns","Y":"kick-return yards","L":"longest kick return yards","TD":"kickoff return touchdowns"},"PR":{"R":"punt returns","Y":"punt-return yards","L":"longest punt-return yards","TD":"punt return touchdowns"},"FU":{"F":"fumbles","L":"fumbles lost","TD":"own fumbles recovered touchdowns","OR":"own fumbles recovered","OY":"own fumbles recovered yards"},"FG":{"F":"field goals","A":"field goal attempts","U20":"field-goals from 0-19 yards","U30":"field-goals from 20-29 yards","U40":"field-goals from 30-39 yards","U50":"field-goals from 40-49 yards","O50":"field-goals from 50+ yards"},"PAT":{"P":"extra-point conversions","A":"extra-point conversion attempts"},"2PC":{"S":"two-point conversions scored","P":"two-point conversion passes","A":"two-point conversion attempts"},"DE":{"T":"tackles","A":"assists","S":"sacks","SY":"sack-yards","P":"passes-defensed","F":"forced-fumbles","FR":"opponent-fumbles recovered","FRTD":"fumble return touchdowns","IRA":"interception return attempts","I":"interceptions made","SF":"safeties","RTD":"return touchdowns","B":"blocked kicks","PA0":"0 points allowed","PA1-6":"1-6 points allowed","PA7-13":"7-13 points allowed","PA14-20":"14-20 points allowed","PA28-34":"28-34 points allowed","PA35+":"35+ points allowed"}},"201":{"PD":"games","TD":"touchdowns","PTS":"points","RU":{"A":"rushing attempts","Y":"rushing yards made","L":"longest rush","TD":"rushing touchdowns"},"PA":{"A":"passing attempts","C":"completed passes","I":"interceptions","Y":"passing yards","YL":"sacked yards-lost","S":"times sacked","L":"longest pass","TD":"passing touchdowns"},"RE":{"R":"receptions","Y":"receiving yards","L":"longest reception","TD":"receiving touchdowns"},"PU":{"P":"punts","B":"punts blocked","R":"punt returns","L":"longest return yards","Y":"yards punted","RY":"punt-return yards"},"KR":{"R":"kick returns","Y":"kick-return yards","L":"longest kick return yards","TD":"kickoff return touchdowns"},"PR":{"R":"punt returns","Y":"punt-return yards","L":"longest punt-return yards","TD":"punt return touchdowns"},"FU":{"F":"fumbles","L":"fumbles lost","TD":"own fumbles recovered touchdowns","OR":"own fumbles recovered","OY":"own fumbles recovered yards"},"FG":{"F":"field goals","A":"field goal attempts","U20":"field-goals from 0-19 yards","U30":"field-goals from 20-29 yards","U40":"field-goals from 30-39 yards","U50":"field-goals from 40-49 yards","O50":"field-goals from 50+ yards"},"PAT":{"P":"extra-point conversions","A":"extra-point conversion attempts"},"2PC":{"S":"two-point conversions scored","P":"two-point conversion passes","A":"two-point conversion attempts"},"DE":{"T":"tackles","A":"assists","S":"sacks","SY":"sack-yards","P":"passes-defensed","F":"forced-fumbles","FR":"opponent-fumbles recovered","FRTD":"fumble return touchdowns","IRA":"interception return attempts","I":"interceptions made","SF":"safeties","RTD":"return touchdowns","B":"blocked kicks","PA0":"0 points allowed","PA1-6":"1-6 points allowed","PA7-13":"7-13 points allowed","PA14-20":"14-20 points allowed","PA28-34":"28-34 points allowed","PA35+":"35+ points allowed"}},"500":{"P":{"O":"Fractional Innings"}},"501":{"P":{"O":"Fractional Innings"}},"400":{"PD":"games","FGA":"Field Goal Attempted","FG":"Field Goal Made","FTA":"Free Throw Attempted","FT":"Free Throw Made","3PA":"3-point Shot Attempted","3P":"3-point Shot Made","P":"Points Scored","R":"Rebounds","A":"Assists","S":"Steals","T":"Turnovers","B":"Blocked Shots"},"301":{"PD":"games","P":"goals","A":"assists","+-":"plus-minus","PM":"penalty minutes","PPG":"power play goals","PPA":"power play assists","S":"shots on goal","G":{"W":"wins","L":"losses","SO":"shutouts","SV":"saves","G":"goals against"}},"302":{"PD":"games","P":"goals","A":"assists","+-":"plus-minus","PM":"penalty minutes","PPG":"power play goals","PPA":"power play assists","S":"shots on goal","G":{"W":"wins","L":"losses","SO":"shutouts","SV":"saves","G":"goals against"}},"600":{"PD":"games","FGA":"Field Goal Attempted","FG":"Field Goal Made","FTA":"Free Throw Attempted","FT":"Free Throw Made","3PA":"3-point Shot Attempted","3P":"3-point Shot Made","P":"Points Scored","R":"Rebounds","A":"Assists","S":"Steals","T":"Turnovers","B":"Blocked Shots"},"700":{"PD":"games","TD":"touchdowns","PTS":"points","RU":{"A":"rushing attempts","Y":"rushing yards made","L":"longest rush","TD":"rushing touchdowns"},"PA":{"A":"passing attempts","C":"completed passes","I":"interceptions","Y":"passing yards","YL":"sacked yards-lost","S":"times sacked","L":"longest pass","TD":"passing touchdowns"},"RE":{"R":"receptions","Y":"receiving yards","L":"longest reception","TD":"receiving touchdowns"},"PU":{"P":"punts","B":"punts blocked","R":"punt returns","L":"longest return yards","Y":"yards punted","RY":"punt-return yards"},"KR":{"R":"kick returns","Y":"kick-return yards","L":"longest kick return yards","TD":"kickoff return touchdowns"},"PR":{"R":"punt returns","Y":"punt-return yards","L":"longest punt-return yards","TD":"punt return touchdowns"},"FU":{"F":"fumbles","L":"fumbles lost","TD":"own fumbles recovered touchdowns","OR":"own fumbles recovered","OY":"own fumbles recovered yards"},"2PC":{"S":"two-point conversions scored","P":"two-point conversion passes","A":"two-point conversion attempts"}}},
 fractional: {"301":true,"302":true,"200":true,"201":true,"500":true,"501":true,"700":true,"400":true,"600":true}};
-</script><script type="text/javascript" src="https://www.fanduel.com/scripts/yui-animation.js"></script><script src="https://www.fanduel.com/scripts/compiled/seatview.base.80cb7793d1b23cdcf801a63d06cfa963.js"></script><script>sendAjax([])</script><div class='row column-3'><form action="https://www.fanduel.com/c/CCEntry?cc_action=cca_cancel&seat_id=140628524&cc_success_url=https%3A%2F%2Fwww.fanduel.com%2F" method="post"><button class="button text text-red fullwidth" onClick="return confirm('Are you sure you want to cancel this entry to NHL Salary Cap 55k Thu Feb 26th? (cannot be undone)');">Cancel entry</button></form></div>		<script type="text/javascript" src="https://www.fanduel.com/scripts/seatview.js"></script>
+</script><script type="text/javascript" src="https://www.fanduel.com/scripts/yui-animation.js"></script><script src="https://www.fanduel.com/scripts/compiled/seatview.base.80cb7793d1b23cdcf801a63d06cfa963.js"></script><script>sendAjax([])</script><div class='row column-3'><form action="https://www.fanduel.com/c/CCEntry?cc_action=cca_cancel&seat_id=149575196&cc_success_url=https%3A%2F%2Fwww.fanduel.com%2F" method="post"><button class="button text text-red fullwidth" onClick="return confirm('Are you sure you want to cancel this entry to NHL Salary Cap 55k Sat Mar 14th? (cannot be undone)');">Cancel entry</button></form></div>		<script type="text/javascript" src="https://www.fanduel.com/scripts/seatview.js"></script>
 				<script>
 			if (window.Countdown) Countdown.tickAll();
 						window.seatAdditionalData = {
-				size: 3,
-				id: 10787734			};
+				size: 2,
+				id: 11189562			};
 					</script>
 	<script src="https://www.fanduel.com/scripts/compiled/core.backbone1.6d00a5aad685c05f9c85948a6f47347e.js"></script>			<script src="https://www.fanduel.com/scripts/compiled/zeroclipboard.base.c988f144df7bceb0c3405ecea53da5d3.js"></script>			<script type="text/javascript">
 				ZeroClipboard.setDefaults({
@@ -930,7 +795,7 @@ fractional: {"301":true,"302":true,"200":true,"201":true,"500":true,"501":true,"
 					Your link has been copied to your clipboard.
 				</div>
 				<div class="refer-link">
-					<input type="text" value="https://www.fanduel.com/entry/AOGTUMBBX?invitedby=hamofgobelgope&cnl=ea" readonly><button data-copy-ref-link-button class="button mini primary" data-clipboard-text="https://www.fanduel.com/entry/AOGTUMBBX?invitedby=hamofgobelgope&cnl=ea">Copy Link</button>
+					<input type="text" value="https://www.fanduel.com/entry/AQYGRMMEF?invitedby=hamofgobelgope&cnl=ea" readonly><button data-copy-ref-link-button class="button mini primary" data-clipboard-text="https://www.fanduel.com/entry/AQYGRMMEF?invitedby=hamofgobelgope&cnl=ea">Copy Link</button>
 				</div>
 			</div>
 			<div data-tab-name="email">
@@ -992,7 +857,7 @@ fractional: {"301":true,"302":true,"200":true,"201":true,"500":true,"501":true,"
 			</div>
 			<div data-tab-name="facebook">
 				<h4>Click below to share your referral link on Facebook</h4>
-				<div class="fb-share-button" data-href="https://www.fanduel.com/entry/AOGTUMBBX?invitedby=hamofgobelgope&cnl=ec" data-type="button" data-width="200"></div>
+				<div class="fb-share-button" data-href="https://www.fanduel.com/entry/AQYGRMMEF?invitedby=hamofgobelgope&cnl=ec" data-type="button" data-width="200"></div>
 			</div>
 			<div data-tab-name="twitter">
 				<h4>Click below to share your referral link on Twitter</h4>
@@ -1000,7 +865,7 @@ fractional: {"301":true,"302":true,"200":true,"201":true,"500":true,"501":true,"
 					href="https://twitter.com/share"
 					class="twitter-share-button"
 					data-lang="en"
-					data-url="https://www.fanduel.com/entry/AOGTUMBBX?invitedby=hamofgobelgope&cnl=ed"
+					data-url="https://www.fanduel.com/entry/AQYGRMMEF?invitedby=hamofgobelgope&cnl=ed"
 					data-text="I'm playing new daily fantasy leagues at FanDuel.com - come and join me!"
 					data-related="FanDuel"
 					data-hashtags="FanDuel"
@@ -1023,12 +888,12 @@ fractional: {"301":true,"302":true,"200":true,"201":true,"500":true,"501":true,"
 
 <script>
 				if (window.saleTrack) {
-					saleTrack.addSaleItem(1, 2, 'Entry', 'NHL', 'Salary Cap', '');
-					saleTrack.orderid = 'S140628524';
+					saleTrack.addSaleItem(1, 10, 'Entry', 'NHL', 'Salary Cap', '');
+					saleTrack.orderid = 'S149575196';
 					saleTrack.logSale(1);
 				}
-			</script>	<script src="https://za.offerforge.com/i_sale_third/415/0.20/140628524/403637+cur=USD&sale_status=1"></script>
-					<noscript><IMG SRC="https://za.offerforge.com/i_track_sale/415/0.20/140628524/403637+cur=USD&sale_status=1"></noscript>		<img src="https://altfarm.mediaplex.com/ad/bk/21507-158562-3840-0?EnteredContest=1&amp;stake=2&amp;tableId=10787734&amp;mpuid=" height="1" width="1" alt="Mediaplex_tag" />
+			</script>	<script src="https://za.offerforge.com/i_sale_third/415/1.00/149575196/403637+cur=USD&sale_status=1"></script>
+					<noscript><IMG SRC="https://za.offerforge.com/i_track_sale/415/1.00/149575196/403637+cur=USD&sale_status=1"></noscript>		<img src="https://altfarm.mediaplex.com/ad/bk/21507-158562-3840-0?EnteredContest=1&amp;stake=10&amp;tableId=11189562&amp;mpuid=" height="1" width="1" alt="Mediaplex_tag" />
 	</section><footer class="global-footer">
 				<div class="row">
 					<nav class="footer-navigation">
@@ -1041,7 +906,7 @@ fractional: {"301":true,"302":true,"200":true,"201":true,"500":true,"501":true,"
 							<li><a href="/affiliates">Affiliates</a></li>
 							<li><a href="/legal">Legal</a></li>
 							<li><a href="/insider">FanDuel Insider</a></li>
-							<li><a href="/pg/Switcher/toMobile" onclick="document.cookie='renderMode=Smartphone;path=/;domain=.fanduel.com;expires=Sun, 23 Feb 2025 13:56:26 UTC';window.location='/';return false;" class="mobile">Mobile site</a></li>
+							<li><a href="/pg/Switcher/toMobile" onclick="document.cookie='renderMode=Smartphone;path=/;domain=.fanduel.com;expires=Tue, 11 Mar 2025 11:15:58 UTC';window.location='/';return false;" class="mobile">Mobile site</a></li>
 						</ul>
 					</nav>
 					<ul class="footer-contact-details">

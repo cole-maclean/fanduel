@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <title>Main</title>
+    <style type="text/css">
+      .label {text-align: right}
+      .error {color: red}
+    </style>
+  </head>
+  <body>
+    <h2>Clear Caches</h2>
+    <input type="submit" name="clearwinscache" value="Clear Wins Cache">
+    <input type="submit" name="clearlineupcache" value = "Clear Lineup Cache">
+    <h2>Input Data</h2>
+    <form method="post">
+      <table>
+        <tr>
+          <td class="label">
+            Contest Url
+          </td>
+          <td>
+            <input type="text" name="contesturl" value="{{contesturl}}">
+          </td>
+        </tr>
+        <tr>
+          <td class="label">
+            Historical Game Count
+          </td>
+          <td>
+            <input type="text" name="histgamecount" value="{{histgamecount}}">
+          </td>
+        </tr>
+        <tr>
+          <td class="label">
+            Losing Team List
+          </td>
+          <td>
+            <input type="text" name="losingteamlist" value="{{losingteamlist}}">
+          </td>
+        </tr>
+      </table>
+        <h2>Roster</h2>
+      <table>
+      {% for player_data in player_dict %}
+          <tr>
+          <td class="label">
+            {{player_data.position}}
+          </td>
+          <td>
+            <input type="text" name="Player{{loop.index}}" value="{{player_data.player}}">
+          </td>
+          <td class="label">
+            {{player_data.team}}
+          </td>
+          <td class="label">
+            {{player_data.salary}}
+          </td>
+          <td class="label">
+            {{player_data.objective}}
+          </td>
+          <td>
+            <input type="checkbox" name="Player{{loop.index}}_keep" value="{{player_data.keep}}">
+          </td>
+          <td>
+            <input type="checkbox" name="Player{{loop.index}}_omit" value="{{player_data.omit}}">
+          </td>
+        </tr>
+       {% endfor %}
+      </table>
+      <input type="submit" value="Generate Roster">
+    </form>
+    <h2>Contest Entries<h2>
+    <form method="post">
+      <table>
+        <tr>
+          <td class="label">
+            Entry Status = {{entry_status}}
+          </td>
+        </tr>
+        <tr>
+          <td class="label">
+            Total Bet
+          </td>
+          <td>
+            <input type="text" name="total_bet">
+          </td>
+          <td class="label">
+            Current Bet = {{current_bet}}
+          </td>
+        </tr>
+        <tr>
+          <td class="label">
+            password
+          </td>
+          <td>
+            <input type="text" name="password">
+          </td>
+        </tr>
+      </table>
+      <input type ="submit" value="Enter Contests">
+    </form>
+  </body>
+</html>

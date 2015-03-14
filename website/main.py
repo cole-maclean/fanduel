@@ -69,7 +69,7 @@ def build_lineup_avg_goals_dict(player_data_dict):
 def build_full_player_dictionary():
 	player_map = player_mapping(1,2)
 	rw = 2
-	player_data_dict = dbo.get_player_data_dict('nhl','2014020800')
+	player_data_dict = dbo.get_player_data_dict('nhl','2014020840')
 	lineup_avg_goals_dict = build_lineup_avg_goals_dict(player_data_dict)
 	columns = ['PlayerID','G','C','LW','RW','D','Position','FD_name','MatchupID','TeamID','Dummy2','Salary','PPG','GamesPlayed','Dummy3','Dummy4','Injury','InjuryAge','Dummy5','PlayerID']
  	for player_id,player_data in data_scrapping.get_FD_playerlist().iteritems():
@@ -118,17 +118,13 @@ def build_full_player_dictionary():
  	return player_data_dict
 def optimum_roster():
 	player_data_dict = build_full_player_dictionary()
-	starting_goalies = ['MacKenzie Skapski']#data_scrapping.get_starting_goalies()
+	starting_goalies = ['Andrew Hammond']#data_scrapping.get_starting_goalies()
 	player_universe = build_player_universe(player_data_dict,starting_goalies)
-	losing_team_list =['COL','MTL','WPG','MIN']
-	ex_list = ['Alex Killorn','Kris Russell','Dennis Wideman','Sean Monahan','Tyler Johnson']
+	losing_team_list =['CAR','CBJ','BUF','CGY','EDM','PIT','ANA','NJD','MIN']
+	ex_list = []
 	items = [
          {
              'name': player,
-             'Position': player_data_dict[player]['Position'],
-             'PlayerID': player_data_dict[player]['PlayerID'],
-             'MatchupID': player_data_dict[player]['MatchupID'],
-             'TeamID': player_data_dict[player]['TeamID'],
              'Salary': int(player_data_dict[player]['Salary']),
              'Team': player_data_dict[player]['Team'][-1],
              'G': int(player_data_dict[player]['G']), 
@@ -159,15 +155,17 @@ def output_final_roster():
 	r,player_universe,objective = optimum_roster()
 	strategy_data = {}
 	roster_data = []
-	strategy_data['strat_params'] = {'objective':objective,'vegas':'None','slate_size':9}
+	strategy_data['strat_params'] = {'objective':objective,'vegas':'Full','slate_size':6}
 	rw = 2
 	for player in r.xf:
 		roster_data.append([player_universe[player]['Position'],player_universe[player]['PlayerID'],player_universe[player]['MatchupID'],player_universe[player]['TeamID']])
 		Cell("Roster",rw,1).value = player
 		Cell("Roster",rw,2).value = player_universe[player]['Team']
 		Cell("Roster",rw,3).value = player_universe[player]['Position']
-		Cell("Roster",rw,4).value = player_universe[player]['Avg_Line_Goals'] * player_universe[player]['Avg_ToI']
+		Cell("Roster",rw,4).value = float(player_universe[player]['Avg_Line_Goals'])*float(player_universe[player]['Avg_ToI'])
 		Cell("Roster",rw,5).value = player_universe[player]['Salary']
+		Cell("Roster",rw,6).value = player_universe[player]['Avg_ToI']
+		Cell("Roster",rw,7).value = player_universe[player]['Avg_Line_Goals']
 		rw = rw + 1
 	strategy_data['player_data'] = sorted(roster_data, key=get_sort_key)
 	with open('C:/Users/Cole/Desktop/Fanduel/fanduel/roster.txt',"w") as myfile:
@@ -215,7 +213,7 @@ def build_hist_win_tuples():
 		else:
 			hist_perf_tuples.append((rw[0],0))
 	return hist_perf_tuples
-#data_scrapping.update_gamedata('NHL',Cell("Parameters",'clLastGameDataID').value)
+#data_scrapping.update_gamedata(Cell("Parameters",'clLastGameDataID').value)
 #print output_final_roster()
 print run_enter_best_contests(100,25)#paramter passing getting out of hand, need to figure out how refactor. Classes?
 #dbo.load_csv_into_db('C:/Users/Cole/Desktop/FanDuel/fanduel entry history.csv','hist_performance')

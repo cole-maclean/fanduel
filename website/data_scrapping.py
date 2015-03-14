@@ -13,17 +13,14 @@ import re
 import requests
 import FD_operations as fdo
 import general_utils as Ugen
-def update_gamedata(sport,LastGameDataID): #TODO: add optional paramters for which tables to update, check team roster for player #s, consideration for other sports
+def update_gamedata(LastGameDataID): #TODO: add optional paramters for which tables to update, check team roster for player #s, consideration for other sports
 	print 'Only update game data when no games are currently in progress'
 	os.system('pause')
-	if sport == 'NHL':
-		for i in range(LastGameDataID + 1,10000): 
-			sGameID = '201402' + str(i).zfill(4)
-			data_status = get_NHL_gamedata('20142015',sGameID)
-			if data_status == "URL not found":
-				break
-	elif sport == 'MLB':
-		pass
+	for i in range(LastGameDataID + 1,10000): 
+		sGameID = '201402' + str(i).zfill(4)
+		data_status = get_NHL_gamedata('20142015',sGameID)
+		if data_status == "URL not found":
+			break
 def get_NHL_gamedata(sGameSeason,sGameID):
 	game_stats_Url = 'http://live.nhle.com/GameData/' + sGameSeason + '/' + sGameID + '/gc/gcbx.jsonp'
 	game_stats_data = Uds.get_JSON_data(game_stats_Url, ['GCBX.load(',')'])
@@ -191,7 +188,7 @@ def enter_best_contests(s,session_id,bet_sport,max_bet,potential_contests,time_r
 		myfile.write(str(user_wins_cache))
 	return current_bet
 def get_FD_playerlist():
- 	FD_list = ast.literal_eval(Uds.parse_html('https://www.fanduel.com/e/Game/11829?tableId=11160163&fromLobby=true',"FD.playerpicker.allPlayersFullData = ",";"))
+ 	FD_list = ast.literal_eval(Uds.parse_html('https://www.fanduel.com/e/Game/11756?tableId=10967988&fromLobby=true',"FD.playerpicker.allPlayersFullData = ",";"))
  	return FD_list
 def team_mapping():
 	team_map = {}
@@ -245,7 +242,7 @@ def get_contest_utlity(avg_top_wins,time_remaining,wins_data,bin_size):
 	future_utility = 0.000834725*time_remaining + 0.399165 #predicting future utility, currently assumes 0.9 at T-600mins and 0.5 at T-1 min. Needs more rigourous stats
 	try:
 		#contest_utility = wins_data[Ugen.bin_mapping(avg_top_wins,bin_size)][-1]
-		if avg_top_wins <=300:
+		if avg_top_wins <=100:
 			contest_utility = 1#tempory contest utilities until hist performance dataset builts
 		else:
 			contest_utility = 0
