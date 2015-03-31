@@ -9,11 +9,21 @@
     </style>
   </head>
   <body>
+    <h2>Load Data</h2>
+    <form method = "post" action = "/loadhistdata">
+      <input type="submit" name="loadhistdata" value="Load Hist Player Data">
+      <input type="text" name="contesturl" value="{{contesturl}}">
+    </form>
     <h2>Clear Caches</h2>
-    <input type="submit" name="clearwinscache" value="Clear Wins Cache">
-    <input type="submit" name="clearlineupcache" value = "Clear Lineup Cache">
+    <form method = "post" action = "/clearwinscache">
+      <input type="submit" name="clearwinscache" value="Clear Wins Cache">
+    </form>
+    <br>
+    <form method = "post" action = "/clearlineupcache">
+      <input type="submit" name="clearlineupcache" value = "Clear Lineup Cache">
+    </form>
     <h2>Input Data</h2>
-    <form method="post">
+    <form method="post" action = "/generateroster">
       <table>
         <tr>
           <td class="label">
@@ -42,6 +52,7 @@
       </table>
         <h2>Roster</h2>
       <table>
+      {% if player_dict != None %}
       {% for player_data in player_dict %}
           <tr>
           <td class="label">
@@ -67,6 +78,7 @@
           </td>
         </tr>
        {% endfor %}
+       {% endif %}
       </table>
       <input type="submit" value="Generate Roster">
     </form>

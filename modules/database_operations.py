@@ -9,12 +9,13 @@ def get_connection_cursor():
     cur = conn.cursor()
     return cur
 def get_data_dict_structure(sport,position):
-    data_dict_structures = {'nhl':{'player':['GameID','Assists','num','Goals','SoG','ToI','PlusMinus','PiM','Team'],'goalie':['GameID','num','Saves','ToI','GoalsAgainst','ShotsAgainst','SavePercent','weighted_toi=int(Ugen.getSec(player_dict[rw_data[0]]["ToI"][-1]))*float(player_dict[rw_data[0]]["SavePercent"][-1])','Team']}} #might need to move this to config file
+    data_dict_structures = {'NHL':{'player':['GameID','Assists','num','Goals','SoG','ToI','PlusMinus','PiM','Team'],'goalie':['GameID','num','Saves','ToI','GoalsAgainst','ShotsAgainst','SavePercent','weighted_toi=int(Ugen.getSec(player_dict[rw_data[0]]["ToI"][-1]))*float(player_dict[rw_data[0]]["SavePercent"][-1])','Team']}} #might need to move this to config file
     return data_dict_structures[sport][position]
 def get_player_data_dict(sport, GameIDLimit):#TODO: Limits for history games and season
     cur = get_connection_cursor()
-    sql = "SELECT Player, GameID, Stat1, Stat2, Stat3, Stat4, Stat5, Stat6, Stat7, Team FROM hist_player_data WHERE GameID > " + GameIDLimit
-    cur.execute(sql)
+    sql = "SELECT Player, GameID, Stat1, Stat2, Stat3, Stat4, Stat5, Stat6, Stat7, Team, Sport FROM hist_player_data WHERE Sport=%s AND GameID > " + GameIDLimit
+    print sql
+    cur.execute(sql,(sport))
     resultset = cur.fetchall()
     player_dict = collections.OrderedDict()
     for rw in resultset:

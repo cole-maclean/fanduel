@@ -1,27 +1,77 @@
-import MySQLdb
 import collections
 import general_utils as Ugen
 import time
-def get_connection_cursor():
-    with open('C:\Users\Cole\Desktop\Fanduel\Parameters.txt',"r") as myfile:
-        passwd = myfile.read().split(',')[0]
-    conn = MySQLdb.Connection(db="autotrader",host="localhost",user="root",passwd=passwd);
-    cur = conn.cursor()
-    return cur
+import fanduelweb
+from google.appengine.api import rdbms
+import MySQLdb
+import threading
+import logging
+
+_INSTANCE_NAME = 'bamboo-velocity-87603:fanduel'
+
+def _db_connect():
+  return rdbms.connect(instance=_INSTANCE_NAME, database='fanduel',user='root',passwd='Timeflies1')
+_mydata = threading.local()
+def with_db_cursor(do_commit = False):
+  """ Decorator for managing DB connection by wrapping around web calls.
+
+  Stores connections and open cursor count in a threadlocal
+  between calls.  Sets a cursor variable in the wrapped function. Optionally
+  does a commit.  Closes the cursor when wrapped method returns, and closes
+  the DB connection if there are no outstanding cursors.
+
+  If the wrapped method has a keyword argument 'existing_cursor', whose value
+  is non-False, this wrapper is bypassed, as it is assumed another cursor is
+  already in force because of an alternate call stack.
+  """
+  def method_wrap(method):
+    def wrap(self, *args, **kwargs):
+      if kwargs.get('existing_cursor', False):
+        # Bypass everything if method called with existing open cursor.
+        return method(self, None, *args, **kwargs)
+
+      if not hasattr(_mydata, 'conn') or not _mydata.conn:
+        _mydata.conn = _db_connect()
+        _mydata.ref = 0
+        _mydata.commit = False
+
+      conn = _mydata.conn
+      _mydata.ref = _mydata.ref + 1
+
+      try:
+        cursor = conn.cursor()
+        try:
+          result = method(self, cursor, *args, **kwargs)
+          if do_commit or _mydata.commit:
+            _mydata.commit = False
+            conn.commit()
+          return result
+        finally:
+          cursor.close()
+      finally:
+        _mydata.ref = _mydata.ref - 1
+        if _mydata.ref == 0:
+          _mydata.conn = None
+          logging.info('Closing conn')
+          conn.close()
+    return wrap
+  return method_wrap
 def get_data_dict_structure(sport,position):
-    data_dict_structures = {'nhl':{'player':['GameID','Assists','num','Goals','SoG','ToI','PlusMinus','PiM','Team'],'goalie':['GameID','num','Saves','ToI','GoalsAgainst','ShotsAgainst','SavePercent','weighted_toi=int(Ugen.getSec(player_dict[rw_data[0]]["ToI"][-1]))*float(player_dict[rw_data[0]]["SavePercent"][-1])','Team']}} #might need to move this to config file
+    data_dict_structures = {'NHL':{'player':['GameID','Assists','Goals','num','PiM','PlusMinus','SoG','ToI','Team'],'goalie':['GameID','GoalsAgainst','num','ShotsAgainst','Saves','SavePercent''ToI','weighted_toi=int(Ugen.getSec(player_dict[rw_data[0]]["ToI"][-1]))*float(player_dict[rw_data[0]]["SavePercent"][-1])','Team']}} #might need to move this to config file
     return data_dict_structures[sport][position]
-def get_player_data_dict(sport, GameIDLimit):#TODO: Limits for history games and season
-    cur = get_connection_cursor()
-    sql = "SELECT Player, GameID, Stat1, Stat2, Stat3, Stat4, Stat5, Stat6, Stat7, Team FROM hist_player_data WHERE GameID > " + GameIDLimit
-    cur.execute(sql)
+@with_db_cursor(do_commit = False)
+def get_player_data_dict(sport,cur, GameIDLimit):#TODO: Limits for history games and season
+    sql = "SELECT Player, GameID, Stat1, Stat2, Stat3, Stat4, Stat5, Stat6, Stat7, Team, Sport FROM hist_player_data WHERE Sport= %s AND GameID > " + GameIDLimit
+    print sql
+    cur.execute(sql,(sport))
     resultset = cur.fetchall()
     player_dict = collections.OrderedDict()
     for rw in resultset:
-        if rw[8] != None: #Check if player is goalie, hack job need to clean
+        if rw[9] != None: #Check if player is goalie, hack job need to clean
             player_dict = build_data_dict_structure(player_dict,get_data_dict_structure(sport,'player'),rw,1)
         else:
             player_dict = build_data_dict_structure(player_dict,get_data_dict_structure(sport,'goalie'),rw,1)
+    print player_dict
     return player_dict
 def build_data_dict_structure(player_dict,column_names, rw_data, start_rw = 0): #TODO: seems like a good place for functional thing (decorator) 
     d = collections.OrderedDict()
@@ -41,8 +91,8 @@ def build_data_dict_structure(player_dict,column_names, rw_data, start_rw = 0): 
             player_dict[rw_data[0]] = d
         start_rw = start_rw + 1
     return player_dict
-def read_from_db(sql,primary_key_col = 0):
-    cur = get_connection_cursor()
+@with_db_cursor(do_commit = False)
+def read_from_db(sql,cur,primary_key_col = 0):
     cur.execute(sql)
     resultset = cur.fetchall()
     query_dict = collections.OrderedDict()
@@ -60,15 +110,13 @@ def write_to_db(table,static_columns,static_data,write_data={}): #TODO: need to 
     for i in range(1,len(row_data) + 1):
         columns = columns + ', Stat' + str(i)
     insert_mysql(table,columns, placeholders, static_data)
-def insert_mysql(table, columns, placeholders, data):
+@with_db_cursor(do_commit = True)
+def insert_mysql(table,cursor, columns, placeholders, data):
     sql = "INSERT INTO " + table + " (%s) VALUES (%s)" % (columns, placeholders)
-    cur = get_connection_cursor()
-    cur.execute(sql, data)
-    cur.execute('COMMIT')
+    cursor.execute(sql, data)
     time.sleep(.1)
-def load_csv_into_db(csv_file,table):
+@with_db_cursor(do_commit = True)
+def load_csv_into_db(csv_file,cursor,table):
     sql = "LOAD DATA INFILE '" + csv_file + "' IGNORE INTO TABLE " + table + " FIELDS TERMINATED BY ',' IGNORE 1 LINES"
-    cur = get_connection_cursor()
-    cur.execute(sql)
-    cur.execute('COMMIT')
+    cursor.execute(sql)
     time.sleep(.1)

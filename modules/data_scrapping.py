@@ -2,6 +2,7 @@ import json
 import urllib2
 import os
 import time
+import datetime
 import ast
 from bs4 import BeautifulSoup
 import numpy
@@ -45,7 +46,7 @@ def write_nhl_game_data(team_data,player_team,sGameID):
 			except KeyError:
 				print str(player_stats['num']) + " KeyError"
 				player = str(player_stats['num']) + " KeyError"
-			dbo.write_to_db('hist_player_data','Player, GameID, Team',[player,sGameID,player_team],player_stats)
+			dbo.write_to_db('hist_player_data','Sport,Player, GameID, Team',['NHL',player,sGameID,player_team],player_stats)
 	return 'data succesfully loaded'
 def get_NHL_team_players(team):
 	roster_data_url = 'http://nhlwc.cdnak.neulion.com/fs1/nhl/league/teamroster/' + team + '/iphone/clubroster.json'
@@ -184,6 +185,7 @@ def enter_best_contests(s,session_id,bet_sport,max_bet,potential_contests,time_r
 				contest['strat_params'] = str(strategy_data['strat_params'])
 				if entry_status == 'success':
 					current_bet = current_bet + contest['entryFee']
+					contest['timestamp'] = time.strftime("%c")
 					placeholders = ', '.join(['%s'] * len(contest))
 					columns = ', '.join(contest.keys())
 					dbo.insert_mysql('FD_table_contests',columns,placeholders,contest.values())
@@ -191,11 +193,11 @@ def enter_best_contests(s,session_id,bet_sport,max_bet,potential_contests,time_r
 		myfile.write(str(user_wins_cache))
 	return current_bet
 def get_FD_playerlist():
- 	FD_list = ast.literal_eval(Uds.parse_html('https://www.fanduel.com/e/Game/11829?tableId=11160163&fromLobby=true',"FD.playerpicker.allPlayersFullData = ",";"))
+ 	FD_list = ast.literal_eval(Uds.parse_html('https://www.fanduel.com/e/Game/11974?tableId=11509342&fromLobby=true',"FD.playerpicker.allPlayersFullData = ",";"))
  	return FD_list
 def team_mapping():
 	team_map = {}
-	for rw in range(2,31):#This isnt great...
+	for rw in range(2,32):#This isnt great...
 		team_map[Cell('Team Map',rw,1).value] = Cell('Team Map',rw,2).value
 	return team_map
 def build_lineup_dict():
@@ -242,13 +244,13 @@ def get_live_contest_ids():
 	for contest in live_contest_dict['seats']:
 		dbo.write_to_db('FD_table_contests','table_id,contest_id',[str(contest[2].split(r'/')[2]),str(contest[0])])
 def get_contest_utlity(avg_top_wins,time_remaining,wins_data,bin_size):
-	future_utility = 0.000834725*time_remaining + 0.399165 #predicting future utility, currently assumes 0.9 at T-600mins and 0.5 at T-1 min. Needs more rigourous stats
+	future_utility = 0.0007*time_remaining #predicting future utility, currently assumes 0.6 at T-600mins and 0.0 at T-0 min. Needs more rigourous stats
 	try:
-		#contest_utility = wins_data[Ugen.bin_mapping(avg_top_wins,bin_size)][-1]
-		if avg_top_wins <=300:
-			contest_utility = 1#tempory contest utilities until hist performance dataset builts
-		else:
-			contest_utility = 0
+		contest_utility = wins_data[Ugen.bin_mapping(avg_top_wins,bin_size)][-1]
+		#if avg_top_wins <=500:
+			#contest_utility = 1#tempory contest utilities until hist performance dataset builts
+		#else:
+			#contest_utility = 0
 	except KeyError:
 		print 'wins data bin for ' + str(avg_top_wins) + ' does not exist'
 		contest_utility = 0

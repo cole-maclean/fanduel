@@ -1,7 +1,5 @@
-import mechanize
 import json
 import urllib2
-import cookielib
 def get_JSON_data(sUrl,clean_strings = ''):
 	try:
 		response = urllib2.urlopen(sUrl)

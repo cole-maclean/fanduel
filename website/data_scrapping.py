@@ -13,47 +13,53 @@ import re
 import requests
 import FD_operations as fdo
 import general_utils as Ugen
+import logging
+import collections
+from google.appengine.api import memcache
 def update_gamedata(LastGameDataID): #TODO: add optional paramters for which tables to update, check team roster for player #s, consideration for other sports
-	print 'Only update game data when no games are currently in progress'
-	os.system('pause')
-	for i in range(LastGameDataID + 1,10000): 
-		sGameID = '201402' + str(i).zfill(4)
-		data_status = get_NHL_gamedata('20142015',sGameID)
-		if data_status == "URL not found":
-			break
+	data_status = 1
+	i = 1 
+	while data_status == 1:
+		sGameID = str(LastGameDataID + i)
+		data_status, last_gameid = get_NHL_gamedata('20142015',sGameID)
+		i = i + 1
+	return last_gameid
 def get_NHL_gamedata(sGameSeason,sGameID):
 	game_stats_Url = 'http://live.nhle.com/GameData/' + sGameSeason + '/' + sGameID + '/gc/gcbx.jsonp'
 	game_stats_data = Uds.get_JSON_data(game_stats_Url, ['GCBX.load(',')'])
 	if game_stats_data == "URL not found":
-		Cell("Parameters",'clLastGameDataID').value = int(sGameID[-4:]) -1
-		return "URL not found"
+		last_gameid = int(sGameID) - 1
+		return (0, last_gameid)
 	roster_data_Url = 'http://live.nhle.com/GameData/' + sGameSeason + '/' + sGameID + '/gc/gcsb.jsonp'
 	roster_data = Uds.get_JSON_data(roster_data_Url, ['GCSB.load(',')'])
 	HomeTeam = roster_data['h']['ab']
 	AwayTeam = roster_data['a']['ab']
 	print HomeTeam + " " + write_nhl_game_data(game_stats_data['rosters']['home'],HomeTeam,sGameID)
 	print AwayTeam + " " + write_nhl_game_data(game_stats_data['rosters']['away'],AwayTeam,sGameID)
+	return (1, int(sGameID) - 1)
 def write_nhl_game_data(team_data,player_team,sGameID):
 	player_num_lookup = get_NHL_team_players(player_team)
 	for player_types in team_data.values():
 		for player_stats in player_types:
+			ordered_player_stats = collections.OrderedDict(sorted(player_stats.items()))
 			try:
 				player = player_num_lookup[player_stats['num']]
 			except KeyError:
 				print str(player_stats['num']) + " KeyError"
 				player = str(player_stats['num']) + " KeyError"
-			dbo.write_to_db('hist_player_data','Player, GameID, Team',[player,sGameID,player_team],player_stats)
+			dbo.write_to_db('hist_player_data','Sport,Player, GameID, Team',['NHL',player,sGameID,player_team],ordered_player_stats)
 	return 'data succesfully loaded'
 def get_NHL_team_players(team):
 	roster_data_url = 'http://nhlwc.cdnak.neulion.com/fs1/nhl/league/teamroster/' + team + '/iphone/clubroster.json'
 	roster_data = Uds.get_JSON_data(roster_data_url)
 	team_player_num_lookup = {}
-	for position in roster_data.values()[1:]:
-		for player in position:
-			try:
-				team_player_num_lookup[player['number']] = player['name']
-			except KeyError:
-				print player['name'] + " num lookup failure"
+	for data_key,data_items in roster_data.iteritems():
+		if data_key != 'timestamp':
+			for player in data_items:
+				try:
+					team_player_num_lookup[player['number']] = player['name']
+				except KeyError:
+					print player['name'] + " num lookup failure"
 	return team_player_num_lookup
 def get_starting_goalies():
 	goalie_list = []
@@ -187,21 +193,24 @@ def enter_best_contests(s,session_id,bet_sport,max_bet,potential_contests,time_r
 	with open('C:/Users/Cole/Desktop/Fanduel/fanduel/userwinscache.txt',"w") as myfile:
 		myfile.write(str(user_wins_cache))
 	return current_bet
-def get_FD_playerlist():
- 	FD_list = ast.literal_eval(Uds.parse_html('https://www.fanduel.com/e/Game/11756?tableId=10967988&fromLobby=true',"FD.playerpicker.allPlayersFullData = ",";"))
+def get_FD_playerlist(contest_url):
+ 	FD_list = ast.literal_eval(Uds.parse_html(contest_url,"FD.playerpicker.allPlayersFullData = ",";"))
  	return FD_list
+def get_FD_contests(contest_url):
+	print contest_url
+ 	FD_contests = ast.literal_eval(Uds.parse_html(contest_url,"FD.playerpicker.teamIdToFixtureCompactString = ",";"))
+ 	return FD_contests
 def team_mapping():
-	team_map = {}
-	for rw in range(2,31):#This isnt great...
-		team_map[Cell('Team Map',rw,1).value] = Cell('Team Map',rw,2).value
+	sql = "SELECT * FROM team_map"
+	team_map = dbo.read_from_db(sql)
 	return team_map
 def build_lineup_dict():
-	rw = 2
-	if Cell('Parameters','clLineupsCache').value == None:
+	if memcache.get('teamlineups') == None:
 		team_map = team_mapping()
 		team_lineups_dict = {}
 		for team in team_map.keys():
-			roster_url = 'http://www2.dailyfaceoff.com/teams/lines/' + str(team_map[team]) +'/'
+			print str(team_map[team][1])
+			roster_url = 'http://www2.dailyfaceoff.com/teams/lines/' + str(team_map[team][1]) +'/'
 			response = urllib2.urlopen(roster_url)
 			shtml = response.read()
 			soup = BeautifulSoup(shtml)
@@ -217,7 +226,7 @@ def build_lineup_dict():
  					try:
  						line.append(str(lineup.get_text()).strip())
  					except:
- 						print lineup.get_text()
+ 						pass
 				else:
 					if line:
 						lines.append(line)
@@ -228,9 +237,9 @@ def build_lineup_dict():
  						print lineup.get_text()
 					line_id = lineup.get('id')[-1]			
 			team_lineups_dict[team] = lines
-		Cell('Parameters','clLineupsCache').value = team_lineups_dict
+		memcache.set(key='teamlineups',value= team_lineups_dict)
 	else:
-		team_lineups_dict = ast.literal_eval(Cell('Parameters','clLineupsCache').value)
+		team_lineups_dict = memcache.get('teamlineups')
 	return team_lineups_dict
 def get_live_contest_ids():
 	s, session_id = fdo.get_fanduel_session()

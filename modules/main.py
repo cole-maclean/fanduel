@@ -69,7 +69,7 @@ def build_lineup_avg_goals_dict(player_data_dict):
 def build_full_player_dictionary():
 	player_map = player_mapping(1,2)
 	rw = 2
-	player_data_dict = dbo.get_player_data_dict('nhl','2014020800')
+	player_data_dict = dbo.get_player_data_dict('NHL','2014021000')
 	lineup_avg_goals_dict = build_lineup_avg_goals_dict(player_data_dict)
 	columns = ['PlayerID','G','C','LW','RW','D','Position','FD_name','MatchupID','TeamID','Dummy2','Salary','PPG','GamesPlayed','Dummy3','Dummy4','Injury','InjuryAge','Dummy5','PlayerID']
  	for player_id,player_data in data_scrapping.get_FD_playerlist().iteritems():
@@ -118,10 +118,10 @@ def build_full_player_dictionary():
  	return player_data_dict
 def optimum_roster():
 	player_data_dict = build_full_player_dictionary()
-	starting_goalies = ['MacKenzie Skapski']#data_scrapping.get_starting_goalies()
+	starting_goalies = data_scrapping.get_starting_goalies()
 	player_universe = build_player_universe(player_data_dict,starting_goalies)
-	losing_team_list =['COL','MTL','WPG','MIN']
-	ex_list = ['Alex Killorn','Kris Russell','Dennis Wideman','Sean Monahan','Tyler Johnson']
+	losing_team_list =['OTT','WPG','TOR','VAN','FLA']
+	ex_list = ['Cam Atkinson','Alexander Wennberg','Boone Jenner']
 	items = [
          {
              'name': player,
@@ -159,7 +159,7 @@ def output_final_roster():
 	r,player_universe,objective = optimum_roster()
 	strategy_data = {}
 	roster_data = []
-	strategy_data['strat_params'] = {'objective':objective,'vegas':'None','slate_size':9}
+	strategy_data['strat_params'] = {'objective':objective,'vegas':'Partial','slate_size':7}
 	rw = 2
 	for player in r.xf:
 		roster_data.append([player_universe[player]['Position'],player_universe[player]['PlayerID'],player_universe[player]['MatchupID'],player_universe[player]['TeamID']])

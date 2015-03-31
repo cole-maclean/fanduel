@@ -1,0 +1,755 @@
+2015-03-25 15:44:43,302 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,1,R,Groundout,0,6,2014-03-23T02:14:47Z,Dee Gordon batea rodado de out suavemente, lanzador Trevor Cahill a primera base Paul Goldschmidt.  ,021447,502239,543829,top,2014/03/23/lanmlb-arimlb-1,Roletazo de Out,0,5-11,0,Dee Gordon grounds out softly, pitcher Trevor Cahill to first baseman Paul Goldschmidt.  ,1,1,L
+
+
+2015-03-25 15:44:43,418 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,2,R,Single,0,10,2014-03-23T02:16:07Z,Yasiel Puig pega sencillo con rodado a jardinero central A.  J.   Pollock.  ,021607,502239,624577,top,2014/03/23/lanmlb-arimlb-1,Sencillo,0,6-3,0,Yasiel Puig singles on a ground ball to center fielder A.  J.   Pollock.  ,1,0,R
+
+
+2015-03-25 15:49:14,990 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,1,R,Groundout,0,11,2014-03-31T19:14:51Z,Daniel Nava batea rodado de out suavemente, lanzador Chris Tillman a primera base Chris Davis.  ,191451,501957,537953,top,2014/03/31/bosmlb-balmlb-1,Roletazo de Out,2,5-11,0,Daniel Nava grounds out softly, pitcher Chris Tillman to first baseman Chris Davis.  ,1,2,L
+
+
+2015-03-25 16:03:24,607 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,1,R,Groundout,0,6,2014-03-23T02:14:47Z,Dee Gordon batea rodado de out suavemente, lanzador Trevor Cahill a primera base Paul Goldschmidt.  ,021447,502239,543829,top,2014/03/23/lanmlb-arimlb-1,Roletazo de Out,0,5-11,0,Dee Gordon grounds out softly, pitcher Trevor Cahill to first baseman Paul Goldschmidt.  ,1,1,L
+
+
+2015-03-25 16:03:24,769 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,2,R,Single,0,10,2014-03-23T02:16:07Z,Yasiel Puig pega sencillo con rodado a jardinero central A.  J.   Pollock.  ,021607,502239,624577,top,2014/03/23/lanmlb-arimlb-1,Sencillo,0,6-3,0,Yasiel Puig singles on a ground ball to center fielder A.  J.   Pollock.  ,1,0,R
+
+
+2015-03-25 16:03:59,098 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,1,R,Groundout,0,11,2014-03-31T19:14:51Z,Daniel Nava batea rodado de out suavemente, lanzador Chris Tillman a primera base Chris Davis.  ,191451,501957,537953,top,2014/03/31/bosmlb-balmlb-1,Roletazo de Out,2,5-11,0,Daniel Nava grounds out softly, pitcher Chris Tillman to first baseman Chris Davis.  ,1,2,L
+
+
+2015-03-25 16:04:04,641 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,1,R,Flyout,0,8,2014-04-02T00:09:51Z,Jason Heyward batea elevado de out a jardinero central Carlos Gomez.  ,000951,346798,518792,top,2014/04/01/atlmlb-milmlb-1,Elevado de Out,1,6-5,0,Jason Heyward flies out to center fielder Carlos Gomez.  ,1,2,L
+
+
+2015-03-25 16:04:05,108 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,2,R,Strikeout,0,17,2014-04-02T00:11:47Z,Melvin Upton se poncha sin tirarle.  ,001147,346798,425834,top,2014/04/01/atlmlb-milmlb-1,Ponche,3,6-3,0,Melvin Upton called out on strikes.  ,2,3,R
+
+
+2015-03-25 16:04:05,318 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,3,R,Walk,0,25,2014-04-02T00:13:34Z,Freddie Freeman recibe base por bolas.  ,001334,346798,518692,top,2014/04/01/atlmlb-milmlb-1,Base por Bolas,4,6-5,0,Freddie Freeman walks.  ,2,1,L
+
+
+2015-03-25 16:04:05,642 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,1,R,Groundout,0,5,2014-04-02T17:12:22Z,Jason Heyward batea rodado de out, segunda base Scooter Gennett a primera base Lyle Overbay.  ,171222,490063,518792,top,2014/04/02/atlmlb-milmlb-1,Roletazo de Out,0,6-5,0,Jason Heyward grounds out, second baseman Scooter Gennett to first baseman Lyle Overbay.  ,1,0,L
+
+
+2015-03-25 16:04:10,661 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,1,L,Groundout,0,7,2014-04-09T02:12:29Z,Kole Calhoun batea rodado de out suavemente, campo corto Brad Miller a primera base Justin Smoak.  ,021229,572020,594777,top,2014/04/08/anamlb-seamlb-1,Roletazo de Out,0,5-10,0,Kole Calhoun grounds out softly, shortstop Brad Miller to first baseman Justin Smoak.  ,1,2,L
+
+
+2015-03-25 16:04:13,315 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,1,L,Strikeout,0,9,2014-04-11T23:07:15Z,Jonny Gomes se poncha sin tirarle.  ,230715,282332,430404,top,2014/04/11/bosmlb-nyamlb-1,Ponche,2,6-1,0,Jonny Gomes called out on strikes.  ,1,3,R
+
+
+2015-03-25 16:04:16,750 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,1,R,Groundout,0,5,2014-04-17T17:08:52Z,Jason Heyward batea rodado de out fuertemente a primera base John Mayberry.  ,170852,150359,518792,top,2014/04/17/atlmlb-phimlb-1,Roletazo de Out,0,6-5,0,Jason Heyward grounds out sharply to first baseman John Mayberry.  ,1,0,L
+
+
+2015-03-25 16:04:19,138 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,1,L,Flyout,0,8,2014-04-18T23:08:23Z,Collin Cowgill batea elevado de out a jardinero derecho Torii Hunter.  ,230823,592767,518577,top,2014/04/18/anamlb-detmlb-1,Elevado de Out,1,5-9,0,Collin Cowgill flies out to right fielder Torii Hunter.  ,1,2,R
+
+
+2015-03-25 16:04:19,654 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,1,R,Groundout,0,6,2014-04-20T17:08:50Z,J.  B.   Shuck batea rodado de out, segunda base Ian Kinsler a primera base Victor Martinez.  ,170850,519144,543776,top,2014/04/20/anamlb-detmlb-1,Roletazo de Out,0,5-11,0,J.  B.   Shuck grounds out, second baseman Ian Kinsler to first baseman Victor Martinez.  ,1,1,L
+
+
+2015-03-25 16:04:24,176 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,1,L,Strikeout,0,12,2014-04-23T23:06:23Z,Collin Cowgill se poncha sin tirarle.  ,230623,461829,518577,top,2014/04/23/anamlb-wasmlb-1,Ponche,3,5-9,0,Collin Cowgill called out on strikes.  ,1,3,R
+
+
+2015-03-25 16:04:24,319 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,1,R,Strikeout,0,9,2014-04-21T23:06:26Z,J.  B.   Shuck se poncha sin tirarle.  ,230626,543699,543776,top,2014/04/21/anamlb-wasmlb-1,Ponche,1,5-11,0,J.  B.   Shuck called out on strikes.  ,1,3,L
+
+
+2015-03-25 16:04:25,065 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,1,L,Flyout,0,9,2014-04-26T17:07:40Z,Collin Cowgill batea elevado de out fuertemente a jardinero central Jacoby Ellsbury.  ,170740,573064,518577,top,2014/04/26/anamlb-nyamlb-1,Elevado de Out,2,5-9,0,Collin Cowgill flies out sharply to center fielder Jacoby Ellsbury.  ,1,2,R
+
+
+2015-03-25 16:04:38,217 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,2,R,Groundout,0,12,2014-04-17T17:09:30Z,Melvin Upton batea rodado de out, campo corto Jimmy Rollins a primera base John Mayberry.  ,170930,150359,425834,top,2014/04/17/atlmlb-phimlb-1,Roletazo de Out,2,6-3,0,Melvin Upton grounds out, shortstop Jimmy Rollins to first baseman John Mayberry.  ,2,1,R
+
+
+2015-03-25 16:04:38,434 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,2,L,Single,0,14,2014-04-09T02:14:03Z,Mike Trout pega sencillo con rodado a jardinero derecho Stefen Romero.  ,021403,572020,545361,top,2014/04/08/anamlb-seamlb-1,Sencillo,1,6-2,0,Mike Trout singles on a ground ball to right fielder Stefen Romero.  ,1,2,R
+
+
+2015-03-25 16:04:38,644 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,2,L,Groundout,0,18,2014-04-11T23:09:30Z,Dustin Pedroia batea rodado de out a primera base Kelly Johnson.  ,230930,282332,456030,top,2014/04/11/bosmlb-nyamlb-1,Roletazo de Out,3,5-8,0,Dustin Pedroia grounds out to first baseman Kelly Johnson.  ,2,2,R
+
+
+2015-03-25 16:04:38,651 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,3,R,Walk,0,19,2014-04-17T17:10:59Z,Freddie Freeman recibe base por bolas.  ,171059,150359,518692,top,2014/04/17/atlmlb-phimlb-1,Base por Bolas,4,6-5,0,Freddie Freeman walks.  ,2,0,L
+
+
+2015-03-25 16:04:38,707 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,2,R,Strikeout,0,17,2014-04-21T23:08:51Z,Mike Trout se poncha sin tirarle.  ,230851,543699,545361,top,2014/04/21/anamlb-wasmlb-1,Ponche,2,6-2,0,Mike Trout called out on strikes.  ,2,3,R
+
+
+2015-03-25 16:04:38,923 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,4,R,Flyout,0,26,2014-04-17T17:12:34Z,Justin Upton batea elevado de out a jardinero derecho Marlon Byrd.  ,171234,150359,457708,top,2014/04/17/atlmlb-phimlb-1,Elevado de Out,2,6-2,0,Justin Upton flies out to right fielder Marlon Byrd.  ,3,1,R
+
+
+2015-03-25 16:04:39,005 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,1,R,Flyout,0,8,2014-04-16T00:10:56Z,Grady Sizemore batea elevado de out a jardinero derecho Dayan Viciedo.  ,001056,605304,429713,top,2014/04/15/bosmlb-chamlb-1,Elevado de Out,2,6-2,0,Grady Sizemore flies out to right fielder Dayan Viciedo.  ,1,1,L
+
+
+2015-03-25 16:04:39,084 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,3,L,Walk,0,26,2014-04-11T23:12:04Z,David Ortiz recibe base por bolas.  ,231204,282332,120074,top,2014/04/11/bosmlb-nyamlb-1,Base por Bolas,4,6-4,0,David Ortiz walks.  ,2,1,L
+
+
+2015-03-25 16:04:39,084 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,3,R,Groundout,0,26,2014-04-21T23:10:56Z,Albert Pujols batea rodado de out, tercera base Anthony Rendon a primera base Adam LaRoche.  ,231056,543699,405395,top,2014/04/21/anamlb-wasmlb-1,Roletazo de Out,3,6-3,0,Albert Pujols grounds out, third baseman Anthony Rendon to first baseman Adam LaRoche.  ,3,2,R
+
+
+2015-03-25 16:04:39,292 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,2,R,Strikeout,0,16,2014-04-16T00:13:51Z,Xander Bogaerts se poncha sin tirarle.  ,001351,605304,593428,top,2014/04/15/bosmlb-chamlb-1,Ponche,2,6-1,0,Xander Bogaerts called out on strikes.  ,2,3,R
+
+
+2015-03-25 16:04:39,295 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,5,L,Single,0,35,2014-04-17T17:16:57Z,Ben Revere pega sencillo con rodado a jardinero izquierdo Justin Upton.  ,171657,622072,519184,bottom,2014/04/17/atlmlb-phimlb-1,Sencillo,1,5-9,0,Ben Revere singles on a ground ball to left fielder Justin Upton.  ,0,2,L
+
+
+2015-03-25 16:04:39,638 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,4,L,Strikeout,0,34,2014-04-11T23:14:07Z,Mike Napoli se poncha sin tirarle.  ,231407,282332,435063,top,2014/04/11/bosmlb-nyamlb-1,Ponche,1,6-0,0,Mike Napoli called out on strikes.  ,3,3,R
+
+
+2015-03-25 16:04:39,732 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,4,R,Groundout,0,33,2014-04-21T23:15:14Z,Denard Span batea rodado de out, campo corto Erick Aybar a primera base Albert Pujols.  ,231514,572070,452655,bottom,2014/04/21/anamlb-wasmlb-1,Roletazo de Out,1,6-0,0,Denard Span grounds out, shortstop Erick Aybar to first baseman Albert Pujols.  ,1,1,L
+
+
+2015-03-25 16:04:39,913 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,3,R,Pop Out,0,21,2014-04-16T00:15:42Z,David Ortiz batea elevadito de out a tercera base Conor Gillaspie.  ,001542,605304,120074,top,2014/04/15/bosmlb-chamlb-1,Elevado de Out,0,6-4,0,David Ortiz pops out to third baseman Conor Gillaspie.  ,3,1,L
+
+
+2015-03-25 16:04:40,082 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,5,L,Groundout,0,42,2014-04-11T23:18:39Z,Derek Jeter batea rodado de out, segunda base Dustin Pedroia a primera base Mike Napoli.  ,231839,452657,116539,bottom,2014/04/11/bosmlb-nyamlb-1,Roletazo de Out,0,6-3,0,Derek Jeter grounds out, second baseman Dustin Pedroia to first baseman Mike Napoli.  ,1,2,R
+
+
+2015-03-25 16:05:09,440 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,1,R,Flyout,0,12,2014-04-13T18:16:59Z,Emilio Bonifacio batea elevado de out suavemente a jardinero central Peter Bourjos.  ,181659,608379,466988,top,2014/04/13/chnmlb-slnmlb-1,Elevado de Out,3,5-11,0,Emilio Bonifacio flies out softly to center fielder Peter Bourjos.  ,1,2,L
+
+
+2015-03-25 16:05:09,904 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,2,R,Single,0,22,2014-04-13T18:19:23Z,Justin Ruggiano pega sencillo con rodado fuerte a jardinero central Peter Bourjos.  ,181923,608379,448605,top,2014/04/13/chnmlb-slnmlb-1,Sencillo,3,6-1,0,Justin Ruggiano singles on a sharp ground ball to center fielder Peter Bourjos.  ,1,2,R
+
+
+2015-03-25 16:05:09,983 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,1,R,Groundout,0,6,2014-04-04T20:11:19Z,Gerardo Parra batea rodado de out, segunda base DJ LeMahieu a primera base Justin Morneau.  ,201119,504379,467827,top,2014/04/04/arimlb-colmlb-1,Roletazo de Out,1,5-11,0,Gerardo Parra grounds out, second baseman DJ LeMahieu to first baseman Justin Morneau.  ,1,0,L
+
+
+2015-03-25 16:05:10,137 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,2,R,Strikeout,0,14,2014-04-04T20:12:19Z,Aaron Hill se poncha sin tirarle.  ,201219,504379,431094,top,2014/04/04/arimlb-colmlb-1,Ponche,2,5-11,0,Aaron Hill called out on strikes.  ,2,3,R
+
+
+2015-03-25 16:05:10,592 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,3,R,Walk,0,22,2014-04-04T20:13:54Z,Paul Goldschmidt recibe base por bolas.  ,201354,504379,502671,top,2014/04/04/arimlb-colmlb-1,Base por Bolas,4,6-3,0,Paul Goldschmidt walks.  ,2,1,R
+
+
+2015-03-25 16:05:10,825 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,4,R,Flyout,0,29,2014-04-04T20:15:51Z,Martin Prado batea elevado de out a jardinero derecho Michael Cuddyer en territorio de foul.  ,201551,504379,445988,top,2014/04/04/arimlb-colmlb-1,Elevado de Out,0,6-1,0,Martin Prado flies out to right fielder Michael Cuddyer in foul territory.  ,3,2,R
+
+
+2015-03-25 16:05:13,539 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,b,b_height,des_es,start_tfs,des,pitcher,o,s,num,batter,stand,half,event_num,game_id,p_throws,event,start_tfs_zulu) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,1,5-8,Tony Campana batea rodado de out, campo corto Starlin Castro a primera base Anthony Rizzo.  ,000659,Tony Campana grounds out, shortstop Starlin Castro to first baseman Anthony Rizzo.  ,434628,1,1,1,542999,L,top,7,2014/04/22/arimlb-chnmlb-1,R,Groundout,2014-04-23T00:06:59Z
+
+
+2015-03-25 16:05:17,364 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,1,R,Groundout,0,6,2014-04-20T00:10:54Z,Gerardo Parra batea rodado de out, segunda base Dee Gordon a primera base Adrian Gonzalez.  ,001054,429717,467827,top,2014/04/19/arimlb-lanmlb-1,Roletazo de Out,1,5-11,0,Gerardo Parra grounds out, second baseman Dee Gordon to first baseman Adrian Gonzalez.  ,1,0,L
+
+
+2015-03-25 16:05:17,677 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,2,R,Groundout,0,11,2014-04-20T00:11:42Z,Aaron Hill batea rodado de out, tercera base Juan Uribe a primera base Adrian Gonzalez.  ,001142,429717,431094,top,2014/04/19/arimlb-lanmlb-1,Roletazo de Out,0,5-11,0,Aaron Hill grounds out, third baseman Juan Uribe to first baseman Adrian Gonzalez.  ,2,1,R
+
+
+2015-03-25 16:05:17,964 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,3,R,Strikeout,0,19,2014-04-20T00:12:35Z,Paul Goldschmidt se poncha sin tirarle.  ,001235,429717,502671,top,2014/04/19/arimlb-lanmlb-1,Ponche,2,6-3,0,Paul Goldschmidt called out on strikes.  ,3,3,R
+
+
+2015-03-25 16:05:18,392 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,4,R,Groundout,0,25,2014-04-20T00:16:52Z,Dee Gordon batea rodado de out suavemente, tercera base Martin Prado a primera base Paul Goldschmidt.  ,001652,502211,543829,bottom,2014/04/19/arimlb-lanmlb-1,Roletazo de Out,0,5-11,0,Dee Gordon grounds out softly, third baseman Martin Prado to first baseman Paul Goldschmidt.  ,1,1,L
+
+
+2015-03-25 16:05:18,701 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,5,R,Groundout,0,30,2014-04-20T00:17:53Z,Carl Crawford batea rodado de out, segunda base Aaron Hill a primera base Paul Goldschmidt.  ,001753,502211,408307,bottom,2014/04/19/arimlb-lanmlb-1,Roletazo de Out,0,6-2,0,Carl Crawford grounds out, second baseman Aaron Hill to first baseman Paul Goldschmidt.  ,2,1,L
+
+
+2015-03-25 16:05:19,082 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,6,R,Groundout,0,34,2014-04-20T00:18:58Z,Hanley Ramirez batea rodado de out, segunda base Aaron Hill a primera base Paul Goldschmidt.  ,001858,502211,434670,bottom,2014/04/19/arimlb-lanmlb-1,Roletazo de Out,0,6-2,0,Hanley Ramirez grounds out, second baseman Aaron Hill to first baseman Paul Goldschmidt.  ,3,0,R
+
+
+2015-03-25 16:05:24,226 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,1,L,Single,0,10,2014-04-30T23:09:34Z,Emilio Bonifacio pega sencillo con rodado fuerte a jardinero derecho Jay Bruce.  ,230934,571561,466988,top,2014/04/30/chnmlb-cinmlb-1,Sencillo,3,5-11,0,Emilio Bonifacio singles on a sharp ground ball to right fielder Jay Bruce.  ,0,2,R
+
+
+2015-03-25 16:05:24,671 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,2,L,Flyout,0,14,2014-04-30T23:12:00Z,Junior Lake batea elevado de out a jardinero central Billy Hamilton.  ,231200,571561,516809,top,2014/04/30/chnmlb-cinmlb-1,Elevado de Out,0,6-3,0,Junior Lake flies out to center fielder Billy Hamilton.  ,1,0,R
+
+
+2015-03-25 16:05:31,434 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,1,L,Pop Out,0,7,2014-04-29T01:40:02Z,Charlie Blackmon batea elevadito de out a tercera base Martin Prado.  ,014002,489119,453568,top,2014/04/28/colmlb-arimlb-1,Elevado de Out,1,6-3,0,Charlie Blackmon pops out to third baseman Martin Prado.  ,1,1,L
+
+
+2015-03-25 16:05:31,582 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,2,L,Groundout,0,11,2014-04-29T01:41:25Z,Brandon Barnes batea rodado de out, segunda base Aaron Hill a primera base Paul Goldschmidt.  ,014125,489119,488681,top,2014/04/28/colmlb-arimlb-1,Roletazo de Out,0,6-2,0,Brandon Barnes grounds out, second baseman Aaron Hill to first baseman Paul Goldschmidt.  ,2,0,R
+
+
+2015-03-25 16:06:39,851 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,1,R,Groundout,0,7,2014-04-09T19:13:49Z,Adam Eaton batea rodado de out, segunda base DJ LeMahieu a primera base Justin Morneau.  ,191349,504379,594809,top,2014/04/09/chamlb-colmlb-1,Roletazo de Out,0,5-8,0,Adam Eaton grounds out, second baseman DJ LeMahieu to first baseman Justin Morneau.  ,1,2,L
+
+
+2015-03-25 16:06:40,078 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,2,R,Flyout,0,15,2014-04-09T19:15:11Z,Marcus Semien batea elevado de out a jardinero izquierdo Carlos Gonzalez.  ,191511,504379,543760,top,2014/04/09/chamlb-colmlb-1,Elevado de Out,3,6-1,0,Marcus Semien flies out to left fielder Carlos Gonzalez.  ,2,1,R
+
+
+2015-03-25 16:06:42,848 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,1,R,Pop Out,0,7,2014-04-27T17:37:55Z,Billy Hamilton batea elevadito de out a campo corto Andrelton Simmons.  ,173755,527054,571740,top,2014/04/27/cinmlb-atlmlb-1,Elevado de Out,1,6-0,0,Billy Hamilton pops out to shortstop Andrelton Simmons.  ,1,1,L
+
+
+2015-03-25 16:06:43,017 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,2,R,Walk,0,14,2014-04-27T17:39:34Z,Joey Votto recibe base por bolas.  ,173934,527054,458015,top,2014/04/27/cinmlb-atlmlb-1,Base por Bolas,4,6-2,0,Joey Votto walks.  ,1,0,L
+
+
+2015-03-25 16:06:43,184 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,3,R,Flyout,0,19,2014-04-27T17:41:04Z,Brandon Phillips batea elevado de out a jardinero derecho Jason Heyward.  ,174104,527054,408252,top,2014/04/27/cinmlb-atlmlb-1,Elevado de Out,0,6-0,0,Brandon Phillips flies out to right fielder Jason Heyward.  ,2,1,R
+
+
+2015-03-25 16:06:43,250 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,4,R,Groundout,0,25,2014-04-27T17:42:31Z,Jay Bruce batea rodado de out a primera base Freddie Freeman.  ,174231,527054,457803,top,2014/04/27/cinmlb-atlmlb-1,Roletazo de Out,1,6-3,0,Jay Bruce grounds out to first baseman Freddie Freeman.  ,3,1,L
+
+
+2015-03-25 16:06:43,355 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,5,R,Flyout,0,31,2014-04-27T17:45:46Z,Jason Heyward batea elevado de out a jardinero izquierdo Ryan Ludwick.  ,174546,456501,518792,bottom,2014/04/27/cinmlb-atlmlb-1,Elevado de Out,0,6-5,0,Jason Heyward flies out to left fielder Ryan Ludwick.  ,1,0,L
+
+
+2015-03-25 16:06:43,405 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,6,R,Walk,0,42,2014-04-27T17:46:25Z,Melvin Upton recibe base por bolas.  ,174625,456501,425834,bottom,2014/04/27/cinmlb-atlmlb-1,Base por Bolas,4,6-3,0,Melvin Upton walks.  ,1,2,R
+
+
+2015-03-25 16:06:43,671 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,7,R,Strikeout,0,49,2014-04-27T17:48:58Z,Freddie Freeman se poncha sin tirarle.  ,174858,456501,518692,bottom,2014/04/27/cinmlb-atlmlb-1,Ponche,1,6-5,0,Freddie Freeman called out on strikes.  ,2,3,L
+
+
+2015-03-25 16:06:43,793 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,8,R,Single,0,67,2014-04-27T17:50:27Z,Justin Upton pega sencillo con rodado a jardinero central Billy Hamilton.   Melvin Upton a 2da.  ,175027,456501,457708,bottom,2014/04/27/cinmlb-atlmlb-1,Sencillo,1,6-2,0,Justin Upton singles on a ground ball to center fielder Billy Hamilton.   Melvin Upton to 2nd.  ,2,1,R
+
+
+2015-03-25 16:06:43,900 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,9,R,Pop Out,0,72,2014-04-27T17:57:23Z,Chris Johnson batea elevadito de out a segunda base Brandon Phillips.  ,175723,456501,453400,bottom,2014/04/27/cinmlb-atlmlb-1,Elevado de Out,1,6-3,0,Chris Johnson pops out to second baseman Brandon Phillips.  ,3,0,R
+
+
+2015-03-25 16:06:49,655 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,1,R,Groundout,0,5,2014-04-25T23:35:35Z,Billy Hamilton batea rodado de out, segunda base Dan Uggla a primera base Freddie Freeman.  ,233535,429722,571740,top,2014/04/25/cinmlb-atlmlb-1,Roletazo de Out,0,6-0,0,Billy Hamilton grounds out, second baseman Dan Uggla to first baseman Freddie Freeman.  ,1,0,L
+
+
+2015-03-25 16:07:00,210 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,1,R,Flyout,0,5,2014-04-06T18:10:37Z,Adam Eaton batea elevado de out a jardinero izquierdo Alex Gordon en territorio de foul.  ,181037,448306,594809,top,2014/04/06/chamlb-kcamlb-1,Elevado de Out,0,5-8,0,Adam Eaton flies out to left fielder Alex Gordon in foul territory.  ,1,0,L
+
+
+2015-03-25 16:23:13,266 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,1,R,Groundout,0,6,2014-05-04T20:11:56Z,Gerardo Parra batea rodado de out, segunda base Jedd Gyorko a primera base Yasmani Grandal.  ,201156,475115,467827,top,2014/05/04/arimlb-sdnmlb-1,Roletazo de Out,1,5-11,0,Gerardo Parra grounds out, second baseman Jedd Gyorko to first baseman Yasmani Grandal.  ,1,0,L
+
+
+2015-03-25 16:23:13,598 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,2,R,Flyout,0,12,2014-05-04T20:13:21Z,Martin Prado batea elevado de out a jardinero central Cameron Maybin.  ,201321,475115,445988,top,2014/05/04/arimlb-sdnmlb-1,Elevado de Out,2,6-1,0,Martin Prado flies out to center fielder Cameron Maybin.  ,2,0,R
+
+
+2015-03-25 16:23:13,776 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,3,R,Single,0,20,2014-05-04T20:14:31Z,Paul Goldschmidt pega sencillo con rodado fuerte a jardinero central Cameron Maybin.  ,201431,475115,502671,top,2014/05/04/arimlb-sdnmlb-1,Sencillo,3,6-3,0,Paul Goldschmidt singles on a sharp ground ball to center fielder Cameron Maybin.  ,2,1,R
+
+
+2015-03-25 16:23:14,072 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,4,R,Groundout,0,32,2014-05-04T20:16:10Z,Aaron Hill batea rodado de out, campo corto Everth Cabrera a primera base Yasmani Grandal.  ,201610,475115,431094,top,2014/05/04/arimlb-sdnmlb-1,Roletazo de Out,2,5-11,0,Aaron Hill grounds out, shortstop Everth Cabrera to first baseman Yasmani Grandal.  ,3,2,R
+
+
+2015-03-25 16:23:14,806 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,1,R,Single,0,7,2014-05-06T00:12:11Z,Gerardo Parra pega sencillo con rodado a jardinero central Carlos Gomez.  ,001211,490063,467827,top,2014/05/05/arimlb-milmlb-1,Sencillo,1,5-11,0,Gerardo Parra singles on a ground ball to center fielder Carlos Gomez.  ,0,1,L
+
+
+2015-03-25 16:23:14,954 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,2,R,Flyout,0,11,2014-05-06T00:14:13Z,Martin Prado batea elevado de out a jardinero derecho Caleb Gindl.  ,001413,490063,445988,top,2014/05/05/arimlb-milmlb-1,Elevado de Out,0,6-1,0,Martin Prado flies out to right fielder Caleb Gindl.  ,1,0,R
+
+
+2015-03-25 16:23:15,062 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,3,R,Strikeout,0,24,2014-05-06T00:15:03Z,Paul Goldschmidt se poncha con foul tip.  ,001503,490063,502671,top,2014/05/05/arimlb-milmlb-1,Ponche,3,6-3,0,Paul Goldschmidt strikes out on a foul tip.  ,2,3,R
+
+
+2015-03-25 16:23:15,744 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,4,R,Walk,0,33,2014-05-06T00:20:38Z,Miguel Montero recibe base por bolas.   Gerardo Parra a 2da.  ,002038,490063,471083,top,2014/05/05/arimlb-milmlb-1,Base por Bolas,4,5-11,0,Miguel Montero walks.   Gerardo Parra to 2nd.  ,2,1,L
+
+
+2015-03-25 16:23:22,035 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,1,R,Groundout,0,8,2014-05-11T17:08:14Z,Erick Aybar batea rodado de out, segunda base Steve Tolleson a primera base Edwin Encarnacion.  ,170814,571800,430947,top,2014/05/11/anamlb-tormlb-1,Roletazo de Out,1,5-10,0,Erick Aybar grounds out, second baseman Steve Tolleson to first baseman Edwin Encarnacion.  ,1,2,L
+
+
+2015-03-25 16:23:23,191 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,1,L,Flyout,0,8,2014-05-13T23:07:05Z,Collin Cowgill batea elevado de out a jardinero derecho Marlon Byrd.  ,230705,424324,518577,top,2014/05/13/anamlb-phimlb-1,Elevado de Out,1,5-9,0,Collin Cowgill flies out to right fielder Marlon Byrd.  ,1,2,R
+
+
+2015-03-25 16:23:23,694 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,2,L,Groundout,0,15,2014-05-13T23:08:31Z,Mike Trout batea rodado de out, campo corto Jimmy Rollins a primera base Ryan Howard.  ,230831,424324,545361,top,2014/05/13/anamlb-phimlb-1,Roletazo de Out,1,6-2,0,Mike Trout grounds out, shortstop Jimmy Rollins to first baseman Ryan Howard.  ,2,2,R
+
+
+2015-03-25 16:23:23,971 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,3,L,Groundout,0,22,2014-05-13T23:10:18Z,Albert Pujols batea rodado de out, campo corto Jimmy Rollins a primera base Ryan Howard.  ,231018,424324,405395,top,2014/05/13/anamlb-phimlb-1,Roletazo de Out,3,6-3,0,Albert Pujols grounds out, shortstop Jimmy Rollins to first baseman Ryan Howard.  ,3,0,R
+
+
+2015-03-25 16:23:24,397 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,4,R,Pop Out,0,28,2014-05-13T23:13:56Z,Ben Revere batea elevadito de out a campo corto John McDonald.  ,231356,533167,519184,bottom,2014/05/13/anamlb-phimlb-1,Elevado de Out,1,5-9,0,Ben Revere pops out to shortstop John McDonald.  ,1,0,L
+
+
+2015-03-25 16:23:25,292 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,1,R,Groundout,0,10,2014-05-14T17:08:32Z,Efren Navarro batea rodado de out suavemente, lanzador A.  J.   Burnett a primera base Ryan Howard.  ,170832,150359,519068,top,2014/05/14/anamlb-phimlb-1,Roletazo de Out,2,6-0,0,Efren Navarro grounds out softly, pitcher A.  J.   Burnett to first baseman Ryan Howard.  ,1,2,L
+
+
+2015-03-25 16:23:27,558 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,1,R,Flyout,0,6,2014-05-17T18:16:35Z,Jason Heyward batea elevado de out a jardinero central Peter Bourjos.  ,181635,571946,518792,top,2014/05/17/atlmlb-slnmlb-1,Elevado de Out,0,6-5,0,Jason Heyward flies out to center fielder Peter Bourjos.  ,1,1,L
+
+
+2015-03-25 16:23:29,720 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,1,L,Groundout,0,8,2014-05-18T18:15:10Z,Jason Heyward batea rodado de out fuertemente a primera base Matt Adams.  ,181510,448802,518792,top,2014/05/18/atlmlb-slnmlb-1,Roletazo de Out,2,6-5,0,Jason Heyward grounds out sharply to first baseman Matt Adams.  ,1,1,L
+
+
+2015-03-25 16:23:35,377 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,1,R,Groundout,0,7,2014-05-24T20:10:16Z,Gerardo Parra batea rodado de out suavemente, primera base Lucas Duda a lanzador Zack Wheeler.  ,201016,554430,467827,top,2014/05/24/arimlb-nynmlb-1,Roletazo de Out,1,5-11,0,Gerardo Parra grounds out softly, first baseman Lucas Duda to pitcher Zack Wheeler.  ,1,1,L
+
+
+2015-03-25 16:23:35,667 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,2,R,Strikeout,0,17,2014-05-24T20:11:55Z,Chris Owings se poncha con foul tip.  ,201155,554430,572008,top,2014/05/24/arimlb-nynmlb-1,Ponche,1,5-10,0,Chris Owings strikes out on a foul tip.  ,2,3,R
+
+
+2015-03-25 16:23:35,970 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,1,R,Flyout,0,10,2014-05-25T17:10:36Z,Gerardo Parra batea elevado de out a jardinero izquierdo Chris Young.  ,171036,606160,467827,top,2014/05/25/arimlb-nynmlb-1,Elevado de Out,3,5-11,0,Gerardo Parra flies out to left fielder Chris Young.  ,1,2,L
+
+
+2015-03-25 16:23:36,186 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,3,R,Groundout,0,26,2014-05-24T20:15:23Z,Paul Goldschmidt batea rodado de out, tercera base David Wright a primera base Lucas Duda.  ,201523,554430,502671,top,2014/05/24/arimlb-nynmlb-1,Roletazo de Out,3,6-3,0,Paul Goldschmidt grounds out, third baseman David Wright to first baseman Lucas Duda.  ,3,2,R
+
+
+2015-03-25 16:23:36,849 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,4,R,Groundout,0,33,2014-05-24T20:19:45Z,Juan Lagares batea rodado de out suavemente, lanzador Josh Collmenter a primera base Paul Goldschmidt.  ,201945,518567,501571,bottom,2014/05/24/arimlb-nynmlb-1,Roletazo de Out,1,6-1,0,Juan Lagares grounds out softly, pitcher Josh Collmenter to first baseman Paul Goldschmidt.  ,1,1,R
+
+
+2015-03-25 16:23:37,161 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,5,R,Flyout,0,43,2014-05-24T20:21:06Z,Daniel Murphy batea elevado de out a jardinero izquierdo Cody Ross en territorio de foul.  ,202106,518567,502517,bottom,2014/05/24/arimlb-nynmlb-1,Elevado de Out,2,6-1,0,Daniel Murphy flies out to left fielder Cody Ross in foul territory.  ,2,2,L
+
+
+2015-03-25 16:23:39,385 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,1,L,Groundout,0,7,2014-05-31T02:08:06Z,Erick Aybar batea rodado de out, tercera base Josh Donaldson a primera base Brandon Moss.  ,020806,519141,430947,top,2014/05/30/anamlb-oakmlb-1,Roletazo de Out,0,5-10,0,Erick Aybar grounds out, third baseman Josh Donaldson to first baseman Brandon Moss.  ,1,2,R
+
+
+2015-03-25 16:23:39,654 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,2,L,Strikeout,0,15,2014-05-31T02:08:54Z,Mike Trout se poncha sin tirarle.  ,020854,519141,545361,top,2014/05/30/anamlb-oakmlb-1,Ponche,1,6-2,0,Mike Trout called out on strikes.  ,2,3,R
+
+
+2015-03-25 16:23:40,369 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,3,L,Strikeout,0,22,2014-05-31T02:11:29Z,Albert Pujols se poncha sin tirarle.  ,021129,519141,405395,top,2014/05/30/anamlb-oakmlb-1,Ponche,1,6-3,0,Albert Pujols called out on strikes.  ,3,3,R
+
+
+2015-03-25 16:24:03,391 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,1,R,Flyout,0,7,2014-05-23T23:10:34Z,Brock Holt batea elevado de out a jardinero central Desmond Jennings.  ,231034,502042,571788,top,2014/05/23/bosmlb-tbamlb-1,Elevado de Out,1,5-10,0,Brock Holt flies out to center fielder Desmond Jennings.  ,1,1,L
+
+
+2015-03-25 16:24:16,970 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,1,R,Single,0,6,2014-05-09T00:10:17Z,Ryan Kalish pega sencillo con rodado a jardinero central Alejandro De Aza.  ,001017,453222,501888,top,2014/05/08/chnmlb-chamlb-1,Sencillo,0,6-0,0,Ryan Kalish singles on a ground ball to center fielder Alejandro De Aza.  ,0,1,L
+
+
+2015-03-25 16:24:17,301 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,2,R,Groundout,0,13,2014-05-09T00:11:19Z,Luis Valbuena batea rodado de out suavemente a primera base Jose Abreu en jugada de infield fly.   Ryan Kalish a 2da.  ,001119,453222,472528,top,2014/05/08/chnmlb-chamlb-1,Roletazo de Out,2,5-10,0,Luis Valbuena grounds out softly to first baseman Jose Abreu.   Ryan Kalish to 2nd.  ,1,0,L
+
+
+2015-03-25 16:24:19,773 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,1,L,Groundout,0,6,2014-05-20T23:06:53Z,Nick Markakis batea rodado de out, segunda base Neil Walker a primera base Ike Davis.  ,230653,434538,455976,top,2014/05/20/balmlb-pitmlb-1,Roletazo de Out,1,6-1,0,Nick Markakis grounds out, second baseman Neil Walker to first baseman Ike Davis.  ,1,0,L
+
+
+2015-03-25 16:24:31,503 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,1,R,Flyout,0,7,2014-05-26T18:11:09Z,Nick Markakis batea elevado de out a jardinero izquierdo Khris Davis.  ,181109,346798,455976,top,2014/05/26/balmlb-milmlb-1,Elevado de Out,1,6-1,0,Nick Markakis flies out to left fielder Khris Davis.  ,1,1,L
+
+
+2015-03-25 16:24:31,586 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,1,R,Bunt Pop Out,0,5,2014-05-19T23:06:28Z,Billy Hamilton batea elevadito con toque de out a receptor Wilson Ramos en territorio de foul.  ,230628,544931,571740,top,2014/05/19/cinmlb-wasmlb-1,Elevado de Out en Toque de Bola,0,6-0,0,Billy Hamilton bunt pops out to catcher Wilson Ramos in foul territory.  ,1,0,L
+
+
+2015-03-25 16:24:31,678 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,2,R,Groundout,0,14,2014-05-26T18:12:50Z,Manny Machado batea rodado de out, primera base Lyle Overbay a lanzador Kyle Lohse.  ,181250,346798,592518,top,2014/05/26/balmlb-milmlb-1,Roletazo de Out,1,6-2,0,Manny Machado grounds out, first baseman Lyle Overbay to pitcher Kyle Lohse.  ,2,2,R
+
+
+2015-03-25 16:24:31,681 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,1,R,Pop Out,0,7,2014-05-28T23:18:05Z,Jason Heyward batea elevadito de out a campo corto Xander Bogaerts.  ,231805,407793,518792,top,2014/05/28/atlmlb-bosmlb-1,Elevado de Out,0,6-5,0,Jason Heyward pops out to shortstop Xander Bogaerts.  ,1,2,L
+
+
+2015-03-25 16:24:31,940 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,3,R,Single,0,21,2014-05-26T18:14:23Z,Adam Jones pega sencillo con rodado a jardinero central Carlos Gomez.  ,181423,346798,430945,top,2014/05/26/balmlb-milmlb-1,Sencillo,2,6-3,0,Adam Jones singles on a ground ball to center fielder Carlos Gomez.  ,2,1,R
+
+
+2015-03-25 16:24:36,224 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,1,R,Flyout,0,11,2014-05-31T20:10:17Z,Jason Heyward batea elevado de out a jardinero izquierdo Christian Yelich.  ,201017,545363,518792,top,2014/05/31/atlmlb-miamlb-1,Elevado de Out,3,6-5,0,Jason Heyward flies out to left fielder Christian Yelich.  ,1,2,L
+
+
+2015-03-25 16:24:36,273 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,1,R,Groundout,0,8,2014-05-28T00:10:20Z,Nick Markakis batea rodado de out suavemente, segunda base Rickie Weeks a primera base Jonathan Lucroy.  ,001020,490063,455976,top,2014/05/27/balmlb-milmlb-1,Roletazo de Out,1,6-1,0,Nick Markakis grounds out softly, second baseman Rickie Weeks to first baseman Jonathan Lucroy.  ,1,2,L
+
+
+2015-03-25 16:24:36,579 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,2,R,Groundout,0,13,2014-05-28T00:12:59Z,Manny Machado batea rodado de out, segunda base Rickie Weeks a lanzador Matt Garza.  ,001259,490063,592518,top,2014/05/27/balmlb-milmlb-1,Roletazo de Out,0,6-2,0,Manny Machado grounds out, second baseman Rickie Weeks to pitcher Matt Garza.  ,2,1,R
+
+
+2015-03-25 16:24:36,733 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,1,R,Pop Out,0,8,2014-05-29T23:11:23Z,Jason Heyward batea elevadito de out a segunda base Dustin Pedroia.  ,231123,408241,518792,top,2014/05/29/atlmlb-bosmlb-1,Elevado de Out,2,6-5,0,Jason Heyward pops out to second baseman Dustin Pedroia.  ,1,1,L
+
+
+2015-03-25 16:24:36,737 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,2,R,Single,0,17,2014-05-31T20:12:51Z,Melvin Upton pega sencillo con rodado a jardinero central Marcell Ozuna.  ,201251,545363,425834,top,2014/05/31/atlmlb-miamlb-1,Sencillo,1,6-3,0,Melvin Upton singles on a ground ball to center fielder Marcell Ozuna.  ,1,1,R
+
+
+2015-03-25 16:24:36,960 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,3,R,Pop Out,0,24,2014-05-31T20:14:15Z,Freddie Freeman batea elevadito de out a campo corto Adeiny Hechavarria.  ,201415,545363,518692,top,2014/05/31/atlmlb-miamlb-1,Elevado de Out,1,6-5,0,Freddie Freeman pops out to shortstop Adeiny Hechavarria.  ,2,0,L
+
+
+2015-03-25 16:24:37,017 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,2,R,Pop Out,0,14,2014-05-29T23:12:50Z,Melvin Upton batea elevadito de out a primera base Ryan Lavarnway en territorio de foul.  ,231250,408241,425834,top,2014/05/29/atlmlb-bosmlb-1,Elevado de Out,1,6-3,0,Melvin Upton pops out to first baseman Ryan Lavarnway in foul territory.  ,2,1,R
+
+
+2015-03-25 16:24:37,210 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,3,R,Groundout,0,21,2014-05-29T23:14:02Z,Freddie Freeman batea rodado de out a primera base Ryan Lavarnway.  ,231402,408241,518692,top,2014/05/29/atlmlb-bosmlb-1,Roletazo de Out,2,6-5,0,Freddie Freeman grounds out to first baseman Ryan Lavarnway.  ,3,1,L
+
+
+2015-03-25 16:24:45,355 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,1,R,Walk,0,13,2014-05-02T23:06:10Z,Adam Eaton recibe base por bolas.  ,230610,517593,594809,top,2014/05/02/chamlb-clemlb-1,Base por Bolas,4,5-8,0,Adam Eaton walks.  ,0,2,L
+
+
+2015-03-25 16:25:06,219 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,1,L,Groundout,0,7,2014-05-11T00:07:53Z,Dustin Pedroia batea rodado de out a primera base Prince Fielder.  ,000753,527048,456030,top,2014/05/10/bosmlb-texmlb-1,Roletazo de Out,1,5-8,0,Dustin Pedroia grounds out to first baseman Prince Fielder.  ,1,1,R
+
+
+2015-03-25 16:25:10,543 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,1,R,Flyout,0,6,2014-05-13T02:07:47Z,Leury Garcia batea elevado de out a jardinero izquierdo Yoenis Cespedes.  ,020747,445926,544725,top,2014/05/12/chamlb-oakmlb-1,Elevado de Out,0,5-8,0,Leury Garcia flies out to left fielder Yoenis Cespedes.  ,1,1,L
+
+
+2015-03-25 16:25:10,621 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,1,R,Groundout,0,8,2014-05-10T00:07:37Z,Dustin Pedroia batea rodado de out, campo corto Elvis Andrus a primera base Prince Fielder.  ,000737,506433,456030,top,2014/05/09/bosmlb-texmlb-1,Roletazo de Out,2,5-8,0,Dustin Pedroia grounds out, shortstop Elvis Andrus to first baseman Prince Fielder.  ,1,1,R
+
+
+2015-03-25 16:25:20,013 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,1,R,Groundout,0,14,2014-05-15T17:47:43Z,Emilio Bonifacio batea rodado de out, tercera base Matt Carpenter a primera base Matt Adams.  ,174743,608379,466988,top,2014/05/15/chnmlb-slnmlb-1,Roletazo de Out,2,5-11,0,Emilio Bonifacio grounds out, third baseman Matt Carpenter to first baseman Matt Adams.  ,1,2,L
+
+
+2015-03-25 16:25:21,056 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,1,L,Groundout,0,6,2014-05-22T23:07:43Z,Michael Bourn batea rodado de out suavemente, lanzador Wei-Yin Chen a primera base Chris Davis.  ,230743,612672,456422,top,2014/05/22/clemlb-balmlb-1,Roletazo de Out,1,5-10,0,Michael Bourn grounds out softly, pitcher Wei-Yin Chen to first baseman Chris Davis.  ,1,0,L
+
+
+2015-03-25 16:25:30,752 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,1,L,Flyout,0,12,2014-05-03T23:11:44Z,Rajai Davis batea elevado de out a jardinero central Justin Maxwell.  ,231144,518633,434658,top,2014/05/03/detmlb-kcamlb-1,Elevado de Out,2,5-9,0,Rajai Davis flies out to center fielder Justin Maxwell.  ,1,2,R
+
+
+2015-03-25 16:25:36,924 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,2,L,Groundout,0,14,2014-05-22T23:08:39Z,Asdrubal Cabrera batea rodado de out, campo corto J.   Hardy a primera base Chris Davis.  ,230839,612672,452678,top,2014/05/22/clemlb-balmlb-1,Roletazo de Out,1,6-0,0,Asdrubal Cabrera grounds out, shortstop J.   Hardy to first baseman Chris Davis.  ,2,2,R
+
+
+2015-03-25 16:25:37,193 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,3,L,Groundout,0,23,2014-05-22T23:10:47Z,Michael Brantley batea rodado de out a primera base Chris Davis.  ,231047,612672,488726,top,2014/05/22/clemlb-balmlb-1,Roletazo de Out,1,6-2,0,Michael Brantley grounds out to first baseman Chris Davis.  ,3,2,L
+
+
+2015-03-25 16:25:37,332 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,2,R,Groundout,0,20,2014-05-15T17:50:45Z,Ryan Kalish batea rodado de out, segunda base Mark Ellis a primera base Matt Adams.  ,175045,608379,501888,top,2014/05/15/chnmlb-slnmlb-1,Roletazo de Out,1,6-0,0,Ryan Kalish grounds out, second baseman Mark Ellis to first baseman Matt Adams.  ,2,1,L
+
+
+2015-03-25 16:25:37,487 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,3,R,Single,0,24,2014-05-15T17:51:50Z,Anthony Rizzo pega sencillo con rodado con toque a tercera base Matt Carpenter.  ,175150,608379,519203,top,2014/05/15/chnmlb-slnmlb-1,Sencillo,0,6-3,0,Anthony Rizzo singles on a bunt ground ball to third baseman Matt Carpenter.  ,2,0,L
+
+
+2015-03-25 16:25:45,710 - gameday - 40 - ERROR - Unknown column 'event_num' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,1,L,Strikeout,0,9,2014-05-06T23:11:46Z,Chris Heisey se poncha sin tirarle.  ,231146,467094,502317,top,2014/05/06/cinmlb-bosmlb-1,Ponche,2,6-1,0,Chris Heisey called out on strikes.  ,1,3,R
+
+
+2015-03-25 16:26:55,252 - gameday - 40 - ERROR - Unknown column 'event_es' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,1,R,Walk,0,11,2014-06-01T20:07:42Z,Kole Calhoun recibe base por bolas.  ,200742,543243,594777,top,2014/06/01/anamlb-oakmlb-1,Base por Bolas,4,5-10,0,Kole Calhoun walks.  ,0,2,L
+
+
+2015-03-25 16:26:55,641 - gameday - 40 - ERROR - Unknown column 'event_es' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,2,R,Sac Bunt,0,17,2014-06-01T20:11:11Z,Erick Aybar out en toque de sacrificio, lanzador Sonny Gray a primera base Alberto Callaspo.   Kole Calhoun a 2da.  ,201111,543243,430947,top,2014/06/01/anamlb-oakmlb-1,Toque de Sacrificio,0,5-10,0,Erick Aybar out on a sacrifice bunt, pitcher Sonny Gray to first baseman Alberto Callaspo.   Kole Calhoun to 2nd.  ,1,1,L
+
+
+2015-03-25 16:26:55,730 - gameday - 40 - ERROR - Unknown column 'event_es' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,3,R,Double Play,0,25,2014-06-01T20:12:18Z,Albert Pujols batea rodado para doble matanza, campo corto Jed Lowrie a primera base Alberto Callaspo a tercera base Josh Donaldson.   Kole Calhoun a cabo a 3ra.  ,201218,543243,405395,top,2014/06/01/anamlb-oakmlb-1,Doble-Play,1,6-3,0,Albert Pujols grounds into a double play, shortstop Jed Lowrie to first baseman Alberto Callaspo to third baseman Josh Donaldson.   Kole Calhoun out at 3rd.  ,3,2,R
+
+
+2015-03-25 16:26:56,253 - gameday - 40 - ERROR - Unknown column 'event_es' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,4,R,Pop Out,0,31,2014-06-01T20:17:18Z,Coco Crisp batea elevadito de out a receptor Hank Conger en territorio de foul.  ,201718,450308,424825,bottom,2014/06/01/anamlb-oakmlb-1,Elevado de Out,1,5-10,0,Coco Crisp pops out to catcher Hank Conger in foul territory.  ,1,0,L
+
+
+2015-03-25 16:26:56,410 - gameday - 40 - ERROR - Unknown column 'event_es' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,5,R,Groundout,0,38,2014-06-01T20:18:21Z,John Jaso batea rodado de out suavemente, lanzador Jered Weaver a primera base C.   Cron.  ,201821,450308,444379,bottom,2014/06/01/anamlb-oakmlb-1,Roletazo de Out,2,6-2,0,John Jaso grounds out softly, pitcher Jered Weaver to first baseman C.   Cron.  ,2,1,L
+
+
+2015-03-25 16:26:56,763 - gameday - 40 - ERROR - Unknown column 'event_es' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,6,R,Flyout,0,44,2014-06-01T20:19:50Z,Josh Donaldson batea elevado de out a jardinero derecho Kole Calhoun.  ,201950,450308,518626,bottom,2014/06/01/anamlb-oakmlb-1,Elevado de Out,1,6-0,0,Josh Donaldson flies out to right fielder Kole Calhoun.  ,3,1,R
+
+
+2015-03-25 16:26:56,976 - gameday - 40 - ERROR - Unknown column 'event_es' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 2,7,R,Flyout,0,50,2014-06-01T20:23:03Z,Raul Ibanez batea elevado de out a jardinero central Coco Crisp.  ,202303,543243,116380,top,2014/06/01/anamlb-oakmlb-1,Elevado de Out,1,6-2,0,Raul Ibanez flies out to center fielder Coco Crisp.  ,1,0,L
+
+
+2015-03-25 16:26:59,500 - gameday - 40 - ERROR - Unknown column 'event_es' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,1,R,Single,0,8,2014-06-07T01:39:00Z,Jason Heyward pega sencillo con rodado a jardinero derecho Gerardo Parra, desviada por segunda base Aaron Hill.  ,013900,435221,518792,top,2014/06/06/atlmlb-arimlb-1,Sencillo,2,6-5,0,Jason Heyward singles on a ground ball to right fielder Gerardo Parra, deflected by second baseman Aaron Hill.  ,0,1,L
+
+
+2015-03-25 16:27:02,346 - gameday - 40 - ERROR - Unknown column 'event_es' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,1,L,Groundout,0,5,2014-06-08T02:10:18Z,Jason Heyward batea rodado de out, segunda base Didi Gregorius a primera base Paul Goldschmidt.  ,021018,489119,518792,top,2014/06/07/atlmlb-arimlb-1,Roletazo de Out,0,6-5,0,Jason Heyward grounds out, second baseman Didi Gregorius to first baseman Paul Goldschmidt.  ,1,0,L
+
+
+2015-03-25 16:27:03,482 - gameday - 40 - ERROR - Unknown column 'event_es' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,1,R,Single,0,6,2014-06-10T00:43:58Z,Jason Heyward pega sencillo con rodado a jardinero central Drew Stubbs.  ,004358,548357,518792,top,2014/06/09/atlmlb-colmlb-1,Sencillo,1,6-5,0,Jason Heyward singles on a ground ball to center fielder Drew Stubbs.  ,0,0,L
+
+
+2015-03-25 16:27:03,948 - gameday - 40 - ERROR - Unknown column 'event_es' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,2,L,Groundout,0,10,2014-06-08T02:11:06Z,Melvin Upton batea rodado de out, segunda base Didi Gregorius a primera base Paul Goldschmidt.  ,021106,489119,425834,top,2014/06/07/atlmlb-arimlb-1,Roletazo de Out,1,6-3,0,Melvin Upton grounds out, second baseman Didi Gregorius to first baseman Paul Goldschmidt.  ,2,0,R
+
+
+2015-03-25 16:27:06,321 - gameday - 40 - ERROR - Unknown column 'event_es' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,1,R,Single,0,11,2014-06-13T23:35:49Z,Kole Calhoun pega sencillo con elevado suave a jardinero izquierdo Justin Upton.  ,233549,421685,594777,top,2014/06/13/anamlb-atlmlb-1,Sencillo,2,5-10,0,Kole Calhoun singles on a soft fly ball to left fielder Justin Upton.  ,0,2,L
+
+
+2015-03-25 16:27:07,036 - gameday - 40 - ERROR - Unknown column 'event_es' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,2,R,Flyout,0,22,2014-06-13T23:39:03Z,Mike Trout batea elevado de out a jardinero derecho Jason Heyward en territorio de foul.  ,233903,421685,545361,top,2014/06/13/anamlb-atlmlb-1,Elevado de Out,2,6-2,0,Mike Trout flies out to right fielder Jason Heyward in foul territory.  ,1,2,R
+
+
+2015-03-25 16:27:07,943 - gameday - 40 - ERROR - Unknown column 'event_es' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,3,R,Forceout,0,32,2014-06-13T23:43:18Z,Albert Pujols batea rodado batea para out forzado, lanzador Aaron Harang a campo corto Andrelton Simmons.   Kole Calhoun a cabo a 2da.    Albert Pujols a 1ra.  ,234318,421685,405395,top,2014/06/13/anamlb-atlmlb-1,Out Forzado,2,6-3,0,Albert Pujols grounds into a force out, pitcher Aaron Harang to shortstop Andrelton Simmons.   Kole Calhoun out at 2nd.    Albert Pujols to 1st.  ,2,2,R
+
+
+2015-03-25 16:27:08,286 - gameday - 40 - ERROR - Unknown column 'event_es' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,4,R,Flyout,0,38,2014-06-13T23:46:11Z,Josh Hamilton batea elevado de out a jardinero central Melvin Upton.  ,234611,421685,285078,top,2014/06/13/anamlb-atlmlb-1,Elevado de Out,0,6-4,0,Josh Hamilton flies out to center fielder Melvin Upton.  ,3,2,L
+
+
+2015-03-25 16:27:08,507 - gameday - 40 - ERROR - Unknown column 'event_es' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,5,L,Hit By Pitch,0,44,2014-06-13T23:50:05Z,Jason Heyward golpeado por lanzamiento.  ,235005,450351,518792,bottom,2014/06/13/anamlb-atlmlb-1,Pelotazo,0,6-5,0,Jason Heyward hit by pitch.  ,0,1,L
+
+
+2015-03-25 16:27:09,476 - gameday - 40 - ERROR - Unknown column 'event_es' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,1,L,Strikeout,0,8,2014-06-16T00:09:42Z,Collin Cowgill se poncha sin tirarle.  ,000942,501985,518577,top,2014/06/15/anamlb-atlmlb-1,Ponche,1,5-9,0,Collin Cowgill called out on strikes.  ,1,3,R
+
+
+2015-03-25 16:27:12,648 - gameday - 40 - ERROR - Unknown column 'event_es' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,1,R,Flyout,0,7,2014-06-14T23:15:08Z,Kole Calhoun batea elevado de out a jardinero izquierdo Justin Upton.  ,231508,425856,594777,top,2014/06/14/anamlb-atlmlb-1,Elevado de Out,1,5-10,0,Kole Calhoun flies out to left fielder Justin Upton.  ,1,1,L
+
+
+2015-03-25 16:27:12,989 - gameday - 40 - ERROR - Unknown column 'event_es' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,2,R,Groundout,0,13,2014-06-14T23:16:49Z,Mike Trout batea rodado de out fuertemente, campo corto Andrelton Simmons a primera base Freddie Freeman.  ,231649,425856,545361,top,2014/06/14/anamlb-atlmlb-1,Roletazo de Out,1,6-2,0,Mike Trout grounds out sharply, shortstop Andrelton Simmons to first baseman Freddie Freeman.  ,2,1,R
+
+
+2015-03-25 16:27:13,378 - gameday - 40 - ERROR - Unknown column 'event_es' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,3,R,Groundout,0,21,2014-06-14T23:18:07Z,Albert Pujols batea rodado de out, campo corto Andrelton Simmons a primera base Freddie Freeman.  ,231807,425856,405395,top,2014/06/14/anamlb-atlmlb-1,Roletazo de Out,2,6-3,0,Albert Pujols grounds out, shortstop Andrelton Simmons to first baseman Freddie Freeman.  ,3,2,R
+
+
+2015-03-25 16:27:14,230 - gameday - 40 - ERROR - Unknown column 'event_es' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,4,R,Groundout,0,26,2014-06-14T23:21:53Z,Jason Heyward batea rodado de out fuertemente, campo corto Erick Aybar a primera base Albert Pujols.  ,232153,572070,518792,bottom,2014/06/14/anamlb-atlmlb-1,Roletazo de Out,0,6-5,0,Jason Heyward grounds out sharply, shortstop Erick Aybar to first baseman Albert Pujols.  ,1,0,L
+
+
+2015-03-25 16:27:14,306 - gameday - 40 - ERROR - Unknown column 'event_es' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,5,R,Single,0,35,2014-06-14T23:22:38Z,Melvin Upton pega sencillo con rodado a jardinero central Mike Trout.  ,232238,572070,425834,bottom,2014/06/14/anamlb-atlmlb-1,Sencillo,2,6-3,0,Melvin Upton singles on a ground ball to center fielder Mike Trout.  ,1,2,R
+
+
+2015-03-25 16:27:18,963 - gameday - 40 - ERROR - Unknown column 'event_es' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,1,R,Pop Out,0,6,2014-06-20T23:07:09Z,Tommy La Stella batea elevadito de out a tercera base Anthony Rendon en territorio de foul.  ,230709,544931,600303,top,2014/06/20/atlmlb-wasmlb-1,Elevado de Out,1,5-11,0,Tommy La Stella pops out to third baseman Anthony Rendon in foul territory.  ,1,0,L
+
+
+2015-03-25 16:27:19,137 - gameday - 40 - ERROR - Unknown column 'event_es' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,2,R,Strikeout,0,15,2014-06-20T23:08:09Z,Melvin Upton se poncha sin tirarle.  ,230809,544931,425834,top,2014/06/20/atlmlb-wasmlb-1,Ponche,3,6-3,0,Melvin Upton called out on strikes.  ,2,3,R
+
+
+2015-03-25 16:27:19,292 - gameday - 40 - ERROR - Unknown column 'event_es' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,1,R,Groundout,0,8,2014-06-25T00:11:42Z,Melvin Upton batea rodado de out, campo corto Jonathan Villar a primera base Jon Singleton.  ,001142,444857,425834,top,2014/06/24/atlmlb-houmlb-1,Roletazo de Out,1,6-3,0,Melvin Upton grounds out, shortstop Jonathan Villar to first baseman Jon Singleton.  ,1,2,R
+
+
+2015-03-25 16:27:19,779 - gameday - 40 - ERROR - Unknown column 'event_es' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,2,R,Pop Out,0,20,2014-06-25T00:13:20Z,Tommy La Stella batea elevadito de out a tercera base Matt Dominguez en territorio de foul.  ,001320,444857,600303,top,2014/06/24/atlmlb-houmlb-1,Elevado de Out,3,5-11,0,Tommy La Stella pops out to third baseman Matt Dominguez in foul territory.  ,2,2,L
+
+
+2015-03-25 16:27:21,368 - gameday - 40 - ERROR - Unknown column 'event_es' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,1,R,Single,0,6,2014-06-28T18:10:17Z,Kole Calhoun pega sencillo con rodado a jardinero derecho Justin Maxwell.  ,181017,570649,594777,top,2014/06/28/anamlb-kcamlb-1,Sencillo,0,5-10,0,Kole Calhoun singles on a ground ball to right fielder Justin Maxwell.  ,0,1,L
+
+
+2015-03-25 16:27:21,553 - gameday - 40 - ERROR - Unknown column 'event_es' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,2,R,Forceout,0,15,2014-06-28T18:11:37Z,Mike Trout batea rodado batea para out forzado, segunda base Omar Infante a campo corto Alcides Escobar.   Kole Calhoun a cabo a 2da.    Mike Trout a 1ra.  ,181137,570649,545361,top,2014/06/28/anamlb-kcamlb-1,Out Forzado,3,6-2,0,Mike Trout grounds into a force out, second baseman Omar Infante to shortstop Alcides Escobar.   Kole Calhoun out at 2nd.    Mike Trout to 1st.  ,1,1,R
+
+
+2015-03-25 16:27:22,043 - gameday - 40 - ERROR - Unknown column 'event_es' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,3,R,Groundout,0,22,2014-06-28T18:14:11Z,Albert Pujols batea rodado de out suavemente a primera base Eric Hosmer en jugada de infield fly.   Mike Trout a 2da.  ,181411,570649,405395,top,2014/06/28/anamlb-kcamlb-1,Roletazo de Out,1,6-3,0,Albert Pujols grounds out softly, third baseman Danny Valencia to first baseman Eric Hosmer.   Mike Trout to 2nd.  ,2,1,R
+
+
+2015-03-25 16:28:51,530 - gameday - 40 - ERROR - Unknown column 'event2_es' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,score,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,event2_es,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand,event2) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 8,56,R,Single,T,5,451,2014-06-03T02:26:03Z,Salvador Perez pega sencillo con rodado a jardinero central Randal Grichuk.   Omar Infante anota  Alex Gordon anota  Salvador Perez a 3ra.  Error en en fildeo de jardinero central Randal Grichuk.  ,022603,435400,521692,top,Error,2014/06/02/kcamlb-slnmlb-1,Sencillo,1,6-3,0,Salvador Perez singles on a ground ball to center fielder Randal Grichuk.   Omar Infante scores.    Alex Gordon scores.    Salvador Perez to 3rd.  Fielding error by center fielder Randal Grichuk.  ,1,2,R,Error
+
+
+2015-03-25 16:29:10,513 - gameday - 40 - ERROR - Unknown column 'event2_es' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,event2_es,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand,event2) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 2,14,R,Forceout,0,122,2014-06-20T02:38:11Z,Derek Norris batea rodado batea para out forzado, lanzador Jake Peavy a tercera base Xander Bogaerts.   Josh Donaldson a cabo a 3ra.    Jed Lowrie a 3ra.  Derek Norris avanza a la 2da, on error en tiro de tercera base Xander Bogaerts.  ,023811,408241,519083,bottom,Error,2014/06/19/bosmlb-oakmlb-1,Out Forzado,3,6-0,0,Derek Norris grounds into a force out, pitcher Jake Peavy to third baseman Xander Bogaerts.   Josh Donaldson out at 3rd.    Jed Lowrie to 3rd.  Derek Norris advances to 2nd, on a throwing error by third baseman Xander Bogaerts.  ,1,2,R,Error
+
+
+2015-03-25 16:29:11,049 - gameday - 40 - ERROR - Unknown column 'event2_es' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,score,away_team_runs,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,event2_es,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand,event2) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,7,R,Forceout,T,0,55,2014-06-17T23:23:34Z,Casey McGehee batea rodado batea para out forzado, primera base Anthony Rizzo a campo corto Starlin Castro.   Rafael Furcal anota  Adeiny Hechavarria a cabo a 2da.  Casey McGehee avanza a la 1ra, on error en tiro de campo corto Starlin Castro.  ,232334,502188,431171,bottom,Error,2014/06/17/chnmlb-miamlb-1,Out Forzado,0,6-1,1,Casey McGehee grounds into a force out, first baseman Anthony Rizzo to shortstop Starlin Castro.   Rafael Furcal scores.    Adeiny Hechavarria out at 2nd.  Casey McGehee advances to 1st, on a throwing error by shortstop Starlin Castro.  ,2,0,R,Error
+
+
+2015-03-25 16:36:38,203 - gameday - 40 - ERROR - Unknown column 'event3_es' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event3_es,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,event2_es,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand,event2,event3) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 3,28,R,Single,2,Corredor Out,230,2014-06-17T03:14:03Z,Jed Lowrie pega sencillo con elevado a jardinero izquierdo Michael Choice.  Jed Lowrie avanza a la 3ra, on error en en fildeo de jardinero izquierdo Michael Choice.  Jed Lowrie out en 3ra, jardinero izquierdo Michael Choice a tercera base Adrian Beltre.  ,031403,407890,476704,bottom,Error,2014/06/16/texmlb-oakmlb-1,Sencillo,2,6-0,2,Jed Lowrie singles on a fly ball to left fielder Michael Choice.  Jed Lowrie advances to 3rd, on a fielding error by left fielder Michael Choice.  Jed Lowrie out at 3rd, left fielder Michael Choice to third baseman Adrian Beltre.  ,3,0,L,Error,Runner Out
+
+
+2015-03-25 17:05:10,367 - gameday - 40 - ERROR - Unknown column 'event3_es' in 'field list'
+QUERY: REPLACE INTO atbat (inning,num,p_throws,event,away_team_runs,event3_es,event_num,start_tfs_zulu,des_es,start_tfs,pitcher,batter,half,event2_es,game_id,event_es,b,b_height,home_team_runs,des,o,s,stand,event2,event3) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+VALUES: 1,3,L,Strikeout,0,Error,24,2014-08-28T23:13:41Z,Freddie Freeman se poncha sin tirarle.  Emilio Bonifacio se roba (19) la 2da base.  Emilio Bonifacio avanza a la 3ra, on error en tiro de receptor Travis d'Arnaud.  ,231341,477003,518692,top,Base Robada 2B,2014/08/28/atlmlb-nynmlb-1,Ponche,0,6-5,0,Freddie Freeman called out on strikes.  Emilio Bonifacio steals (19) 2nd base.  Emilio Bonifacio advances to 3rd, on a throwing error by catcher Travis d'Arnaud.  ,2,3,L,Stolen Base 2B,Error
+
+
