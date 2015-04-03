@@ -120,8 +120,8 @@ def optimum_roster():
 	player_data_dict = build_full_player_dictionary()
 	starting_goalies = data_scrapping.get_starting_goalies()
 	player_universe = build_player_universe(player_data_dict,starting_goalies)
-	losing_team_list =['OTT','WPG','TOR','VAN','FLA']
-	ex_list = ['Cam Atkinson','Alexander Wennberg','Boone Jenner']
+	losing_team_list =['COL','NJD','BUF','ARI','PHI','CAR']
+	ex_list = []
 	items = [
          {
              'name': player,
@@ -159,7 +159,7 @@ def output_final_roster():
 	r,player_universe,objective = optimum_roster()
 	strategy_data = {}
 	roster_data = []
-	strategy_data['strat_params'] = {'objective':objective,'vegas':'Partial','slate_size':7}
+	strategy_data['strat_params'] = {'objective':objective,'vegas':'None','slate_size':5}
 	rw = 2
 	for player in r.xf:
 		roster_data.append([player_universe[player]['Position'],player_universe[player]['PlayerID'],player_universe[player]['MatchupID'],player_universe[player]['TeamID']])

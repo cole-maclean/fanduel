@@ -193,7 +193,7 @@ def enter_best_contests(s,session_id,bet_sport,max_bet,potential_contests,time_r
 		myfile.write(str(user_wins_cache))
 	return current_bet
 def get_FD_playerlist():
- 	FD_list = ast.literal_eval(Uds.parse_html('https://www.fanduel.com/e/Game/11974?tableId=11509342&fromLobby=true',"FD.playerpicker.allPlayersFullData = ",";"))
+ 	FD_list = ast.literal_eval(Uds.parse_html('https://www.fanduel.com/e/Game/11991?tableId=11561335&fromLobby=true',"FD.playerpicker.allPlayersFullData = ",";"))
  	return FD_list
 def team_mapping():
 	team_map = {}
