@@ -3,6 +3,8 @@ from bs4 import BeautifulSoup
 import urllib2
 import ast
 import data_scrapping_utils as uds
+import data_scrapping #Cole: imported data_scrapping module for get_FD_playerlist()
+import general_utils as Ugen
 
 
 def odds_to_prob(odd,type): #takes in a "string odd" and returns probability as %
@@ -76,39 +78,14 @@ def get_team_odds(sport):
                         team2=teams_list[j]
                     
             moneyline1=row.findAll("div",{"class":"book moneyline book-"+"1"})[0].get_text().split() #for now just do opening odds
-            Cell(i,3).value=moneyline1            
-            Cell(i,1).value=team1
-            Cell(i,2).value=team2
+            Cell("Output",i,3).value=moneyline1      #Cole: Changed excel writes to sheet Output      
+            Cell("Output",i,1).value=team1
+            Cell("Output",i,2).value=team2
+            team_map = Ugen.excel_mapping("Team Map",3,1)
             if moneyline1:
-                odds_list[team1]=round(odds_to_prob(moneyline1[0],'American Moneyline'),2)
-                odds_list[team2]=round(odds_to_prob(moneyline1[1],'American Moneyline'),2)
+                odds_list[team_map[team1]]=round(odds_to_prob(moneyline1[0],'American Moneyline'),2)#Cole:incorporated mapping to change city name to NHL team name
+                odds_list[team_map[team2]]=round(odds_to_prob(moneyline1[1],'American Moneyline'),2)
             i=i+1
-    Cell(15,5).value=odds_list
+    Cell("Output",15,5).value=odds_list
     return odds_list
-
-def parse_html(sUrl,sStart,sEnd):
-    response = urllib2.urlopen(sUrl)
-    shtml = response.read()
-    shtml = shtml.replace('false',"False")
-    intStart = shtml.find(sStart)
-    intEnd = shtml.find(sEnd,intStart)
-    parsed_html = shtml[intStart:intEnd].replace(sStart,"")
-    return parsed_html
-
-def get_FD_playerlist():
-    FD_list = ast.literal_eval(uds.parse_html('https://www.fanduel.com/e/Game/11971?tableId=11516161&fromLobby=true',"FD.playerpicker.allPlayersFullData = ",";"))
-    #FD_list = parse_html('https://www.fanduel.com/e/Game/11971?tableId=11516161&fromLobby=true',"FD.playerpicker.allPlayersFullData = ",";")
-    return FD_list #dictionary with follwoing structure {FD_ID:[Position,Name,num1,num2,num3,Salary,FPPG,Games Played]}         
-
-
 #FUNCTION CALLS
-
-#print get_team_odds('MLB')
-fd_dict=get_FD_playerlist()
-Cell(1,1).value=fd_dict
-i=2
-for e in fd_dict:
-    Cell(i,1).value=fd_dict[e][1]
-    Cell(i,2).value=fd_dict[e][5]
-    i=i+1
-

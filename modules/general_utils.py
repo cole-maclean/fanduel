@@ -27,3 +27,10 @@ def output_dict(data_dict):
 			Cell(rw,col).value = data_item
 			col = col + 1
 	return data_dict
+def excel_mapping(map_sheet,key_col,map_col):#Cole: built general mapping utility to use excel as mapping matrix. Data must start at row 2
+	excel_map = {}
+	rw = 2
+	while Cell(map_sheet,rw,key_col).value != None:
+		excel_map[Cell(map_sheet,rw,key_col).value] = Cell(map_sheet,rw,map_col).value
+		rw = rw + 1
+	return excel_map

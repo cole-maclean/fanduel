@@ -193,17 +193,12 @@ def enter_best_contests(s,session_id,bet_sport,max_bet,potential_contests,time_r
 		myfile.write(str(user_wins_cache))
 	return current_bet
 def get_FD_playerlist():
- 	FD_list = ast.literal_eval(Uds.parse_html('https://www.fanduel.com/e/Game/11991?tableId=11561335&fromLobby=true',"FD.playerpicker.allPlayersFullData = ",";"))
+ 	FD_list = ast.literal_eval(Uds.parse_html('https://www.fanduel.com/e/Game/11999?tableId=11569882&fromLobby=true',"FD.playerpicker.allPlayersFullData = ",";"))
  	return FD_list
-def team_mapping():
-	team_map = {}
-	for rw in range(2,32):#This isnt great...
-		team_map[Cell('Team Map',rw,1).value] = Cell('Team Map',rw,2).value
-	return team_map
 def build_lineup_dict():
 	rw = 2
 	if Cell('Parameters','clLineupsCache').value == None:
-		team_map = team_mapping()
+		team_map = Ugen.excel_mapping('Team Map',1,2)
 		team_lineups_dict = {}
 		for team in team_map.keys():
 			roster_url = 'http://www2.dailyfaceoff.com/teams/lines/' + str(team_map[team]) +'/'

@@ -10,6 +10,7 @@ import FD_operations as fdo
 import operator
 from datetime import datetime
 import time
+import TeamOdds
 def build_player_universe(full_playerlist,goalie_list):
 	delkeys = []
 	for key,data in full_playerlist.iteritems():
@@ -22,17 +23,10 @@ def build_player_universe(full_playerlist,goalie_list):
 	for key in delkeys:
 		full_playerlist.pop(key)
 	return full_playerlist
-def player_mapping(key_col,map_col):
-	player_map = {}
-	rw = 2
-	while Cell('Player Map',rw,key_col).value != None:
-		player_map[Cell('Player Map',rw,key_col).value] = Cell('Player Map',rw,map_col).value
-		rw = rw + 1
-	return player_map
 def build_lineup_avg_goals_dict(player_data_dict):
 	rw = 2
 	team_lineups = data_scrapping.build_lineup_dict()
-	player_map = player_mapping(3,2)
+	player_map = Ugen.excel_mapping('Player Map',3,2)
 	for team in team_lineups:
 		for lineup in team_lineups[team]:
 			lineup_goals = []
@@ -67,7 +61,7 @@ def build_lineup_avg_goals_dict(player_data_dict):
 					print mapped_name
 	return player_data_dict
 def build_full_player_dictionary():
-	player_map = player_mapping(1,2)
+	player_map = Ugen.excel_mapping('Player Map',1,2)
 	rw = 2
 	player_data_dict = dbo.get_player_data_dict('NHL','2014021000')
 	lineup_avg_goals_dict = build_lineup_avg_goals_dict(player_data_dict)
@@ -116,12 +110,16 @@ def build_full_player_dictionary():
  					col = col + 1
  				rw = rw + 1
  	return player_data_dict
-def optimum_roster():
+def optimum_roster(vegas_threshold):
 	player_data_dict = build_full_player_dictionary()
-	starting_goalies = data_scrapping.get_starting_goalies()
+	starting_goalies = ['Jaroslav Halak']#data_scrapping.get_starting_goalies()
 	player_universe = build_player_universe(player_data_dict,starting_goalies)
-	losing_team_list =['COL','NJD','BUF','ARI','PHI','CAR']
-	ex_list = []
+	team_odds = TeamOdds.get_team_odds('NHL')
+	slate_size = len(team_odds)/2
+	losing_team_list =[s for s in team_odds.keys() if team_odds[s] <= vegas_threshold] #Cole: incorporated TeamOdds into optimum roster
+	losing_team_list.extend(['OTT','WSH'])
+	print losing_team_list
+	ex_list = ['Kris Russell','Dennis Wideman']
 	items = [
          {
              'name': player,
@@ -155,11 +153,11 @@ def optimum_roster():
 	p = KSP(objective, items, goal = 'max', constraints=constraints)
 	r = p.solve('glpk',iprint = 0)
 	return r,player_universe,objective
-def output_final_roster():
-	r,player_universe,objective = optimum_roster()
+def output_final_roster(vegas_threshold):
+	r,player_universe,objective = optimum_roster(vegas_threshold)
 	strategy_data = {}
 	roster_data = []
-	strategy_data['strat_params'] = {'objective':objective,'vegas':'None','slate_size':5}
+	strategy_data['strat_params'] = {'objective':objective,'vegas':vegas_threshold,'slate_size':10}
 	rw = 2
 	for player in r.xf:
 		roster_data.append([player_universe[player]['Position'],player_universe[player]['PlayerID'],player_universe[player]['MatchupID'],player_universe[player]['TeamID']])
@@ -216,7 +214,7 @@ def build_hist_win_tuples():
 			hist_perf_tuples.append((rw[0],0))
 	return hist_perf_tuples
 #data_scrapping.update_gamedata('NHL',Cell("Parameters",'clLastGameDataID').value)
-#print output_final_roster()
+#print output_final_roster(60)
 print run_enter_best_contests(100,25)#paramter passing getting out of hand, need to figure out how refactor. Classes?
 #dbo.load_csv_into_db('C:/Users/Cole/Desktop/FanDuel/fanduel entry history.csv','hist_performance')
 #print Ugen.output_dict(build_pWins_vs_topwins_dict(5))
