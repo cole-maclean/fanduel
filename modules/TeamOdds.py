@@ -37,8 +37,6 @@ def get_teamname_exceptions(name_str,sport):
         return True
     else:
         return False 
-
-
 def get_team_odds(sport):
     url="http://www.oddsshark.com/"+sport+"/odds/fullgame/moneyline"
     content= urllib2.urlopen(url).read()
