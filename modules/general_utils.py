@@ -1,6 +1,8 @@
 import math
 from datetime import datetime
 import time
+import ConfigParser
+import getpass
 def getSec(s):
     try:
         if len(s) == 2:
@@ -34,3 +36,23 @@ def excel_mapping(map_sheet,key_col,map_col):#Cole: built general mapping utilit
 		excel_map[Cell(map_sheet,rw,key_col).value] = Cell(map_sheet,rw,map_col).value
 		rw = rw + 1
 	return excel_map
+def ConfigSectionMap(section):
+	Config = ConfigParser.ConfigParser()
+	if getpass.getuser() == 'Cole':
+		config_path = 'C:/Users/Cole/Desktop/FanDuel/db.ini'
+		print config_path
+	else:
+		config_path = 'C:/Ian Whitestone/documents/Python Projects/fanduel-master/db.ini'
+	Config.read(config_path)
+	print Config.sections()
+	dict1 = {}
+	options = Config.options(section)
+	for option in options:
+	    try:
+	        dict1[option] = Config.get(section, option)
+	        if dict1[option] == -1:
+	            DebugPrint("skip: %s" % option)
+	    except:
+	        print("exception on %s!" % option)
+	        dict1[option] = None
+	return dict1

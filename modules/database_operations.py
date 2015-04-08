@@ -3,9 +3,8 @@ import collections
 import general_utils as Ugen
 import time
 def get_connection_cursor():
-    with open('C:\Users\Cole\Desktop\Fanduel\Parameters.txt',"r") as myfile:
-        passwd = myfile.read().split(',')[0]
-    conn = MySQLdb.Connection(db="autotrader",host="localhost",user="root",passwd=passwd);
+    DB_parameters = Ugen.ConfigSectionMap('db')
+    conn = MySQLdb.Connection(db=DB_parameters['db'],host="localhost",user=DB_parameters['user'],passwd=DB_parameters['password']);
     cur = conn.cursor()
     return cur
 def get_data_dict_structure(sport,position):

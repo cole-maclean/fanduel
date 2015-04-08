@@ -63,7 +63,7 @@ def build_lineup_avg_goals_dict(player_data_dict):
 def build_full_player_dictionary():
 	player_map = Ugen.excel_mapping('Player Map',1,2)
 	rw = 2
-	player_data_dict = dbo.get_player_data_dict('NHL','2014021000')
+	player_data_dict = dbo.get_player_data_dict('NHL','2014021050')
 	lineup_avg_goals_dict = build_lineup_avg_goals_dict(player_data_dict)
 	columns = ['PlayerID','G','C','LW','RW','D','Position','FD_name','MatchupID','TeamID','Dummy2','Salary','PPG','GamesPlayed','Dummy3','Dummy4','Injury','InjuryAge','Dummy5','PlayerID']
  	for player_id,player_data in data_scrapping.get_FD_playerlist().iteritems():
@@ -112,14 +112,14 @@ def build_full_player_dictionary():
  	return player_data_dict
 def optimum_roster(vegas_threshold):
 	player_data_dict = build_full_player_dictionary()
-	starting_goalies = ['Jaroslav Halak']#data_scrapping.get_starting_goalies()
+	starting_goalies = ['Andrew Hammond']#data_scrapping.get_starting_goalies()
 	player_universe = build_player_universe(player_data_dict,starting_goalies)
 	team_odds = TeamOdds.get_team_odds('NHL')
 	slate_size = len(team_odds)/2
 	losing_team_list =[s for s in team_odds.keys() if team_odds[s] <= vegas_threshold] #Cole: incorporated TeamOdds into optimum roster
-	losing_team_list.extend(['OTT','WSH'])
+	#losing_team_list.extend(['OTT','WSH'])
 	print losing_team_list
-	ex_list = ['Kris Russell','Dennis Wideman']
+	ex_list = []
 	items = [
          {
              'name': player,
@@ -157,7 +157,7 @@ def output_final_roster(vegas_threshold):
 	r,player_universe,objective = optimum_roster(vegas_threshold)
 	strategy_data = {}
 	roster_data = []
-	strategy_data['strat_params'] = {'objective':objective,'vegas':vegas_threshold,'slate_size':10}
+	strategy_data['strat_params'] = {'objective':objective,'vegas':vegas_threshold,'slate_size':4}
 	rw = 2
 	for player in r.xf:
 		roster_data.append([player_universe[player]['Position'],player_universe[player]['PlayerID'],player_universe[player]['MatchupID'],player_universe[player]['TeamID']])
@@ -177,16 +177,16 @@ def get_sort_key(sort_list):
 def run_enter_best_contests(daily_bet,bin_size):
 	s, session_id = fdo.get_fanduel_session()
 	total_bet = 0
-	time_remaining = Ugen.get_time_remain('17:00')
+	time_remaining = Ugen.get_time_remain('15:00')
 	wins_data = build_pWins_vs_topwins_dict(bin_size)
 	print wins_data
 	while total_bet < daily_bet and time_remaining > 0:
 		tmp_total_bet = total_bet
-		potential_contests = data_scrapping.get_potential_contests(s,['nhl'],[{"standard":1}],[3,5],[1,2,5,10,25],0.6,'7:00')
+		potential_contests = data_scrapping.get_potential_contests(s,['nhl'],[{"standard":1}],[3,5],[1,2,5,10,25],0.6,'5:00')
 		print potential_contests
 		total_bet = total_bet + data_scrapping.enter_best_contests(s,session_id,'NHL',(daily_bet - total_bet),potential_contests,time_remaining,wins_data,bin_size)
 		time.sleep(60)
-		time_remaining = Ugen.get_time_remain('17:00')
+		time_remaining = Ugen.get_time_remain('15:00')
 	fdo.end_fanduel_session(s)
 	return total_bet
 def build_pWins_vs_topwins_dict(bin_size):
@@ -214,8 +214,8 @@ def build_hist_win_tuples():
 			hist_perf_tuples.append((rw[0],0))
 	return hist_perf_tuples
 #data_scrapping.update_gamedata('NHL',Cell("Parameters",'clLastGameDataID').value)
-#print output_final_roster(60)
-print run_enter_best_contests(100,25)#paramter passing getting out of hand, need to figure out how refactor. Classes?
+print output_final_roster(40)
+#print run_enter_best_contests(100,25)#paramter passing getting out of hand, need to figure out how refactor. Classes?
 #dbo.load_csv_into_db('C:/Users/Cole/Desktop/FanDuel/fanduel entry history.csv','hist_performance')
 #print Ugen.output_dict(build_pWins_vs_topwins_dict(5))
 os.system('pause')
