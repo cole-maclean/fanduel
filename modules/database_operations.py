@@ -2,10 +2,13 @@ import MySQLdb
 import collections
 import general_utils as Ugen
 import time
-def get_connection_cursor():
+def get_connection_cursor(dict_cursor): #Cole: Updated to allow for db reads to return a Dict cursor
     DB_parameters = Ugen.ConfigSectionMap('db')
     conn = MySQLdb.Connection(db=DB_parameters['db'],host="localhost",user=DB_parameters['user'],passwd=DB_parameters['password']);
-    cur = conn.cursor()
+    if dict_cursor == True:
+        cur = conn.cursor(MySQLdb.cursors.DictCursor)
+    else:
+        cur = conn.cursor()
     return cur
 def get_data_dict_structure(sport,position):
     data_dict_structures = {'NHL':{'player':['GameID','Assists','num','Goals','SoG','ToI','PlusMinus','PiM','Team'],'goalie':['GameID','num','Saves','ToI','GoalsAgainst','ShotsAgainst','SavePercent','weighted_toi=int(Ugen.getSec(player_dict[rw_data[0]]["ToI"][-1]))*float(player_dict[rw_data[0]]["SavePercent"][-1])','Team']}} #might need to move this to config file
@@ -41,8 +44,8 @@ def build_data_dict_structure(player_dict,column_names, rw_data, start_rw = 0): 
             player_dict[rw_data[0]] = d
         start_rw = start_rw + 1
     return player_dict
-def read_from_db(sql,primary_key_col = [0]):#Cole: updated to allow list of columns that make up key
-    cur = get_connection_cursor()
+def read_from_db(sql,primary_key_col = [0],dict_cursor=False):#Cole: updated to allow list of columns that make up key
+    cur = get_connection_cursor(dict_cursor)
     cur.execute(sql)
     resultset = cur.fetchall()
     query_dict = collections.OrderedDict()
