@@ -51,10 +51,11 @@ def read_from_db(sql,primary_key_col = [0],dict_cursor=False):#Cole: updated to 
     query_dict = collections.OrderedDict()
     for rw in resultset:
         prime_key = "_".join(str(rw[s]) for s in primary_key_col)
-        print prime_key
-        query_dict[prime_key] = []
-        for col in rw:
-            query_dict[prime_key].append(col)
+        if dict_cursor == True:
+            query_dict[prime_key] = rw
+        else:
+            for col in rw:
+                query_dict[prime_key].append(col)
     return query_dict
 def write_to_db(table,static_columns,static_data,write_data={}): #TODO: need to generalize (columns, placeholders, etc.)
     row_data = [str(v) for v in write_data.values()]
