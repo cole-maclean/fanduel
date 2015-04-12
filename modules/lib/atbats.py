@@ -41,7 +41,7 @@ class AtBats(list):
         DB = store.Store()
         for inning in self:
             for atbat in inning:
-                keys = [k for k in atbat.keys() if k != 'pitches']
+                keys = [k for k in atbat.keys() if k != 'pitches' and k.find("_es") < 1] #Cole: Got rid of spanish events
                 values = [None if atbat[k] == '' else atbat[k] for k in keys]
                 
                 sql ='REPLACE INTO atbat (%s) VALUES(%s)' % (','.join(keys), ','.join(['%s'] * len(keys)))

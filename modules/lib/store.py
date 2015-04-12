@@ -25,15 +25,14 @@ class Store:
         
     def query(self, query, values = None):
         simplefilter("error", MySQLdb.Warning)
-        
         try:
             res = self.cursor.execute(query, values)
             return self.cursor.fetchall()
-        except (MySQLdb.Error, MySQLdb.Warning), e:
+        except (MySQLdb.Error), e:
             if type(e.args) is tuple and len(e.args) > 1:
                 msg = e.args[1]
             else:
                 msg = str(e)
             logger.error('%s\nQUERY: %s\nVALUES: %s\n\n' % (msg, query, ','.join([str(v) for v in values])))
-            os.system('pause')
+            
 
