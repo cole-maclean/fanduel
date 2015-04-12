@@ -41,15 +41,17 @@ def build_data_dict_structure(player_dict,column_names, rw_data, start_rw = 0): 
             player_dict[rw_data[0]] = d
         start_rw = start_rw + 1
     return player_dict
-def read_from_db(sql,primary_key_col = 0):
+def read_from_db(sql,primary_key_col = [0]):#Cole: updated to allow list of columns that make up key
     cur = get_connection_cursor()
     cur.execute(sql)
     resultset = cur.fetchall()
     query_dict = collections.OrderedDict()
     for rw in resultset:
-        query_dict[rw[primary_key_col]] = []
+        prime_key = "_".join(str(rw[s]) for s in primary_key_col)
+        print prime_key
+        query_dict[prime_key] = []
         for col in rw:
-            query_dict[rw[primary_key_col]].append(col)
+            query_dict[prime_key].append(col)
     return query_dict
 def write_to_db(table,static_columns,static_data,write_data={}): #TODO: need to generalize (columns, placeholders, etc.)
     row_data = [str(v) for v in write_data.values()]

@@ -25,7 +25,7 @@ def update_gamedata(sport,LastGameDataID): #TODO: add optional paramters for whi
 			if data_status == "URL not found":
 				break
 	elif sport == 'MLB':
-		subprocess.call(["python", "gameday.py","-y 2015"], shell=True)#Need to update this so it's easy to update with new data
+		subprocess.call(["python", "gameday.py","-y 2015","-m 4", "-d 1,2,3,4,5,6,7,8,9,10,11"], shell=True)#Need to update this so it's easy to update with new data
 	return "success"
 def get_NHL_gamedata(sGameSeason,sGameID):
 	game_stats_Url = 'http://live.nhle.com/GameData/' + sGameSeason + '/' + sGameID + '/gc/gcbx.jsonp'
