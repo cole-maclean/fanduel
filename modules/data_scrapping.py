@@ -14,6 +14,7 @@ import re
 import requests
 import FD_operations as fdo
 import general_utils as Ugen
+import subprocess
 def update_gamedata(sport,LastGameDataID): #TODO: add optional paramters for which tables to update, check team roster for player #s, consideration for other sports
 	print 'Only update game data when no games are currently in progress'
 	os.system('pause')
@@ -24,7 +25,8 @@ def update_gamedata(sport,LastGameDataID): #TODO: add optional paramters for whi
 			if data_status == "URL not found":
 				break
 	elif sport == 'MLB':
-		pass
+		subprocess.call(["python", "gameday.py","-y 2015"], shell=True)#Need to update this so it's easy to update with new data
+	return "success"
 def get_NHL_gamedata(sGameSeason,sGameID):
 	game_stats_Url = 'http://live.nhle.com/GameData/' + sGameSeason + '/' + sGameID + '/gc/gcbx.jsonp'
 	game_stats_data = Uds.get_JSON_data(game_stats_Url, ['GCBX.load(',')'])

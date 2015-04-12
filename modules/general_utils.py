@@ -40,11 +40,9 @@ def ConfigSectionMap(section):
 	Config = ConfigParser.ConfigParser()
 	if getpass.getuser() == 'Cole':
 		config_path = 'C:/Users/Cole/Desktop/FanDuel/db.ini'
-		print config_path
 	else:
 		config_path = 'C:/Ian Whitestone/documents/Python Projects/fanduel-master/db.ini'
 	Config.read(config_path)
-	print Config.sections()
 	dict1 = {}
 	options = Config.options(section)
 	for option in options:
