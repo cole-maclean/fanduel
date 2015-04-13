@@ -9,7 +9,6 @@ def get_connection_cursor(dict_cursor): #Cole: Updated to allow for db reads to 
         cur = conn.cursor(MySQLdb.cursors.DictCursor)
     else:
         cur = conn.cursor()
-    cur = conn.cursor()
     return cur
 def get_data_dict_structure(sport,position):
     data_dict_structures = {'NHL':{'player':['GameID','Assists','num','Goals','SoG','ToI','PlusMinus','PiM','Team'],'goalie':['GameID','num','Saves','ToI','GoalsAgainst','ShotsAgainst','SavePercent','weighted_toi=int(Ugen.getSec(player_dict[rw_data[0]]["ToI"][-1]))*float(player_dict[rw_data[0]]["SavePercent"][-1])','Team']}} #might need to move this to config file
