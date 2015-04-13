@@ -216,14 +216,9 @@ def build_hist_win_tuples():
 		else:
 			hist_perf_tuples.append((rw[0],0))
 	return hist_perf_tuples
-<<<<<<< HEAD
 MLB = Sport.Sport("MLB",0)
 MLB.update_data()
 #data_scrapping.update_gamedata('MLB',Cell("Parameters",'clLastGameDataID').value)
-=======
-data_scrapping.update_gamedata('NHL',Cell("Parameters",'clLastGameDataID').value)
-
->>>>>>> 716be6e0fedbca2797a05f9ed9b3cc0e9e987420
 #print output_final_roster(40)
 #print run_enter_best_contests(100,25)#paramter passing getting out of hand, need to figure out how refactor. Classes?
 #dbo.load_csv_into_db('C:/Users/Cole/Desktop/FanDuel/fanduel entry history.csv','hist_performance')
