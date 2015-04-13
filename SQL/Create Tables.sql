@@ -238,3 +238,39 @@ CREATE TABLE `hist_performance` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1$$
 
 
+#Ian: three new tables for NHL backtesting
+
+delimiter $$
+
+CREATE TABLE `hist_fanduel_data` (
+  `DataID` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `Sport` varchar(45) DEFAULT NULL,
+  `Date` date DEFAULT NULL,
+  `Player` varchar(45) DEFAULT NULL,
+  `Position` varchar(45) DEFAULT NULL, 
+  `FD_Salary` varchar(45) DEFAULT NULL, 
+  `FD_FPPG` varchar(45) DEFAULT NULL, 
+  `FD_GP` varchar(45) DEFAULT NULL,   
+  PRIMARY KEY (`DataID`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1$$
+
+delimiter $$
+
+CREATE TABLE `hist_backtest_data` (
+  `DataID` int(10) unsigned AUTO_INCREMENT,
+  `Date` date DEFAULT NULL,  
+  `DFN_NBA` text DEFAULT NULL,
+  `RW_NBA` text DEFAULT NULL, 
+  `RW_MLB` text DEFAULT NULL, 
+  PRIMARY KEY (`DataID`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1$$
+
+delimiter $$
+
+#don't need this table anymore
+CREATE TABLE `hist_NHL_gameIDdate` (
+  `DataID` int(10) unsigned AUTO_INCREMENT,
+  `GameID` bigint(20) DEFAULT NULL,  
+  `Date` date DEFAULT NULL,  
+  PRIMARY KEY (`DataID`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1$$

@@ -41,8 +41,13 @@ def ConfigSectionMap(section):
 	if getpass.getuser() == 'Cole':
 		config_path = 'C:/Users/Cole/Desktop/FanDuel/db.ini'
 	else:
-		config_path = 'C:/Ian Whitestone/documents/Python Projects/fanduel-master/db.ini'
+		config_path = 'C:/Users/Ian Whitestone/Documents/Python Projects/fanduel-master/db.ini'
+	
 	Config.read(config_path)
+<<<<<<< HEAD
+=======
+	#print Config.sections()
+>>>>>>> 716be6e0fedbca2797a05f9ed9b3cc0e9e987420
 	dict1 = {}
 	options = Config.options(section)
 	for option in options:
