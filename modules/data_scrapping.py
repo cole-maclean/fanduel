@@ -127,11 +127,12 @@ def get_potential_contests(s,sport_list,game_type_list,size_range,entry_fee_list
 		     ]
 	return potential_contests
 def enter_best_contests(s,session_id,bet_sport,max_bet,potential_contests,time_remaining,wins_data,bin_size):
+	DB_parameters=Ugen.ConfigSectionMap('local text')
 	current_bet = 0
-	with open('C:/Users/Cole/Desktop/Fanduel/fanduel/userwinscache.txt',"r") as myfile:
+	with open(DB_parameters['userwinscache'],"r") as myfile: #Ian: removed hard coded reference to Cole's path
 		data = myfile.read()
 	user_wins_cache = ast.literal_eval(data)
-	with open('C:/Users/Cole/Desktop/Fanduel/fanduel/roster.txt',"r") as myfile:
+	with open(DB_parameters['rostertext'],"r") as myfile: #Ian: removed hard coded reference to Cole's path
 		data = myfile.read()
 	strategy_data = ast.literal_eval(data)
 	for contest in potential_contests:
@@ -193,7 +194,7 @@ def enter_best_contests(s,session_id,bet_sport,max_bet,potential_contests,time_r
 		myfile.write(str(user_wins_cache))
 	return current_bet
 def get_FD_playerlist():
- 	FD_list = ast.literal_eval(Uds.parse_html('https://www.fanduel.com/e/Game/12006?tableId=11591750&fromLobby=true',"FD.playerpicker.allPlayersFullData = ",";"))
+ 	FD_list = ast.literal_eval(Uds.parse_html(Cell('Parameters','cLineUpURL').value,"FD.playerpicker.allPlayersFullData = ",";"))
  	return FD_list
 def build_lineup_dict():
 	rw = 2

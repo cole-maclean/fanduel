@@ -6,6 +6,7 @@ def get_connection_cursor():
     DB_parameters = Ugen.ConfigSectionMap('db')
     conn = MySQLdb.Connection(db=DB_parameters['db'],host="localhost",user=DB_parameters['user'],passwd=DB_parameters['password']);
     cur = conn.cursor()
+
     return cur
 def get_data_dict_structure(sport,position):
     data_dict_structures = {'NHL':{'player':['GameID','Assists','num','Goals','SoG','ToI','PlusMinus','PiM','Team'],'goalie':['GameID','num','Saves','ToI','GoalsAgainst','ShotsAgainst','SavePercent','weighted_toi=int(Ugen.getSec(player_dict[rw_data[0]]["ToI"][-1]))*float(player_dict[rw_data[0]]["SavePercent"][-1])','Team']}} #might need to move this to config file
@@ -59,6 +60,7 @@ def write_to_db(table,static_columns,static_data,write_data={}): #TODO: need to 
     columns = static_columns
     for i in range(1,len(row_data) + 1):
         columns = columns + ', Stat' + str(i)
+
     insert_mysql(table,columns, placeholders, static_data)
 def insert_mysql(table, columns, placeholders, data):
     sql = "INSERT INTO " + table + " (%s) VALUES (%s)" % (columns, placeholders)

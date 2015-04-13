@@ -63,7 +63,7 @@ def build_lineup_avg_goals_dict(player_data_dict):
 def build_full_player_dictionary():
 	player_map = Ugen.excel_mapping('Player Map',1,2)
 	rw = 2
-	player_data_dict = dbo.get_player_data_dict('NHL','2014021050')
+	player_data_dict = dbo.get_player_data_dict('NHL','2014021100')
 	lineup_avg_goals_dict = build_lineup_avg_goals_dict(player_data_dict)
 	columns = ['PlayerID','G','C','LW','RW','D','Position','FD_name','MatchupID','TeamID','Dummy2','Salary','PPG','GamesPlayed','Dummy3','Dummy4','Injury','InjuryAge','Dummy5','PlayerID']
  	for player_id,player_data in data_scrapping.get_FD_playerlist().iteritems():
@@ -112,7 +112,7 @@ def build_full_player_dictionary():
  	return player_data_dict
 def optimum_roster(vegas_threshold):
 	player_data_dict = build_full_player_dictionary()
-	starting_goalies = ['Andrew Hammond']#data_scrapping.get_starting_goalies()
+	starting_goalies = data_scrapping.get_starting_goalies()
 	player_universe = build_player_universe(player_data_dict,starting_goalies)
 	team_odds = TeamOdds.get_team_odds('NHL')
 	slate_size = len(team_odds)/2
@@ -154,6 +154,7 @@ def optimum_roster(vegas_threshold):
 	r = p.solve('glpk',iprint = 0)
 	return r,player_universe,objective
 def output_final_roster(vegas_threshold):
+	DB_parameters=Ugen.ConfigSectionMap('local text')
 	r,player_universe,objective = optimum_roster(vegas_threshold)
 	strategy_data = {}
 	roster_data = []
@@ -168,7 +169,7 @@ def output_final_roster(vegas_threshold):
 		Cell("Roster",rw,5).value = player_universe[player]['Salary']
 		rw = rw + 1
 	strategy_data['player_data'] = sorted(roster_data, key=get_sort_key)
-	with open('C:/Users/Cole/Desktop/Fanduel/fanduel/roster.txt',"w") as myfile:
+	with open(DB_parameters['rostertext'],"w") as myfile: #Ian: replaced hard-coded folder path with reference to config file
 		myfile.write(str(strategy_data).replace(' ',''))
 	return strategy_data
 def get_sort_key(sort_list):
@@ -213,8 +214,9 @@ def build_hist_win_tuples():
 		else:
 			hist_perf_tuples.append((rw[0],0))
 	return hist_perf_tuples
-#data_scrapping.update_gamedata('NHL',Cell("Parameters",'clLastGameDataID').value)
-print output_final_roster(40)
+data_scrapping.update_gamedata('NHL',Cell("Parameters",'clLastGameDataID').value)
+
+#print output_final_roster(40)
 #print run_enter_best_contests(100,25)#paramter passing getting out of hand, need to figure out how refactor. Classes?
 #dbo.load_csv_into_db('C:/Users/Cole/Desktop/FanDuel/fanduel entry history.csv','hist_performance')
 #print Ugen.output_dict(build_pWins_vs_topwins_dict(5))
