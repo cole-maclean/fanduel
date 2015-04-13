@@ -14,7 +14,8 @@ def BBSim():
 		Cell("Baseball Simulation","cl2nd").value = pitching_event['on_2b']
 		Cell("Baseball Simulation","cl3rd").value = pitching_event['on_3b']
 		if pitching_event['type'] == "X":
-			Cell("Baseball Simulation","clEvent").value = batting_data['2015/04/07/anamlb-seamlb-1_' + str(pitching_event['num'])]['des']
+			Cell("Baseball Simulation","clEvent").value = batting_data['2015/04/07/anamlb-seamlb-1_' + str(pitching_event['num'])]['event']
+			Cell("Baseball Simulation","clEventDesc").value = batting_data['2015/04/07/anamlb-seamlb-1_' + str(pitching_event['num'])]['des']
 			Cell("Baseball Simulation","clOut").value = batting_data['2015/04/07/anamlb-seamlb-1_' + str(pitching_event['num'])]['o']
 			Cell("Baseball Simulation","clHomeScore").value = batting_data['2015/04/07/anamlb-seamlb-1_' + str(pitching_event['num'])]['home_team_runs']
 			Cell("Baseball Simulation","clAwayScore").value = batting_data['2015/04/07/anamlb-seamlb-1_' + str(pitching_event['num'])]['away_team_runs']
