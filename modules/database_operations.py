@@ -5,15 +5,11 @@ import time
 def get_connection_cursor(dict_cursor): #Cole: Updated to allow for db reads to return a Dict cursor
     DB_parameters = Ugen.ConfigSectionMap('db')
     conn = MySQLdb.Connection(db=DB_parameters['db'],host="localhost",user=DB_parameters['user'],passwd=DB_parameters['password']);
-<<<<<<< HEAD
     if dict_cursor == True:
         cur = conn.cursor(MySQLdb.cursors.DictCursor)
     else:
         cur = conn.cursor()
-=======
     cur = conn.cursor()
-
->>>>>>> 716be6e0fedbca2797a05f9ed9b3cc0e9e987420
     return cur
 def get_data_dict_structure(sport,position):
     data_dict_structures = {'NHL':{'player':['GameID','Assists','num','Goals','SoG','ToI','PlusMinus','PiM','Team'],'goalie':['GameID','num','Saves','ToI','GoalsAgainst','ShotsAgainst','SavePercent','weighted_toi=int(Ugen.getSec(player_dict[rw_data[0]]["ToI"][-1]))*float(player_dict[rw_data[0]]["SavePercent"][-1])','Team']}} #might need to move this to config file
