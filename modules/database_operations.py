@@ -56,6 +56,7 @@ def read_from_db(sql,primary_key_col = [0],dict_cursor=False):#Cole: updated to 
         else:
             for col in rw:
                 query_dict[prime_key].append(col)
+    cur.close()
     return query_dict
 def write_to_db(table,static_columns,static_data,write_data={}): #TODO: need to generalize (columns, placeholders, etc.)
     row_data = [str(v) for v in write_data.values()]
@@ -65,7 +66,6 @@ def write_to_db(table,static_columns,static_data,write_data={}): #TODO: need to 
     columns = static_columns
     for i in range(1,len(row_data) + 1):
         columns = columns + ', Stat' + str(i)
-
     insert_mysql(table,columns, placeholders, static_data)
 def insert_mysql(table, columns, placeholders, data):
     sql = "INSERT INTO " + table + " (%s) VALUES (%s)" % (columns, placeholders)
