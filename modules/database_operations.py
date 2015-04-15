@@ -2,7 +2,10 @@ import MySQLdb
 import collections
 import general_utils as Ugen
 import time
-def get_connection_cursor(dict_cursor): #Cole: Updated to allow for db reads to return a Dict cursor
+import os
+from Tkinter import Tk
+
+def get_connection_cursor(dict_cursor=False): #Cole: Updated to allow for db reads to return a Dict cursor
     DB_parameters = Ugen.ConfigSectionMap('db')
     conn = MySQLdb.Connection(db=DB_parameters['db'],host="localhost",user=DB_parameters['user'],passwd=DB_parameters['password']);
     if dict_cursor == True:
@@ -58,7 +61,7 @@ def read_from_db(sql,primary_key_col = [0],dict_cursor=False):#Cole: updated to 
                 query_dict[prime_key].append(col)
     cur.close()
     return query_dict
-def write_to_db(table,static_columns,static_data,write_data={}): #TODO: need to generalize (columns, placeholders, etc.)
+def write_to_db(table,static_columns,static_data,write_data={}):
     row_data = [str(v) for v in write_data.values()]
     if row_data != []:
         static_data.extend(row_data)
@@ -67,11 +70,14 @@ def write_to_db(table,static_columns,static_data,write_data={}): #TODO: need to 
     for i in range(1,len(row_data) + 1):
         columns = columns + ', Stat' + str(i)
     insert_mysql(table,columns, placeholders, static_data)
-def insert_mysql(table, columns, placeholders, data):
-    sql = "INSERT INTO " + table + " (%s) VALUES (%s)" % (columns, placeholders)
+def insert_mysql(table, columns, data):
+    sql = "INSERT INTO " + table + " (%s) VALUES (%s)" % (columns, data)
     cur = get_connection_cursor()
-    cur.execute(sql, data)
-    cur.execute('COMMIT')
+    try:
+        cur.execute(sql)
+        cur.execute('COMMIT')
+    except MySQLdb.Error, e:
+        print "MySQL Error [%d]: %s" % (e.args[0], e.args[1])
     time.sleep(.1)
 def load_csv_into_db(csv_file,table):
     sql = "LOAD DATA INFILE '" + csv_file + "' IGNORE INTO TABLE " + table + " FIELDS TERMINATED BY ',' IGNORE 1 LINES"
