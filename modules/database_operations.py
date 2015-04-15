@@ -2,7 +2,7 @@ import MySQLdb
 import collections
 import general_utils as Ugen
 import time
-def get_connection_cursor(dict_cursor): #Cole: Updated to allow for db reads to return a Dict cursor
+def get_connection_cursor(dict_cursor=False): #Cole: Updated to allow for db reads to return a Dict cursor
     DB_parameters = Ugen.ConfigSectionMap('db')
     conn = MySQLdb.Connection(db=DB_parameters['db'],host="localhost",user=DB_parameters['user'],passwd=DB_parameters['password']);
     if dict_cursor == True:
