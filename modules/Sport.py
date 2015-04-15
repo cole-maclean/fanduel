@@ -76,9 +76,7 @@ class Sport():
 		for key,player_game in db_data.iteritems():
 			player_type = player_game['Player_Type']
 			player_data_map = self.inv_db_data_model[player_type]
-			meta_data_map = {key:key for key in self.inv_db_data_model['meta']}
-			data_map = player_data_map.copy()
-			data_map.update(meta_data_map)
+			data_map = {key:player_data_map[key] if 'Stat' in key else key for key in player_data_map} #Cole: updated so only Stat columns change
 			mapped_game_data[key] = {data_map[key]:player_game[key] for key in player_game.keys() if key in data_map.keys()}
 		return mapped_game_data
 
