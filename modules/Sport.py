@@ -69,7 +69,20 @@ class Sport():
 				dbo.insert_mysql('hist_player_data',cols,data)
 		return self
 
-class MLB(Sport): #Cole: data modelling may need to be refactored
+	def get_db_gamedata(self): #Cole: How do we make it so this only queries X number of games?
+		sql = "SELECT * FROM hist_player_data WHERE Sport = '"+ self.sport +"'"
+		db_data = dbo.read_from_db(sql,["Player","GameID","Player_Type"],True)
+		mapped_game_data = {}
+		for key,player_game in db_data.iteritems():
+			player_type = player_game['Player_Type']
+			player_data_map = self.inv_db_data_model[player_type]
+			meta_data_map = {key:key for key in self.inv_db_data_model['meta']}
+			data_map = player_data_map.copy()
+			data_map.update(meta_data_map)
+			mapped_game_data[key] = {data_map[key]:player_game[key] for key in player_game.keys() if key in data_map.keys()}
+		return mapped_game_data
+
+class MLB(Sport): #Cole: data modelling may need to be refactored, might be more elegant solution
 	def __init__(self):
 		Sport.__init__(self,"MLB")
 		self.player_type_map = {'away_batters':'batter','home_batters':'batter','away_pitchers':'pitcher','home_pitchers':'pitcher'}
@@ -82,6 +95,7 @@ class MLB(Sport): #Cole: data modelling may need to be refactored
 										     'whip':'Stat3','innings_pitched':'Stat4','hits_allowed':'Stat5','runs_allowed':'Stat6',
 										       'earned_runs':'Stat7','walks':'Stat8','strike_outs':'Stat9','home_runs_allowed':'Stat10',
 										          'pitch_count':'Stat11','pitches_strikes':'Stat12'}})
+		self.inv_db_data_model = {dataset:dict(zip(self.db_data_model[dataset].values(), self.db_data_model[dataset].keys())) for dataset in self.db_data_model}
 		self.data_model = ({'away_batters':self.db_data_model['batter'],'away_pitchers':self.db_data_model['pitcher'],
 							'home_batters':self.db_data_model['batter'],'home_pitchers':self.db_data_model['pitcher']})
 
