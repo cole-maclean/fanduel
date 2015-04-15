@@ -43,13 +43,15 @@ delimiter $$
 
 DROP TABLE IF EXISTS hist_player_data;
 
+delimiter $$
+
 CREATE TABLE `hist_player_data` (
-  `data_load_timestamp` varchar(45) NOT NULL,
   `Sport` varchar(45) NOT NULL,
   `Player` varchar(45) NOT NULL,
-  `GameID` varchar(45) NOT NULL,
+  `GameID` varchar(255) NOT NULL,
+  `Position` varchar(45) DEFAULT NULL,
   `Team` varchar(45) DEFAULT NULL,
-  `Location` varchar(45) DEFAULT NULL,
+  `Player_Type` varchar(45) NOT NULL,
   `Stat1` varchar(45) DEFAULT NULL,
   `Stat2` varchar(45) DEFAULT NULL,
   `Stat3` varchar(45) DEFAULT NULL,
@@ -57,8 +59,16 @@ CREATE TABLE `hist_player_data` (
   `Stat5` varchar(45) DEFAULT NULL,
   `Stat6` varchar(45) DEFAULT NULL,
   `Stat7` varchar(45) DEFAULT NULL,
-  PRIMARY KEY (`Player`,`GameID`)
+  `Stat8` varchar(45) DEFAULT NULL,
+  `Stat9` varchar(45) DEFAULT NULL,
+  `Stat10` varchar(45) DEFAULT NULL,
+  `Stat11` varchar(45) DEFAULT NULL,
+  `Stat12` varchar(45) DEFAULT NULL,
+  `Stat13` varchar(45) DEFAULT NULL,
+  PRIMARY KEY (`Player`,`GameID`,`Player_Type`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1$$
+
+
 
 
 
