@@ -216,8 +216,8 @@ def build_hist_win_tuples():
 		else:
 			hist_perf_tuples.append((rw[0],0))
 	return hist_perf_tuples
-MLB = Sport.Sport("MLB",0)
-MLB.update_data()
+MLB = Sport.Sport("NHL")
+#MLB.update_data()
 #data_scrapping.update_gamedata('MLB',Cell("Parameters",'clLastGameDataID').value)
 #print output_final_roster(40)
 #print run_enter_best_contests(100,25)#paramter passing getting out of hand, need to figure out how refactor. Classes?
