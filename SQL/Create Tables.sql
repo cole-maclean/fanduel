@@ -43,8 +43,6 @@ delimiter $$
 
 DROP TABLE IF EXISTS hist_player_data;
 
-delimiter $$
-
 CREATE TABLE `hist_player_data` (
   `Sport` varchar(45) NOT NULL,
   `Player` varchar(45) NOT NULL,

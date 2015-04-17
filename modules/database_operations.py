@@ -4,8 +4,6 @@ import general_utils as Ugen
 import time
 import os
 from Tkinter import Tk
-
-
 def get_connection_cursor(dict_cursor=False): #Cole: Updated to allow for db reads to return a Dict cursor
     DB_parameters = Ugen.ConfigSectionMap('db')
     conn = MySQLdb.Connection(db=DB_parameters['db'],host="localhost",user=DB_parameters['user'],passwd=DB_parameters['password']);
@@ -86,3 +84,11 @@ def load_csv_into_db(csv_file,table):
     cur.execute(sql)
     cur.execute('COMMIT')
     time.sleep(.1)
+
+def get_table_last_row(table_name,table_key):
+    sql="SELECT * FROM " + table_name +" ORDER BY " + table_key + " DESC LIMIT 1"
+    cur = get_connection_cursor()
+    cur.execute(sql)
+    resultset = cur.fetchall()
+    cur.close
+    return resultset
