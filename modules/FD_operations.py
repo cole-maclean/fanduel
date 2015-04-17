@@ -1,19 +1,19 @@
 import re
 import requests
+import general_utils as Ugen
 import os
 from bs4 import BeautifulSoup
 import json
 import string_utils as Ustr
 def get_fanduel_session():#Refactor - think this needs to be turned into a class
-	with open('C:\Users\Cole\Desktop\Fanduel\Parameters.txt',"r") as myfile:
-	    passwd = myfile.read().split(',')[1]
+	Fanduel_login=Ugen.ConfigSectionMap('fanduel') #Ian added ref to config file to avoid hardcoding
 	s = requests.session()
 	r = s.get('https://www.fanduel.com/p/login')
 	soup = BeautifulSoup(r.text)
 	session_id = soup.find('input', {'name': 'cc_session_id'}).get('value')
 	headers = {'User-Agent' : 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/535.7 (KHTML, like Gecko) Chrome/16.0.912.77 Safari/535.7'}
 	data = {'cc_session_id':session_id,'cc_action':'cca_login','cc_failure_url':'https://www.fanduel.com/p/login',\
-	'cc_success_url':'https://www.fanduel.com/p/home','email':'cole__maclean@hotmail.com','password':passwd,'login':'Log in'}
+	'cc_success_url':'https://www.fanduel.com/p/home','email':Fanduel_login['email'],'password':Fanduel_login['password'],'login':'Log in'}
 	s.post('https://www.fanduel.com/c/CCAuth',data,headers=headers)
 	return s, session_id
 def end_fanduel_session(s):

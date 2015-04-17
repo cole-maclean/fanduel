@@ -2,12 +2,10 @@ import MySQLdb
 import collections
 import general_utils as Ugen
 import time
-<<<<<<< HEAD
-=======
 import os
 from Tkinter import Tk
 
->>>>>>> 0fb32d1c4a2fee1e5401d97becf417b70f1fa05d
+
 def get_connection_cursor(dict_cursor=False): #Cole: Updated to allow for db reads to return a Dict cursor
     DB_parameters = Ugen.ConfigSectionMap('db')
     conn = MySQLdb.Connection(db=DB_parameters['db'],host="localhost",user=DB_parameters['user'],passwd=DB_parameters['password']);
@@ -32,7 +30,7 @@ def get_player_data_dict(sport, GameIDLimit):#TODO: Limits for history games and
         else:
             player_dict = build_data_dict_structure(player_dict,get_data_dict_structure(sport,'goalie'),rw,1)
     return player_dict
-def build_data_dict_structure(player_dict,column_names, rw_data, start_rw = 0): #TODO: seems like a good place for functional thing (decorator) 
+def build_data_dict_structure(player_dict,column_names, rw_data, start_rw =  0): #TODO: seems like a good place for functional thing (decorator) 
     d = collections.OrderedDict()
     for column in column_names:
         if '=' in column:

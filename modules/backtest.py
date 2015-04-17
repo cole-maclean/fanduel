@@ -123,11 +123,17 @@ def hist_FD_playerdata(Sport):
     return
 
 #hist_web_lineups()
-#hist_FD_playerdata('NBA')
-
-
+#hist_FD_playerdata('MLB')
 #print sample_sql_select()
-#os.system('pause')
-
 #Remove duplicate rows SQL statement
-#ALTER IGNORE TABLE hist_backtest_data ADD UNIQUE KEY idx1(date); --> this statement was to remove non-unique rows? 
+#ALTER IGNORE TABLE hist_backtest_data ADD UNIQUE KEY idx1(date);
+
+
+#TESTING COLE'S GET CONTESTS FUNCTIONS
+s,session_id=fdo.get_fanduel_session()
+contest_dict=data_scrapping.get_FD_contests(s)
+i=1
+for e in contest_dict:
+    Cell(i,1).value=e
+    i=i+1
+fdo.end_fanduel_session(s)
