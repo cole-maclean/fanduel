@@ -69,11 +69,12 @@ def write_to_db(table,static_columns,static_data,write_data={}):
     for i in range(1,len(row_data) + 1):
         columns = columns + ', Stat' + str(i)
     insert_mysql(table,columns, placeholders, static_data)
-def insert_mysql(table, columns, placeholders, data):
-    sql = "INSERT INTO " + table + " (%s) VALUES (%s)" % (columns, placeholders)
+def insert_mysql(table, columns, data):
+    #placeholders = ', '.join(['%s'] * (columns.count(',') + 1)) 
+    sql = "INSERT INTO " + table + " (%s) VALUES (%s)" % (columns, data)
     cur = get_connection_cursor()
     try:
-        cur.execute(sql,data)
+        cur.execute(sql)
         cur.execute('COMMIT')
     except MySQLdb.Error, e:
         print "MySQL Error [%d]: %s" % (e.args[0], e.args[1])
