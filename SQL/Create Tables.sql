@@ -66,6 +66,32 @@ CREATE TABLE `hist_player_data` (
   PRIMARY KEY (`Player`,`GameID`,`Player_Type`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1$$
 
+delimiter $$
+
+CREATE TABLE `hist_fanduel_data` (
+  `DataID` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `Sport` varchar(45) DEFAULT NULL,
+  `Date` date DEFAULT NULL,
+  `Player` varchar(45) DEFAULT NULL,
+  `Position` varchar(45) DEFAULT NULL, 
+  `FD_Salary` varchar(45) DEFAULT NULL, 
+  `FD_FPPG` varchar(45) DEFAULT NULL, 
+  `FD_GP` varchar(45) DEFAULT NULL,
+  `contestID` varchar(45) DEFAULT NULL,   
+  PRIMARY KEY (`DataID`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1$$
+
+delimiter $$
+
+CREATE TABLE `hist_lineup_optimizers` (
+  `DataID` int(10) unsigned AUTO_INCREMENT,
+  `Date` date DEFAULT NULL,  
+  `DFN_NBA` text DEFAULT NULL,
+  `RW_NBA` text DEFAULT NULL, 
+  `RW_MLB` text DEFAULT NULL,
+  `RW_NHL` text DEFAULT NULL, 
+  PRIMARY KEY (`DataID`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1$$
 
 
 
