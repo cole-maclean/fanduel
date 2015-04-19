@@ -69,15 +69,22 @@ def write_to_db(table,static_columns,static_data,write_data={}):
     for i in range(1,len(row_data) + 1):
         columns = columns + ', Stat' + str(i)
     insert_mysql(table,columns, placeholders, static_data)
-def insert_mysql(table, columns, placeholders, data):
-    sql = "INSERT INTO " + table + " (%s) VALUES (%s)" % (columns, placeholders)
+def insert_mysql(table, columns, data,placeholders=False):
+    if placeholders:
+        sql = "INSERT INTO " + table + " (%s) VALUES (%s)" % (columns, placeholders)
+    else:
+        sql = "INSERT INTO " + table + " (%s) VALUES (%s)" % (columns, data)
     cur = get_connection_cursor()
     try:
-        cur.execute(sql,data)
+        if placeholders:
+            cur.execute(sql,data)
+        else:
+            cur.execute(sql)
         cur.execute('COMMIT')
     except MySQLdb.Error, e:
         print "MySQL Error [%d]: %s" % (e.args[0], e.args[1])
     time.sleep(.1)
+
 def load_csv_into_db(csv_file,table):
     sql = "LOAD DATA INFILE '" + csv_file + "' IGNORE INTO TABLE " + table + " FIELDS TERMINATED BY ',' IGNORE 1 LINES"
     cur = get_connection_cursor()

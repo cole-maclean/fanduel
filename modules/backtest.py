@@ -41,7 +41,7 @@ def hist_web_lineups():
     columns='Date,DFN_NBA,RW_NBA,RW_MLB,RW_NHL'
     placeholders = ', '.join(['%s'] * len(db_data))
     print 'now historizing'
-    dbo.insert_mysql(table,columns,placeholders,db_data)
+    dbo.insert_mysql(table,columns,db_data,placeholders)
     print 'web_lineups historized succesfully'
     return
 
@@ -62,7 +62,7 @@ def hist_FD_playerdata(Sport,Url,ContestID):
         placeholders = ', '.join(['%s'] * len(db_data))
         table='hist_fanduel_data'
         print 'now historizing %s contest#: %d player %s' % (Sport,ContestID,player_name)
-        dbo.insert_mysql(table,columns, placeholders, db_data)
+        dbo.insert_mysql(table,columns,db_data,placeholders)
     return
 
 def hist_FD_contest_salaries():
