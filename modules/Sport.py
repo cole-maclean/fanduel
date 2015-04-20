@@ -67,7 +67,7 @@ class Sport():
 							player_data[datum] = player[datum]
 					data_cols = [data_model[datum] for datum in player_data.keys() if datum in data_model.keys()]
 					cols = ", ".join(meta_cols + data_cols)
-					data = ", ".join(["'" + unicode(v) + "'" for v in player_data.values()])
+					data = ", ".join(['"' + unicode(v) + '"' for v in player_data.values()])
 					dbo.insert_mysql('hist_player_data',cols,data)
 		return self
 
