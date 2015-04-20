@@ -47,6 +47,7 @@ delimiter $$
 
 CREATE TABLE `hist_player_data` (
   `Sport` varchar(45) NOT NULL,
+  `Date` date DEFAULT NULL,
   `Player` varchar(45) NOT NULL,
   `GameID` varchar(255) NOT NULL,
   `Position` varchar(45) DEFAULT NULL,
