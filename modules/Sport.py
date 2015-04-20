@@ -8,8 +8,6 @@ import numpy
 import ast
 from openopt import *
 
-
-#sport_data_dict = {'NHL':{:}}
 class Sport():
 	def __init__(self,sport):
 		self.sport = sport
@@ -31,7 +29,6 @@ class Sport():
 	def get_game_data(self,game_id):
 		self.gameid = game_id
 		return XMLStats.main(self,'boxscore',None)
-
 
 	def get_daily_game_data(self,event_dates,store = False):#Cole:event_date format is yyyyMMdd, must be a list
 		for event_date in event_dates:

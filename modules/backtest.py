@@ -100,7 +100,7 @@ def hist_FD_contest_salaries():
     fdo.end_fanduel_session(s)
     return
 
-hist_web_lineups()
+#hist_web_lineups()
 hist_FD_contest_salaries()
 
 #Remove duplicate rows SQL statement

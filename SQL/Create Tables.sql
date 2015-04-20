@@ -43,11 +43,8 @@ delimiter $$
 
 DROP TABLE IF EXISTS hist_player_data;
 
-delimiter $$
-
 CREATE TABLE `hist_player_data` (
   `Sport` varchar(45) NOT NULL,
-  `Date` date DEFAULT NULL,
   `Player` varchar(45) NOT NULL,
   `GameID` varchar(255) NOT NULL,
   `Position` varchar(45) DEFAULT NULL,
@@ -96,7 +93,3 @@ CREATE TABLE `hist_lineup_optimizers` (
   `RW_NHL` text DEFAULT NULL, 
   PRIMARY KEY (`DataID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1$$
-
-
-
-
