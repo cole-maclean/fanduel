@@ -43,7 +43,6 @@ def get_team_odds(sport):
     soup = BeautifulSoup(content)
     i=1 #counter for cells in excel
     odds_list={}
-
     date_raw=soup.find("div",{"class":"time type"}).get_text().split()
     date=date_raw[0]+date_raw[1][0]+date_raw[1][1] #Ian: first date in the table. if any of the row's dates do not equal this then it wont get the odds for that game because its on a diff day
     for z in range(0,2,1):
@@ -92,5 +91,3 @@ def get_team_odds(sport):
             i=i+1
     Cell("Output",15,5).value=odds_list
     return odds_list
-#FUNCTION CALLS
-get_team_odds("NHL")
