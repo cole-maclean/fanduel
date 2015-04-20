@@ -1,9 +1,12 @@
 import data_scrapping as ds
+import data_scrapping_utils as Uds
 import database_operations as dbo
 import collections
 import XMLStats
 import os
 import numpy
+import ast
+
 
 #sport_data_dict = {'NHL':{:}}
 class Sport():
@@ -110,9 +113,14 @@ class Sport():
 					avg_player_stats[player][stat_key] = stat_data[-1]
 		return avg_player_stats
 
+	def get_FD_player_dict(self,contest_url):
+		return ast.literal_eval(Uds.parse_html(contest_url,"FD.playerpicker.allPlayersFullData = ",";"))
+
 class MLB(Sport): #Cole: data modelling may need to be refactored, might be more elegant solution
 	def __init__(self):
 		Sport.__init__(self,"MLB")
+		self.FD_data_columns = (['FD_Position','FD_name','MatchupID','TeamID','Dummy2','Salary','PPG',
+									'GamesPlayed','Dummy3','Dummy4','Injury','InjuryAge','Dummy5'])
 		self.player_type_map = {'away_batters':'batter','home_batters':'batter','away_pitchers':'pitcher','home_pitchers':'pitcher'}
 		self.db_data_model = collections.OrderedDict({'meta':{'gameid':'GameID','sport':'Sport','type':'Player_Type'}, #Cole: prefix with $ to denote a hard coded value
 							'batter':{'display_name':'Player','position':'Position','team_abbreviation':'Team',
@@ -127,6 +135,26 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 		self.data_model = ({'away_batters':self.db_data_model['batter'],'away_pitchers':self.db_data_model['pitcher'],
 							'home_batters':self.db_data_model['batter'],'home_pitchers':self.db_data_model['pitcher']})
 	
+	def build_player_universe(self,contest_url): #Cole: this desperately needs documentation. Entire data structure needs documentation
+		db_player_data = self.get_db_gamedata()
+		FD_player_data = self.get_FD_player_dict(contest_url)
+		for FD_playerid,data in FD_player_data.iteritems():
+			FD_data_index = 0
+			FD_name = data[1]
+			if data[0] == 'P':
+				player_type = 'pitcher'
+			else:
+				player_type = 'batter'
+			player_key = data[1] + '_' + player_type
+			try:
+				db_player_data[player_key]['FD_playerid'] = FD_playerid
+				for FD_data in data:
+					db_player_data[player_key][self.FD_data_columns[FD_data_index]] = FD_data
+					FD_data_index = FD_data_index + 1
+			except KeyError:
+				print player_key + ' not in db_player_data'
+		return db_player_data
+
 	def fanduel_points(self, points_data):
 		for player,data in points_data.iteritems():
 			if data['Player_Type'] == 'batter':
@@ -134,13 +162,4 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 											 + data['walks']*1 + data['stolen_bases']*1 + data['hit_by_pitch'] * 1 - (data['at_bats'] - data['hits'])*.25)
 			else:
 				data['point_forecast'] = data['win']*4 - data['earned_runs']*1 + data['strike_outs']*1 + data['innings_pitched']*1
-		return points_data['Billy Hamilton_batter'] 
-
-
-
-
-
-
-
-
-
+		return points_data
