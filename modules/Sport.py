@@ -3,6 +3,7 @@ import database_operations as dbo
 import collections
 import XMLStats
 import os
+import numpy
 
 #sport_data_dict = {'NHL':{:}}
 class Sport():
@@ -50,7 +51,7 @@ class Sport():
 					all_game_data[game_id] = game_data
 		return all_game_data
 
-	def parse_boxscore_data(self,boxscore_data): #Cole: Not sure about this module, consider refactor
+	def parse_boxscore_data(self,boxscore_data):
 		if boxscore_data:
 			for dataset,data_model in self.data_model.iteritems():
 				for player in boxscore_data[dataset]:
@@ -63,6 +64,10 @@ class Sport():
 					for datum in data_model.keys():
 						if datum[0] == '$': #Cole: prefix with $ denotes hard coded value
 							player_data[datum] = datum[1:]
+						elif player[datum] == True: #Cole: Convert bool to int for db write
+							player_data[datum] = 1
+						elif player[datum] ==False:
+							player_data[datum] = 0
 						else:
 							player_data[datum] = player[datum]
 					data_cols = [data_model[datum] for datum in player_data.keys() if datum in data_model.keys()]
@@ -91,6 +96,20 @@ class Sport():
 					player_data_dict[player_key][stat_key] = [player_data]
 		return player_data_dict
 
+	def avg_stats(self,stats_data):
+		avg_player_stats = {}
+		for player,stat_dict in stats_data.iteritems():
+			avg_player_stats[player] = {}
+			for stat_key,stat_data in stat_dict.iteritems():
+				try:
+					np_array = numpy.array(map(float,stat_data))
+					avg_player_stats[player][stat_key] = numpy.mean(np_array)
+				except TypeError:
+					avg_player_stats[player][stat_key] = stat_data[-1]
+				except ValueError:
+					avg_player_stats[player][stat_key] = stat_data[-1]
+		return avg_player_stats
+
 class MLB(Sport): #Cole: data modelling may need to be refactored, might be more elegant solution
 	def __init__(self):
 		Sport.__init__(self,"MLB")
@@ -108,18 +127,14 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 		self.data_model = ({'away_batters':self.db_data_model['batter'],'away_pitchers':self.db_data_model['pitcher'],
 							'home_batters':self.db_data_model['batter'],'home_pitchers':self.db_data_model['pitcher']})
 	
-	def forecast_model(self):
-		player_data_dict = self.get_db_gamedata()
-		for player,data in player_data_dict:
+	def fanduel_points(self, points_data):
+		for player,data in points_data.iteritems():
 			if data['Player_Type'] == 'batter':
 				data['point_forecast'] = (data['singles']*1 + data['doubles']*2 + data['triples']*3 + data['home_runs']*4 + data['rbi']*1 + data['runs']*1
 											 + data['walks']*1 + data['stolen_bases']*1 + data['hit_by_pitch'] * 1 - (data['at_bats'] - data['hits'])*.25)
 			else:
-				if data['win'] == True:
-					data['win'] = 1
-				else:
-					data['win'] = 0
-				data['point_forecast'] = data['win']*4 - data['earned_runs']*1 + data['strike_outs']*1 + data['innings_pitched']*1 
+				data['point_forecast'] = data['win']*4 - data['earned_runs']*1 + data['strike_outs']*1 + data['innings_pitched']*1
+		return points_data['Billy Hamilton_batter'] 
 
 
 
