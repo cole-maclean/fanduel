@@ -72,6 +72,7 @@ class Sport():
 	def get_db_gamedata(self): #Cole: How do we make it so this only queries X number of games?
 		sql = "SELECT * FROM hist_player_data WHERE Sport = '"+ self.sport +"'"
 		db_data = dbo.read_from_db(sql,["Player","GameID","Player_Type"],True)
+		player_data_dict = {}
 		mapped_game_data = {}
 		for key,player_game in db_data.iteritems():
 			player_type = player_game['Player_Type']
@@ -96,6 +97,20 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 		self.inv_db_data_model = {dataset:dict(zip(self.db_data_model[dataset].values(), self.db_data_model[dataset].keys())) for dataset in self.db_data_model}
 		self.data_model = ({'away_batters':self.db_data_model['batter'],'away_pitchers':self.db_data_model['pitcher'],
 							'home_batters':self.db_data_model['batter'],'home_pitchers':self.db_data_model['pitcher']})
+	
+	def forecast_model(self):
+		player_data_dict = self.get_db_gamedata()
+		for player,data in player_data_dict:
+			if data['Player_Type'] == 'batter':
+				data['point_forecast'] = (data['singles']*1 + data['doubles']*2 + data['triples']*3 + data['home_runs']*4 + data['rbi']*1 + data['runs']*1
+											 + data['walks']*1 + data['stolen_bases']*1 + data['hit_by_pitch'] * 1 - (data['at_bats'] - data['hits'])*.25)
+			else:
+				if data['win'] == True:
+					data['win'] = 1
+				else:
+					data['win'] = 0
+				data['point_forecast'] = data['win']*4 - data['earned_runs']*1 + data['strike_outs']*1 + data['innings_pitched']*1 
+
 
 
 
