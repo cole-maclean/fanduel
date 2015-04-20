@@ -58,7 +58,7 @@ class Sport():
 					player_data['GameID'] = self.gameid
 					player_data['Sport'] = self.sport
 					player_data['Player_Type'] = self.player_type_map[dataset]
-					player_data['Date'] = self.gameid[0:7]
+					player_data['Date'] = self.gameid[0:8]
 					meta_cols = [col for col in player_data.keys()]
 					for datum in data_model.keys():
 						if datum[0] == '$': #Cole: prefix with $ denotes hard coded value
