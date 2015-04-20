@@ -56,8 +56,8 @@ class Sport():
 				player_data['GameID'] = self.gameid
 				player_data['Sport'] = self.sport
 				player_data['Player_Type'] = self.player_type_map[dataset]
+				player_data['Date'] = self.gameid[0:7]
 				meta_cols = [col for col in player_data.keys()]
-				data_cols = []
 				for datum in data_model.keys():
 					if datum[0] == '$': #Cole: prefix with $ denotes hard coded value
 						player_data[datum] = datum[1:]
@@ -73,13 +73,22 @@ class Sport():
 		sql = "SELECT * FROM hist_player_data WHERE Sport = '"+ self.sport +"'"
 		db_data = dbo.read_from_db(sql,["Player","GameID","Player_Type"],True)
 		player_data_dict = {}
-		mapped_game_data = {}
 		for key,player_game in db_data.iteritems():
 			player_type = player_game['Player_Type']
 			player_data_map = self.inv_db_data_model[player_type]
 			data_map = {key:player_data_map[key] if 'Stat' in key else key for key in player_data_map} #Cole: updated so only Stat columns change
-			mapped_game_data[key] = {data_map[key]:player_game[key] for key in player_game.keys() if key in data_map.keys()}
-		return mapped_game_data
+			if player_game['Player'] in player_data_dict.keys():
+				player_key = player_game['Player'] + '_' + player_game['Player_Type']
+				for db_key,player_data in player_game.iteritems():
+					stat_key = data_map[db_key] if db_key in data_map.keys() else db_key
+					player_data_dict[player_key][stat_key].append(player_data)
+			else:
+				player_key = player_game['Player'] + '_' +  player_game['Player_Type']
+				player_data_dict[player_key] = {}
+				for db_key,player_data in player_game.iteritems():
+					stat_key = data_map[db_key] if db_key in data_map.keys() else db_key
+					player_data_dict[player_key][stat_key] = [player_data]
+		return player_data_dict
 
 class MLB(Sport): #Cole: data modelling may need to be refactored, might be more elegant solution
 	def __init__(self):
