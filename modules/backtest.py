@@ -32,8 +32,7 @@ def hist_web_lineups():
     if not todays_date==str(last_date)[0:10]:
         print "hist_web_lineups: enter lineups for todays date OR ensure you've entered today's date"
         time.sleep(5)
-        return
-    
+        return   
     dfn_nba=Cell('Backtest_Parameters','clDFNNBA').value
     rw_nba=Cell('Backtest_Parameters','clRWNBA').value
     rw_mlb=Cell('Backtest_Parameters','clRWMLB').value
@@ -42,12 +41,13 @@ def hist_web_lineups():
     columns='Date,DFN_NBA,RW_NBA,RW_MLB,RW_NHL'
     placeholders = ', '.join(['%s'] * len(db_data))
     print 'now historizing'
-    dbo.insert_mysql(table,columns,placeholders,db_data)
+    dbo.insert_mysql(table,columns,db_data,placeholders)
     print 'web_lineups historized succesfully'
     return
 
 def hist_FD_playerdata(Sport,Url,ContestID):
     #player_map = Ugen.excel_mapping('Player Map',1,2)
+    Cell(10,2).value=Url
     FD_dict = ast.literal_eval(Uds.parse_html(Url,"FD.playerpicker.allPlayersFullData = ",";"))
     todays_date=time.strftime("%Y-%m-%d")
     db_data=[]
@@ -62,7 +62,7 @@ def hist_FD_playerdata(Sport,Url,ContestID):
         placeholders = ', '.join(['%s'] * len(db_data))
         table='hist_fanduel_data'
         print 'now historizing %s contest#: %d player %s' % (Sport,ContestID,player_name)
-        dbo.insert_mysql(table,columns, placeholders, db_data)
+        dbo.insert_mysql(table,columns,db_data,placeholders)
     return
 
 def hist_FD_contest_salaries():
@@ -76,25 +76,26 @@ def hist_FD_contest_salaries():
     s,session_id=fdo.get_fanduel_session()
     contest_dict=data_scrapping.get_FD_contests(s)
     sports_list=['mlb','nba','nhl','nfl'] #pick this option if you wanna historize all sports
-    #sports_list=['mlb']
+    #sports_list=['mlb','nba']
     for sport in sports_list:
         sport_contest_dict=(x for x in contest_dict if x['sport']==sport)
         test_dict_case=(x for x in contest_dict if x['sport']==sport) #assign duplicate var to avoid list mutation
         if len(list(test_dict_case))>0: #test if there are contests for the sport
             i=1 #iterator
             historized_contests=[]
-            for e in sport_contest_dict: #loop through each for given sport
-                Url='https://www.fanduel.com/e/Game'+e['entryURL'][e['entryURL'].find('Game\\')+5:]
-                if i==1: #assign ContestID to first element in dict. historize that contest's data,
-                    ContestID=e['gameId'] #ContestID is a unique identifier for contests @unique time
-                    if len(e['startString'])<14: #this tests if the contest is for today
-                        hist_FD_playerdata(sport.upper(),Url,ContestID)
-                        historized_contests.append(ContestID)
-                if e['gameId']!=ContestID and e['gameId'] not in historized_contests: #check for contests at other times
-                    ContestID=e['gameId']
-                    if len(e['startString'])<14:
-                        hist_FD_playerdata(sport.upper(),Url,ContestID)
-                        historized_contests.append(ContestID)
+            ContestID=''
+            for contest in sport_contest_dict: #loop through each for given sport
+                Url='https://www.fanduel.com/e/Game'+contest['entryURL'][contest['entryURL'].find('Game\\')+5:]
+                if i==1 and len(contest['startString'])<14 and contest['entryURL'].find('accept_public_challenge')==-1:
+                    ContestID=contest['gameId'] #ContestID is a unique identifier for contests @unique time
+                    #print sport,contest['entryURL'],contest['startString']
+                    hist_FD_playerdata(sport.upper(),Url,ContestID)
+                    historized_contests.append(ContestID)
+                if contest['gameId']!=ContestID and contest['gameId'] not in historized_contests and len(contest['startString'])<14 and contest['entryURL'].find('accept_public_challenge')==-1: #check for contests at other times
+                    ContestID=contest['gameId']
+                    #print sport,contest['entryURL'],contest['startString']
+                    hist_FD_playerdata(sport.upper(),Url,ContestID)
+                    historized_contests.append(ContestID)
                 i=i+1
     fdo.end_fanduel_session(s)
     return
