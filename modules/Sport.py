@@ -39,9 +39,10 @@ class Sport():
 				if store == False:
 					game_data = XMLStats.main(self,'boxscore',None)
 				elif store == True and self.gameid not in self.gameids().all_gameids: #Cole: this will make it so this method of the class can only be used if Sport class generated from individual sport class (ie MLB, NHL)
-					game_data = XMLStats.main(self,'boxscore',None)
 					print "loading " + game_id
-					parsed_data = self.parse_boxscore_data(game_data)
+					game_data = XMLStats.main(self,'boxscore',None)
+					if game_data != None:
+						parsed_data = self.parse_boxscore_data(game_data)
 					print game_id + " succesfully loaded"
 				else:
 					game_data = None
@@ -50,23 +51,24 @@ class Sport():
 		return all_game_data
 
 	def parse_boxscore_data(self,boxscore_data): #Cole: Not sure about this module, consider refactor
-		for dataset,data_model in self.data_model.iteritems():
-			for player in boxscore_data[dataset]:
-				player_data = collections.OrderedDict()
-				player_data['GameID'] = self.gameid
-				player_data['Sport'] = self.sport
-				player_data['Player_Type'] = self.player_type_map[dataset]
-				player_data['Date'] = self.gameid[0:7]
-				meta_cols = [col for col in player_data.keys()]
-				for datum in data_model.keys():
-					if datum[0] == '$': #Cole: prefix with $ denotes hard coded value
-						player_data[datum] = datum[1:]
-					else:
-						player_data[datum] = player[datum]
-				data_cols = [data_model[datum] for datum in player_data.keys() if datum in data_model.keys()]
-				cols = ", ".join(meta_cols + data_cols)
-				data = ", ".join(["'" + unicode(v) + "'" for v in player_data.values()])
-				dbo.insert_mysql('hist_player_data',cols,data)
+		if boxscore_data:
+			for dataset,data_model in self.data_model.iteritems():
+				for player in boxscore_data[dataset]:
+					player_data = collections.OrderedDict()
+					player_data['GameID'] = self.gameid
+					player_data['Sport'] = self.sport
+					player_data['Player_Type'] = self.player_type_map[dataset]
+					player_data['Date'] = self.gameid[0:7]
+					meta_cols = [col for col in player_data.keys()]
+					for datum in data_model.keys():
+						if datum[0] == '$': #Cole: prefix with $ denotes hard coded value
+							player_data[datum] = datum[1:]
+						else:
+							player_data[datum] = player[datum]
+					data_cols = [data_model[datum] for datum in player_data.keys() if datum in data_model.keys()]
+					cols = ", ".join(meta_cols + data_cols)
+					data = ", ".join(["'" + unicode(v) + "'" for v in player_data.values()])
+					dbo.insert_mysql('hist_player_data',cols,data)
 		return self
 
 	def get_db_gamedata(self): #Cole: How do we make it so this only queries X number of games?

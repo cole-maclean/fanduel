@@ -67,9 +67,11 @@ def main(Sport,method,parameters):
         time.sleep(10)
     except urllib2.HTTPError, err:
         print "Server returned {} error code!\n{}".format(err.code, err.read())
+        return False
         #sys.exit(1)
     except urllib2.URLError, err:
         print "Error retrieving file: {}".format(err.reason)
+        return False
         #sys.exit(1)
 
     data = None
