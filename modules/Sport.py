@@ -90,13 +90,19 @@ class Sport():
 				player_data_dict[player_key]['name'].append(player_key) #Cole: adding the field 'name' is required for openopts results output
 				for db_key,player_data in player_game.iteritems():
 					stat_key = data_map[db_key] if db_key in data_map.keys() else db_key
-					player_data_dict[player_key][stat_key].append(player_data)
+					try:
+						player_data_dict[player_key][stat_key].append(float(player_data))#Cole: Attempt to convert data to float, else keep as string
+					except:
+						player_data_dict[player_key][stat_key].append(player_data)
 			else:
 				player_data_dict[player_key] = {}
 				player_data_dict[player_key]['name'] = [player_key]
 				for db_key,player_data in player_game.iteritems():
 					stat_key = data_map[db_key] if db_key in data_map.keys() else db_key
-					player_data_dict[player_key][stat_key] = [player_data]
+					try:
+						player_data_dict[player_key][stat_key] = [float(player_data)]
+					except:
+						player_data_dict[player_key][stat_key] = [player_data]
 		return player_data_dict
 
 	def avg_stats(self,stats_data):
@@ -104,7 +110,7 @@ class Sport():
 		for player,stat_dict in stats_data.iteritems():
 			avg_player_stats[player] = {}
 			for stat_key,stat_data in stat_dict.iteritems():
-				try: #Cole: nested Try/Except statements feel like they're not best practice...
+				try:
 					np_array = numpy.array(map(float,stat_data))
 					avg_player_stats[player][stat_key] = numpy.mean(np_array)
 				except TypeError:
@@ -182,13 +188,17 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 		return db_player_data
 
 	def forecast_model(self,points_data):
-		return self.fanduel_points(points_data) #Cole: this will be updated once we have a model, for now just returns the average historical FD points/player
+		return self.FD_points(points_data) #Cole: this will be updated once we have a model, for now just returns the average historical FD points/player
 
-	def fanduel_points(self, points_data):
+	def FD_points(self, points_data): #Cole: This looks pretty repeaty. Need to refactor
 		for player,data in points_data.iteritems():
-			if data['Player_Type'] == 'batter':
-				data['FD_points'] = (data['singles']*1 + data['doubles']*2 + data['triples']*3 + data['home_runs']*4 + data['rbi']*1 + data['runs']*1
-											 + data['walks']*1 + data['stolen_bases']*1 + data['hit_by_pitch'] * 1 - (data['at_bats'] - data['hits'])*.25)
+			print data['Player_Type'][-1]
+			if data['Player_Type'][-1] == 'batter':
+				data['FD_points'] = (numpy.array(data['singles'])*1+numpy.array(data['doubles'])*2+numpy.array(data['triples'])*3+
+								numpy.array(data['home_runs'])*4+numpy.array(data['rbi'])*1+numpy.array(data['runs'])*1+
+									numpy.array(data['walks'])*1+numpy.array(data['stolen_bases'])*1+
+									numpy.subtract(numpy.array(data['at_bats']),numpy.array(data['hits']))*-.25)
 			else:
-				data['FD_points'] = data['win']*4 - data['earned_runs']*1 + data['strike_outs']*1 + data['innings_pitched']*1
+				data['FD_points']= (numpy.array(data['win'])*4+numpy.array(data['earned_runs'])*-1+
+									numpy.array(data['strike_outs'])*1+numpy.array(data['innings_pitched'])*1)
 		return points_data
