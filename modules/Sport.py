@@ -7,8 +7,10 @@ import os
 import numpy
 import ast
 from openopt import *
+from sklearn.feature_selection import SelectKBest
+from sklearn.feature_selection import chi2
 
-class Sport():
+class Sport(): #Cole: Class has functions that should be stripped out and place into more appropriate module/class
 	def __init__(self,sport):
 		self.sport = sport
 		self.gameid = None
@@ -78,7 +80,7 @@ class Sport():
 		return self
 
 	def get_db_gamedata(self): #Cole: How do we make it so this only queries X number of games?
-		sql = "SELECT * FROM hist_player_data WHERE Sport = '"+ self.sport +"'"
+		sql = "SELECT * FROM hist_player_data WHERE Sport = '"+ self.sport +"' ORDER BY Date Desc"
 		db_data = dbo.read_from_db(sql,["Player","GameID","Player_Type"],True)
 		player_data_dict = {}
 		for key,player_game in db_data.iteritems():
@@ -105,22 +107,30 @@ class Sport():
 						player_data_dict[player_key][stat_key] = [player_data]
 		return player_data_dict
 
-	def avg_stats(self,stats_data):
-		avg_player_stats = {}
-		for player,stat_dict in stats_data.iteritems():
-			avg_player_stats[player] = {}
-			for stat_key,stat_data in stat_dict.iteritems():
-				try:
-					np_array = numpy.array(map(float,stat_data))
-					avg_player_stats[player][stat_key] = numpy.mean(np_array)
-				except TypeError:
-					avg_player_stats[player][stat_key] = stat_data[-1]
-				except ValueError:
-					avg_player_stats[player][stat_key] = stat_data[-1]
-		return avg_player_stats
+	def avg_stat(self,stats_data):
+		np_array = numpy.array(stats_data)
+		avg =numpy.mean(np_array)
+		if numpy.isnan(avg):
+			return 0
+		else:
+			return avg
+
+	def trend_stat(self,stats_data):
+		xi = numpy.arange(0,len(stats_data))
+		matrix_ones = numpy.ones(len(stats_data))
+		array = numpy.array([xi,matrix_ones])
+		return numpy.linalg.lstsq(array.T,stats_data)[0][0]
 
 	def get_FD_player_dict(self,contest_url):
 		return ast.literal_eval(Uds.parse_html(contest_url,"FD.playerpicker.allPlayersFullData = ",";"))
+
+	# def get_model_features(self,model_data,feature_list):
+	# 	for feature in feature_list:
+	# 		sklearn.feature_select #(feature data, traget data, len(feature_list - 1))
+	# 	if spurious_feature in pruned_feature_list:
+	# 		return get_model_features(...)
+	# 	else:
+	# 		return pruned_feature_list
 
 	def optimal_roster(self,forecasted_player_universe):
 		items = ([{key:value for key,value in stats_data.iteritems() if key in self.optimizer_items}
@@ -160,9 +170,10 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 									    values['SS'] == 1,
 									    values['OF'] == 3,)
 		self.optimizer_items = ['name','Player','Player_Type','Salary','P','C','1B','2B','3B','SS','OF','FD_points']
+		self.feature_list = {'batter':['avg_FD_points'],'pitcher':['avg_FD_points']}
 	
 	def build_player_universe(self,contest_url): #Cole: this desperately needs documentation. Entire data structure needs documentation
-		db_player_data = self.avg_stats(self.get_db_gamedata()) #Cole: Stats need to be summarized here (ie avg, max, what ever maths)
+		db_player_data = self.get_db_gamedata() #Cole: Stats need to be summarized here (ie avg, max, what ever maths)
 		FD_player_data = self.get_FD_player_dict(contest_url)
 		for FD_playerid,data in FD_player_data.iteritems():
 			FD_data_index = 0
@@ -190,15 +201,39 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 	def forecast_model(self,points_data):
 		return self.FD_points(points_data) #Cole: this will be updated once we have a model, for now just returns the average historical FD points/player
 
-	def FD_points(self, points_data): #Cole: This looks pretty repeaty. Need to refactor
-		for player,data in points_data.iteritems():
-			print data['Player_Type'][-1]
-			if data['Player_Type'][-1] == 'batter':
-				data['FD_points'] = (numpy.array(data['singles'])*1+numpy.array(data['doubles'])*2+numpy.array(data['triples'])*3+
-								numpy.array(data['home_runs'])*4+numpy.array(data['rbi'])*1+numpy.array(data['runs'])*1+
-									numpy.array(data['walks'])*1+numpy.array(data['stolen_bases'])*1+
-									numpy.subtract(numpy.array(data['at_bats']),numpy.array(data['hits']))*-.25)
-			else:
-				data['FD_points']= (numpy.array(data['win'])*4+numpy.array(data['earned_runs'])*-1+
-									numpy.array(data['strike_outs'])*1+numpy.array(data['innings_pitched'])*1)
-		return points_data
+	def FD_points(self, data):
+		if data['Player_Type'][-1] == 'batter':
+			FD_points = (numpy.array(data['singles'])*1+numpy.array(data['doubles'])*2+numpy.array(data['triples'])*3+
+							numpy.array(data['home_runs'])*4+numpy.array(data['rbi'])*1+numpy.array(data['runs'])*1+
+								numpy.array(data['walks'])*1+numpy.array(data['stolen_bases'])*1+
+								numpy.subtract(numpy.array(data['at_bats']),numpy.array(data['hits']))*-.25)
+		else:
+			FD_points= (numpy.array(data['win'])*4+numpy.array(data['earned_runs'])*-1+
+								numpy.array(data['strike_outs'])*1+numpy.array(data['innings_pitched'])*1)
+		return FD_points
+
+	def build_feature_dataset(self,hist_data):#Cole: How do we generalize this method. Some out-of-box method likely exists. Defs need to refactor
+		feature_data = {}
+		for player,stats_data in hist_data.iteritems():
+			FD_points = self.FD_points(stats_data)
+			feature_dict = {}
+			feature_dict['FD_points'] = []
+			feature_dict['five_day_avg'] = []
+			feature_dict['five_day_trend'] = []
+			feature_dict['day_of_week'] = []
+			for indx,FD_point in enumerate(FD_points):
+				reverse_index = len(FD_points)-indx
+				try:
+					chunk_list = [FD_points[chunk_indx] for chunk_indx in range(reverse_index-5,reverse_index-1)]
+					feature_dict['FD_points'].append(FD_point)
+					feature_dict['five_day_avg'].append(self.avg_stat(chunk_list))
+					feature_dict['five_day_trend'].append(self.trend_stat(chunk_list))
+					feature_dict['day_of_week'].append(int(str(stats_data['Date'][indx])[6:8]))
+				except IndexError:
+					break
+			feature_data[player] = feature_dict
+		return feature_data
+
+
+
+
