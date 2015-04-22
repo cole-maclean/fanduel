@@ -8,7 +8,7 @@ import numpy
 import ast
 from openopt import *
 from sklearn.feature_selection import SelectKBest
-from sklearn.feature_selection import chi2
+from sklearn.feature_selection import f_classif
 
 class Sport(): #Cole: Class has functions that should be stripped out and place into more appropriate module/class
 	def __init__(self,sport):
@@ -124,7 +124,16 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 	def get_FD_player_dict(self,contest_url):
 		return ast.literal_eval(Uds.parse_html(contest_url,"FD.playerpicker.allPlayersFullData = ",";"))
 
-	# def get_model_features(self,model_data,feature_list):
+	def get_model_features(self,feature_data,target,spurious_feature):
+		feature_matrix = numpy.array([[feature_data[key][index] for key in feature_data.keys() if key != target] for index in range(0,len(feature_data[target]))])
+		feature_labels = [feature for feature in  feature_data.keys() if feature !=target]
+		spurious_index = feature_labels.index(spurious_feature)
+		target_data = numpy.array(feature_data[target])
+		k = len(feature_labels) - 1
+		feature_scores = SelectKBest(f_classif,k=k).fit(feature_matrix,target_data).pvalues_
+		print feature_scores
+		features = [feature for indx,feature in enumerate(feature_labels) if feature_scores[indx] > feature_scores[spurious_index]]
+		return features
 	# 	for feature in feature_list:
 	# 		sklearn.feature_select #(feature data, traget data, len(feature_list - 1))
 	# 	if spurious_feature in pruned_feature_list:
@@ -220,7 +229,7 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 			feature_dict['FD_points'] = []
 			feature_dict['five_day_avg'] = []
 			feature_dict['five_day_trend'] = []
-			feature_dict['day_of_week'] = []
+			feature_dict['day'] = []
 			for indx,FD_point in enumerate(FD_points):
 				reverse_index = len(FD_points)-indx
 				try:
@@ -228,7 +237,7 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 					feature_dict['FD_points'].append(FD_point)
 					feature_dict['five_day_avg'].append(self.avg_stat(chunk_list))
 					feature_dict['five_day_trend'].append(self.trend_stat(chunk_list))
-					feature_dict['day_of_week'].append(int(str(stats_data['Date'][indx])[6:8]))
+					feature_dict['day'].append(int(str(stats_data['Date'][indx])[6:8]))
 				except IndexError:
 					break
 			feature_data[player] = feature_dict
