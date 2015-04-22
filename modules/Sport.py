@@ -7,13 +7,19 @@ import os
 import numpy
 import ast
 from openopt import *
-from sklearn.feature_selection import SelectKBest
-from sklearn.feature_selection import f_classif
+import Model
 
 class Sport(): #Cole: Class has functions that should be stripped out and place into more appropriate module/class
 	def __init__(self,sport):
 		self.sport = sport
 		self.gameid = None
+
+	def FD_point_model(self,hist_data):
+		for player,data in hist_data.iteritems():
+			player_model_data = self.build_model_dataset(data)
+			features = Model.Model().prune_features(player_model_data,'FD_points','day_of_month')
+			print features
+		return player_model_data
 
 	def events(self,event_date):
 		self.gameid = None
@@ -107,6 +113,20 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 						player_data_dict[player_key][stat_key] = [player_data]
 		return player_data_dict
 
+	def avg_stat(self,stats_data):
+		np_array = numpy.array(stats_data)
+		avg =numpy.mean(np_array)
+		if numpy.isnan(avg):
+			return 0
+		else:
+			return avg
+
+	def trend_stat(self,stats_data):
+		xi = numpy.arange(0,len(stats_data))
+		matrix_ones = numpy.ones(len(stats_data))
+		array = numpy.array([xi,matrix_ones])
+		return numpy.linalg.lstsq(array.T,stats_data)[0][0]
+
 	def get_FD_player_dict(self,contest_url):
 		return ast.literal_eval(Uds.parse_html(contest_url,"FD.playerpicker.allPlayersFullData = ",";"))
 
@@ -148,8 +168,37 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 									    values['SS'] == 1,
 									    values['OF'] == 3,)
 		self.optimizer_items = ['name','Player','Player_Type','Salary','P','C','1B','2B','3B','SS','OF','FD_points']
-		self.feature_list = {'batter':['avg_FD_points'],'pitcher':['avg_FD_points']}
-	
+
+	def build_model_dataset(self,hist_data):#Cole: How do we generalize this method. Some out-of-box method likely exists. Defs need to refactor
+		FD_points = self.FD_points(hist_data)
+		feature_dict = {}
+		feature_dict['FD_points'] = []
+		feature_dict['five_day_avg'] = []
+		feature_dict['five_day_trend'] = []
+		feature_dict['day_of_month'] = []
+		for indx,FD_point in enumerate(FD_points):
+			reverse_index = len(FD_points)-indx
+			try:
+				chunk_list = [FD_points[chunk_indx] for chunk_indx in range(reverse_index-5,reverse_index-1)]
+				feature_dict['FD_points'].append(FD_point)
+				feature_dict['five_day_avg'].append(self.avg_stat(chunk_list))
+				feature_dict['five_day_trend'].append(self.trend_stat(chunk_list))
+				feature_dict['day_of_month'].append(int(str(hist_data['Date'][indx])[6:8]))
+			except IndexError:
+				break
+		return feature_dict
+
+	def FD_points(self, data):
+		if data['Player_Type'][-1] == 'batter':
+			FD_points = (numpy.array(data['singles'])*1+numpy.array(data['doubles'])*2+numpy.array(data['triples'])*3+
+							numpy.array(data['home_runs'])*4+numpy.array(data['rbi'])*1+numpy.array(data['runs'])*1+
+								numpy.array(data['walks'])*1+numpy.array(data['stolen_bases'])*1+
+								numpy.subtract(numpy.array(data['at_bats']),numpy.array(data['hits']))*-.25)
+		else:
+			FD_points= (numpy.array(data['win'])*4+numpy.array(data['earned_runs'])*-1+
+								numpy.array(data['strike_outs'])*1+numpy.array(data['innings_pitched'])*1)
+		return FD_points
+
 	def build_player_universe(self,contest_url): #Cole: this desperately needs documentation. Entire data structure needs documentation
 		db_player_data = self.get_db_gamedata() #Cole: Stats need to be summarized here (ie avg, max, what ever maths)
 		FD_player_data = self.get_FD_player_dict(contest_url)
@@ -176,20 +225,6 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 				print player_key + ' not in db_player_data'
 		return db_player_data
 
-	def forecast_model(self,points_data):
-		return self.FD_points(points_data) #Cole: this will be updated once we have a model, for now just returns the average historical FD points/player
-
-	def FD_points(self, data):
-		if data['Player_Type'][-1] == 'batter':
-			FD_points = (numpy.array(data['singles'])*1+numpy.array(data['doubles'])*2+numpy.array(data['triples'])*3+
-							numpy.array(data['home_runs'])*4+numpy.array(data['rbi'])*1+numpy.array(data['runs'])*1+
-								numpy.array(data['walks'])*1+numpy.array(data['stolen_bases'])*1+
-								numpy.subtract(numpy.array(data['at_bats']),numpy.array(data['hits']))*-.25)
-		else:
-			FD_points= (numpy.array(data['win'])*4+numpy.array(data['earned_runs'])*-1+
-								numpy.array(data['strike_outs'])*1+numpy.array(data['innings_pitched'])*1)
-		return FD_points
 
 
-
-
+		
