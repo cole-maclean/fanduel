@@ -15,9 +15,8 @@ def odds_to_prob(odd,type): #takes in a "string odd" and returns probability as 
         elif odd[0]=='-':
             return (-1)*int(odd)/((-1)*int(odd)+100)*100
         else:
-            return 'Error'
-    else:
-        return
+            return 
+    return 
 
 def get_teamname_exceptions(name_str,sport):
 #NHL: New Jersey, NY Rangers or NY Islanders, Los Angeles, St.Louis, San Jose, Tampa Bay 
@@ -91,3 +90,5 @@ def get_team_odds(sport):
             i=i+1
     Cell("Output",15,5).value=odds_list
     return odds_list
+
+get_team_odds('NHL')

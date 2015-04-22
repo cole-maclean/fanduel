@@ -37,6 +37,9 @@ def hist_web_lineups():
     rw_nba=Cell('Backtest_Parameters','clRWNBA').value
     rw_mlb=Cell('Backtest_Parameters','clRWMLB').value
     rw_nhl=Cell('Backtest_Parameters','clRWNHL').value
+    #nhl_odds=
+    #nba_odds=
+    #mlb_odds=
     db_data=[todays_date,dfn_nba,rw_nba,rw_mlb,rw_nhl]
     columns='Date,DFN_NBA,RW_NBA,RW_MLB,RW_NHL'
     placeholders = ', '.join(['%s'] * len(db_data))
@@ -47,7 +50,6 @@ def hist_web_lineups():
 
 def hist_FD_playerdata(Sport,Url,ContestID):
     #player_map = Ugen.excel_mapping('Player Map',1,2)
-    Cell(10,2).value=Url
     FD_dict = ast.literal_eval(Uds.parse_html(Url,"FD.playerpicker.allPlayersFullData = ",";"))
     todays_date=time.strftime("%Y-%m-%d")
     db_data=[]
@@ -61,7 +63,7 @@ def hist_FD_playerdata(Sport,Url,ContestID):
         columns='contestID,Sport,Date,Player,FD_Salary,FD_FPPG,FD_GP,Position'
         placeholders = ', '.join(['%s'] * len(db_data))
         table='hist_fanduel_data'
-        print 'now historizing %s contest#: %d player %s' % (Sport,ContestID,player_name)
+        #print 'now historizing %s contest#: %d player %s' % (Sport,ContestID,player_name)
         dbo.insert_mysql(table,columns,db_data,placeholders)
     return
 
@@ -88,19 +90,21 @@ def hist_FD_contest_salaries():
                 Url='https://www.fanduel.com/e/Game'+contest['entryURL'][contest['entryURL'].find('Game\\')+5:]
                 if i==1 and len(contest['startString'])<14 and contest['entryURL'].find('accept_public_challenge')==-1:
                     ContestID=contest['gameId'] #ContestID is a unique identifier for contests @unique time
-                    #print sport,contest['entryURL'],contest['startString']
+                    print 'now historizing %s contest#: %d' % (sport,ContestID)
                     hist_FD_playerdata(sport.upper(),Url,ContestID)
+                    print '%s contest#: %d historized succesfully' % (sport,ContestID)
                     historized_contests.append(ContestID)
                 if contest['gameId']!=ContestID and contest['gameId'] not in historized_contests and len(contest['startString'])<14 and contest['entryURL'].find('accept_public_challenge')==-1: #check for contests at other times
                     ContestID=contest['gameId']
-                    #print sport,contest['entryURL'],contest['startString']
+                    print 'now historizing %s contest#: %d' % (sport,ContestID)
                     hist_FD_playerdata(sport.upper(),Url,ContestID)
+                    print '%s contest#: %d historized succesfully' % (sport,ContestID)
                     historized_contests.append(ContestID)
                 i=i+1
     fdo.end_fanduel_session(s)
     return
 
-#hist_web_lineups()
+hist_web_lineups()
 hist_FD_contest_salaries()
 
 #Remove duplicate rows SQL statement
