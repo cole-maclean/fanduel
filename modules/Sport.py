@@ -196,8 +196,8 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 		FD_points = self.FD_points(hist_data)
 		feature_dict = {}
 		feature_dict['FD_points'] = []
-		feature_dict['FD_avg' + self.avg_stat_chunk_size] = []
-		feature_dict['FD_trend' + self.trend_chunk_size] = []
+		feature_dict['FD_avg' + str(self.avg_stat_chunk_size)] = []
+		feature_dict['FD_trend' + str(self.trend_chunk_size)] = []
 		feature_dict['day_of_month'] = []
 		for indx,FD_point in enumerate(FD_points):
 			reverse_index = len(FD_points)-indx
@@ -205,9 +205,9 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 				avg_chunk_list = [FD_points[chunk_indx] for chunk_indx in range(reverse_index-self.avg_stat_chunk_size,reverse_index-1)]
 				trend_chunk_list = [FD_points[chunk_indx] for chunk_indx in range(reverse_index-self.trend_chunk_size,reverse_index-1)]
 				feature_dict['FD_points'].append(FD_point)
-				feature_dict['FD_avg' + self.avg_stat_chunk_size].append(self.avg_stat(avg_chunk_list))
-				feature_dict['FD_trend' + self.trend_chunk_size].append(self.trend_stat(trend_chunk_list))
-				feature_dict['day_of_month'].append(int(str(hist_data['Date'][indx])[6:8]))
+				feature_dict['FD_avg' + str(self.avg_stat_chunk_size)].append(self.avg_stat(avg_chunk_list)) 
+				feature_dict['FD_trend' + str(self.trend_chunk_size)].append(self.trend_stat(trend_chunk_list)+FD_points[reverse_index-1]) #Cole: the trend feature is the trend over chunk size plus the last FD_point
+				feature_dict['day_of_month'].append(int(str(hist_data['Date'][indx])[8:10]))
 			except IndexError:
 				break
 		return feature_dict

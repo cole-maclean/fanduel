@@ -70,7 +70,6 @@ CREATE TABLE `hist_player_data` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8$$
 
 
-
 delimiter $$
 
 CREATE TABLE `hist_fanduel_data` (
@@ -96,4 +95,19 @@ CREATE TABLE `hist_lineup_optimizers` (
   `RW_MLB` text DEFAULT NULL,
   `RW_NHL` text DEFAULT NULL, 
   PRIMARY KEY (`DataID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8$$
+
+delimiter $$
+
+CREATE TABLE `event_data` (
+  `event_id` varchar(255) CHARACTER NOT NULL,
+  `sport` varchar(45) CHARACTER DEFAULT NULL,
+  `start_date_time` varchar(255) DEFAULT NULL,
+  `season_type` varchar(45) DEFAULT NULL,
+  `away_team` varchar(45) DEFAULT NULL,
+  `home_team` varchar(45) DEFAULT NULL,
+  `stadium` varchar(45) DEFAULT NULL,
+  `temperature` varchar(45) DEFAULT NULL,
+  `wind` varchar(45) DEFAULT NULL,
+  PRIMARY KEY (`event_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8$$
