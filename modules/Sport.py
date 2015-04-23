@@ -104,8 +104,8 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 			dbo.insert_mysql('event_data',cols,data)
 		return event_data_dict
 
-	def get_db_gamedata(self): #Cole: How do we make it so this only queries X number of games?
-		sql = "SELECT * FROM hist_player_data WHERE Sport = '"+ self.sport +"' ORDER BY Date Desc"
+	def get_db_gamedata(self,start_date,end_date): #Cole: How do we make it so this only queries X number of games?
+		sql = "SELECT * FROM hist_player_data WHERE Sport = '"+ self.sport +"' AND Date BETWEEN '" + start_date +"' AND '" + end_date + "' ORDER BY Date Desc"
 		db_data = dbo.read_from_db(sql,["Player","GameID","Player_Type"],True)
 		player_data_dict = {}
 		for key,player_game in db_data.iteritems():
@@ -196,8 +196,8 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 		FD_points = self.FD_points(hist_data)
 		feature_dict = {}
 		feature_dict['FD_points'] = []
-		feature_dict['five_day_avg'] = []
-		feature_dict['five_day_trend'] = []
+		feature_dict['FD_avg' + self.avg_stat_chunk_size] = []
+		feature_dict['FD_trend' + self.trend_chunk_size] = []
 		feature_dict['day_of_month'] = []
 		for indx,FD_point in enumerate(FD_points):
 			reverse_index = len(FD_points)-indx
@@ -205,8 +205,8 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 				avg_chunk_list = [FD_points[chunk_indx] for chunk_indx in range(reverse_index-self.avg_stat_chunk_size,reverse_index-1)]
 				trend_chunk_list = [FD_points[chunk_indx] for chunk_indx in range(reverse_index-self.trend_chunk_size,reverse_index-1)]
 				feature_dict['FD_points'].append(FD_point)
-				feature_dict['five_day_avg'].append(self.avg_stat(chunk_list))
-				feature_dict['five_day_trend'].append(self.trend_stat(chunk_list))
+				feature_dict['FD_avg' + self.avg_stat_chunk_size].append(self.avg_stat(avg_chunk_list))
+				feature_dict['FD_trend' + self.trend_chunk_size].append(self.trend_stat(trend_chunk_list))
 				feature_dict['day_of_month'].append(int(str(hist_data['Date'][indx])[6:8]))
 			except IndexError:
 				break

@@ -19,7 +19,6 @@ class Model():
 			self.features = []
 		return self
 
-
 class Visualize():
 		pass
 
