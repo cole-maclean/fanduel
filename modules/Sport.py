@@ -8,6 +8,7 @@ import numpy
 import ast
 from openopt import *
 import Model
+import pandas
 
 class Sport(): #Cole: Class has functions that should be stripped out and place into more appropriate module/class
 	def __init__(self,sport):
@@ -17,8 +18,9 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 	def FD_point_model(self,hist_data):
 		for player,data in hist_data.iteritems():
 			player_model_data = self.build_model_dataset(data)
-			features = Model.Model().prune_features(player_model_data,'FD_points','day_of_month')
-			print features
+			player_model = Model.Model().prune_features(player_model_data,'FD_points','day_of_month')
+			#pruned_model_data = {key:data for key,data in player_model_data.iteritems() if key in features}
+			print player_model.features
 		return player_model_data
 
 	def events(self,event_date):
@@ -38,18 +40,20 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 		self.gameid = game_id
 		return XMLStats.main(self,'boxscore',None)
 
-	def get_daily_game_data(self,event_dates,store = False):#Cole:event_date format is yyyyMMdd, must be a list
+	def get_daily_game_data(self,start_date,end_date,store = False):#Cole:event_date format is yyyyMMdd, must be a list
+		event_dates = [d.strftime('%Y%m%d') for d in pandas.date_range(start_date,end_date)]
 		for event_date in event_dates:
 			day_events = self.events(event_date)
 			event_list = ([game['event_id'] for game in day_events if game['event_status'] == 'completed'
 							 and game['season_type'] == 'regular' or 'post'])
 			all_game_data = {}
-			for game_id in event_list:
+			for indx,game_id in enumerate(event_list):
 				self.gameid = game_id
 				if store == False:
 					game_data = XMLStats.main(self,'boxscore',None)
 				elif store == True and self.gameid not in self.gameids().all_gameids: #Cole: this will make it so this method of the class can only be used if Sport class generated from individual sport class (ie MLB, NHL)
 					print "loading " + game_id
+					self.parse_event_data(day_events[indx])
 					game_data = XMLStats.main(self,'boxscore',None)
 					if game_data != None:
 						parsed_data = self.parse_boxscore_data(game_data)
@@ -84,6 +88,21 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 					data = ", ".join(['"' + unicode(v) + '"' for v in player_data.values()])
 					dbo.insert_mysql('hist_player_data',cols,data)
 		return self
+
+	def parse_event_data(self,event_data): #Cole: There must be a better way...
+		event_data_dict = {}
+		if event_data:
+			event_data_dict['event_id'] = event_data['event_id']
+			event_data_dict['sport'] = event_data['sport']
+			event_data_dict['start_date_time'] = event_data['start_date_time']
+			event_data_dict['season_type'] = event_data['season_type']
+			event_data_dict['away_team'] = event_data['away_team']['team_id']
+			event_data_dict['home_team'] = event_data['home_team']['team_id']			
+			event_data_dict['stadium'] = event_data['home_team']['site_name']
+			cols = ", ".join(event_data_dict.keys())
+			data = ", ".join(['"' + unicode(v) + '"' for v in event_data_dict.values()])
+			dbo.insert_mysql('event_data',cols,data)
+		return event_data_dict
 
 	def get_db_gamedata(self): #Cole: How do we make it so this only queries X number of games?
 		sql = "SELECT * FROM hist_player_data WHERE Sport = '"+ self.sport +"' ORDER BY Date Desc"
@@ -158,6 +177,8 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 		self.inv_db_data_model = {dataset:dict(zip(self.db_data_model[dataset].values(), self.db_data_model[dataset].keys())) for dataset in self.db_data_model}
 		self.data_model = ({'away_batters':self.db_data_model['batter'],'away_pitchers':self.db_data_model['pitcher'],
 							'home_batters':self.db_data_model['batter'],'home_pitchers':self.db_data_model['pitcher']})
+		self.event_data_model = ({'event':{'event_id':'event_id','sport':'sport','start_date_time':'start_date_time','season_type':'season_type'},
+									'away_team':{'team_id':'away_team'},'home_team':{'team_id':'home_team','site_name':'stadium'}})
 		self.optimizer_constraints = lambda values : (
     									values['Salary'] <= 55000,
 									    values['P'] == 1,
@@ -225,6 +246,32 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 				print player_key + ' not in db_player_data'
 		return db_player_data
 
+def best_chunk_size():
+	oMLB=MLB()
+	db_data = oMLB.get_db_gamedata()
+	top_five_chunk_sizes = {}
+	for player,data in db_data.iteritems():
+		FD_points = oMLB.FD_points(data)
+		feature_dict = {}
+		for chunk_size in range(1,30):
+			feature_dict[str(chunk_size) + "_avg"] = FD_point_avg_chucks(oMLB,FD_points,chunk_size)
+			
 
 
-		
+
+def FD_point_avg_chucks(MLB,FD_points,chunk_size):
+	for indx,FD_point in enumerate(FD_points):
+		reverse_index = len(FD_points)-indx
+		chunk_avgs = []
+		try:
+			chunk_list = [FD_points[chunk_indx] for chunk_indx in range(reverse_index-chunk_size,reverse_index-1)]
+			chunk_avgs.append(MLB.avg_stat(chunk_list))
+			feature_dict[chunk_size + '_FD_points'].append(FD_point)
+		except IndexError:
+			break
+	return chunk_avgs
+
+
+
+#MLB=MLB()
+#MLB.get_daily_game_data("20140301","20150422",True)

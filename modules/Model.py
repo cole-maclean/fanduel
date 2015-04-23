@@ -11,13 +11,16 @@ class Model():
 		if feature_matrix.any():
 			feature_labels = [feature for feature in  feature_data.keys() if feature !=target]
 			spurious_index = feature_labels.index(spurious_feature)
-			target_data = numpy.array(feature_data[target])
+			self.target_data = numpy.array(feature_data[target])
 			k = len(feature_labels) - 1
-			feature_scores = SelectKBest(f_classif,k=k).fit(feature_matrix,target_data).pvalues_
-			features = [feature for indx,feature in enumerate(feature_labels) if feature_scores[indx] > feature_scores[spurious_index]]
-			return features
-		return []
+			self.selector = SelectKBest(f_classif,k=k).fit(feature_matrix,self.target_data)
+			self.features = [feature for indx,feature in enumerate(feature_labels) if self.selector.pvalues_[indx] > self.selector.pvalues_[spurious_index]]
+		else:
+			self.features = []
+		return self
 
+	def best_chunk_size(self):
+		pass
 class Visualize():
 		pass
 
