@@ -17,7 +17,7 @@ CREATE TABLE `fd_table_contests` (
   `game_id` varchar(45) DEFAULT NULL,
   `timestamp` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`idFD_table_contests`)
-) ENGINE=InnoDB AUTO_INCREMENT=755 DEFAULT CHARSET=latin1$$
+) ENGINE=InnoDB AUTO_INCREMENT=755 DEFAULT CHARSET=utf8$$
 
 delimiter $$
 DROP TABLE IF EXISTS hist_performance;
@@ -37,7 +37,7 @@ CREATE TABLE `hist_performance` (
   `Winnings` double DEFAULT NULL,
   `Link` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`Entry_Id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1$$
+) ENGINE=InnoDB DEFAULT CHARSET=utf8$$
 
 delimiter $$
 
@@ -65,7 +65,7 @@ CREATE TABLE `hist_player_data` (
   `Stat12` varchar(45) DEFAULT NULL,
   `Stat13` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`Player`,`GameID`,`Player_Type`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1$$
+) ENGINE=InnoDB DEFAULT CHARSET=utf8$$
 
 delimiter $$
 
@@ -80,7 +80,7 @@ CREATE TABLE `hist_fanduel_data` (
   `FD_GP` varchar(45) DEFAULT NULL,
   `contestID` varchar(45) DEFAULT NULL,   
   PRIMARY KEY (`DataID`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1$$
+) ENGINE=InnoDB DEFAULT CHARSET=utf8$$
 
 delimiter $$
 
@@ -92,4 +92,4 @@ CREATE TABLE `hist_lineup_optimizers` (
   `RW_MLB` text DEFAULT NULL,
   `RW_NHL` text DEFAULT NULL, 
   PRIMARY KEY (`DataID`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1$$
+) ENGINE=InnoDB DEFAULT CHARSET=utf8$$
