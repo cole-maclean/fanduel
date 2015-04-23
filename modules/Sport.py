@@ -189,6 +189,8 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 									    values['SS'] == 1,
 									    values['OF'] == 3,)
 		self.optimizer_items = ['name','Player','Player_Type','Salary','P','C','1B','2B','3B','SS','OF','FD_points']
+		self.avg_stat_chunk_size = 5
+		self.trend_chunk_size = 5
 
 	def build_model_dataset(self,hist_data):#Cole: How do we generalize this method. Some out-of-box method likely exists. Defs need to refactor
 		FD_points = self.FD_points(hist_data)
@@ -200,7 +202,8 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 		for indx,FD_point in enumerate(FD_points):
 			reverse_index = len(FD_points)-indx
 			try:
-				chunk_list = [FD_points[chunk_indx] for chunk_indx in range(reverse_index-5,reverse_index-1)]
+				avg_chunk_list = [FD_points[chunk_indx] for chunk_indx in range(reverse_index-self.avg_stat_chunk_size,reverse_index-1)]
+				trend_chunk_list = [FD_points[chunk_indx] for chunk_indx in range(reverse_index-self.trend_chunk_size,reverse_index-1)]
 				feature_dict['FD_points'].append(FD_point)
 				feature_dict['five_day_avg'].append(self.avg_stat(chunk_list))
 				feature_dict['five_day_trend'].append(self.trend_stat(chunk_list))
@@ -245,33 +248,6 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 			except KeyError: #Cole: need to map mis-matched names
 				print player_key + ' not in db_player_data'
 		return db_player_data
-
-def best_chunk_size():
-	oMLB=MLB()
-	db_data = oMLB.get_db_gamedata()
-	top_five_chunk_sizes = {}
-	for player,data in db_data.iteritems():
-		FD_points = oMLB.FD_points(data)
-		feature_dict = {}
-		for chunk_size in range(1,30):
-			feature_dict[str(chunk_size) + "_avg"] = FD_point_avg_chucks(oMLB,FD_points,chunk_size)
-			
-
-
-
-def FD_point_avg_chucks(MLB,FD_points,chunk_size):
-	for indx,FD_point in enumerate(FD_points):
-		reverse_index = len(FD_points)-indx
-		chunk_avgs = []
-		try:
-			chunk_list = [FD_points[chunk_indx] for chunk_indx in range(reverse_index-chunk_size,reverse_index-1)]
-			chunk_avgs.append(MLB.avg_stat(chunk_list))
-			feature_dict[chunk_size + '_FD_points'].append(FD_point)
-		except IndexError:
-			break
-	return chunk_avgs
-
-
 
 #MLB=MLB()
 #MLB.get_daily_game_data("20140301","20150422",True)

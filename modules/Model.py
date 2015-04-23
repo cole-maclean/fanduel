@@ -19,8 +19,7 @@ class Model():
 			self.features = []
 		return self
 
-	def best_chunk_size(self):
-		pass
+
 class Visualize():
 		pass
 
