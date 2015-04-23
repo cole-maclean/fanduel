@@ -10,6 +10,8 @@ import requests
 import FD_operations as fdo
 import general_utils as Ugen
 import sys
+import TeamOdds
+import json
 
 def get_NHLgameID_date():
 	todays_date=time.strftime("%Y-%m-%d")	
@@ -33,15 +35,17 @@ def hist_web_lineups():
         print "hist_web_lineups: enter lineups for todays date OR ensure you've entered today's date"
         time.sleep(5)
         return   
+    if TeamOdds.get_team_odds('MLB')[1].split()[1]!=todays_date.split('-')[2]:
+        print "team odds are not for today. check f'n or don't historize odds"
+        time.sleep(10)
+        return
     dfn_nba=Cell('Backtest_Parameters','clDFNNBA').value
     rw_nba=Cell('Backtest_Parameters','clRWNBA').value
     rw_mlb=Cell('Backtest_Parameters','clRWMLB').value
     rw_nhl=Cell('Backtest_Parameters','clRWNHL').value
-    #nhl_odds=
-    #nba_odds=
-    #mlb_odds=
-    db_data=[todays_date,dfn_nba,rw_nba,rw_mlb,rw_nhl]
-    columns='Date,DFN_NBA,RW_NBA,RW_MLB,RW_NHL'
+    mlb_odds=json.dumps(TeamOdds.get_team_odds('MLB')[0])
+    db_data=[todays_date,dfn_nba,rw_nba,rw_mlb,rw_nhl,mlb_odds]
+    columns='Date,DFN_NBA,RW_NBA,RW_MLB,RW_NHL,MLB_ODDS'
     placeholders = ', '.join(['%s'] * len(db_data))
     print 'now historizing'
     dbo.insert_mysql(table,columns,db_data,placeholders)

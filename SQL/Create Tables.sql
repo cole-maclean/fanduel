@@ -89,6 +89,7 @@ CREATE TABLE `hist_lineup_optimizers` (
   `DFN_NBA` text DEFAULT NULL,
   `RW_NBA` text DEFAULT NULL, 
   `RW_MLB` text DEFAULT NULL,
-  `RW_NHL` text DEFAULT NULL, 
+  `RW_NHL` text DEFAULT NULL,
+  `MLB_ODDS` text DEFAULT NULL, 
   PRIMARY KEY (`Date`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1$$

@@ -15,6 +15,6 @@ def get_weather(feature,state_city): #Ian: feature/state_city are both string in
 
 	return response
 
-Cell(1,1).value=get_weather('forecast','NY/New_York')
-Cell(2,1).value=get_weather('forecast','94107')
+Cell('Output',1,1).value=get_weather('forecast','NY/New_York')
+Cell('Output',2,1).value=get_weather('forecast','94107')
 os.system('pause')

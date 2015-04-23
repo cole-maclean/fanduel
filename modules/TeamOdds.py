@@ -43,7 +43,7 @@ def get_team_odds(sport):
     i=1 #counter for cells in excel
     odds_list={}
     date_raw=soup.find("div",{"class":"time type"}).get_text().split()
-    date=date_raw[0]+date_raw[1][0]+date_raw[1][1] #Ian: first date in the table. if any of the row's dates do not equal this then it wont get the odds for that game because its on a diff day
+    date=date_raw[0]+' '+date_raw[1][0]+date_raw[1][1] #Ian: first date in the table. if any of the row's dates do not equal this then it wont get the odds for that game because its on a diff day
     for z in range(0,2,1):
         if z==0:
             row_type='even'
@@ -74,7 +74,7 @@ def get_team_odds(sport):
                     elif z==1:
                         team2=teams_list[j]
             row_date_raw=row.find("div",{"class":"time type"}).get_text().split()
-            row_date=row_date_raw[0]+row_date_raw[1][0]+row_date_raw[1][1]
+            row_date=row_date_raw[0]+' '+row_date_raw[1][0]+row_date_raw[1][1]
             if row_date==date: #Ian: check if current games date is equal to the date in the first row
                 moneyline1=row.findAll("div",{"class":"book moneyline book-"+"1"})[0].get_text().split() #for now just do opening odds
                 if sport=='MLB':
@@ -85,12 +85,10 @@ def get_team_odds(sport):
                     print 'team map does not exist for entered sport: %s' % sport
                     #return
                 if moneyline1:
-                    # odds_list[team_map[team1]]=round(odds_to_prob(moneyline1[0],'American Moneyline'),2)#Cole:incorporated mapping to change city name to NHL team name
-                    # odds_list[team_map[team2]]=round(odds_to_prob(moneyline1[1],'American Moneyline'),2)
-                    odds_list[team1]=round(odds_to_prob(moneyline1[0],'American Moneyline'),2)#Cole:incorporated mapping to change city name to NHL team name
-                    odds_list[team2]=round(odds_to_prob(moneyline1[1],'American Moneyline'),2)
+                    odds_list[team_map[team1]]=round(odds_to_prob(moneyline1[0],'American Moneyline'),2)#Cole:incorporated mapping to change city name to NHL team name
+                    odds_list[team_map[team2]]=round(odds_to_prob(moneyline1[1],'American Moneyline'),2)
+                    #odds_list[team1]=round(odds_to_prob(moneyline1[0],'American Moneyline'),2)
+                    #odds_list[team2]=round(odds_to_prob(moneyline1[1],'American Moneyline'),2)
             i=i+1
-    #Cell("Output",15,5).value=odds_list
-    return odds_list
-
-#get_team_odds('NBA')
+    Cell("Output",1,1).value=odds_list
+    return [odds_list,date]
