@@ -43,14 +43,16 @@ delimiter $$
 
 DROP TABLE IF EXISTS hist_player_data;
 
+delimiter $$
+
 CREATE TABLE `hist_player_data` (
   `Sport` varchar(45) NOT NULL,
-  `Player` varchar(45) NOT NULL,
+  `Player` varchar(45)  NOT NULL,
   `GameID` varchar(255) NOT NULL,
   `Position` varchar(45) DEFAULT NULL,
   `Team` varchar(45) DEFAULT NULL,
   `Player_Type` varchar(45) NOT NULL,
-  `Date` varchar(45) DEFAULT NULL,
+  `Date` date DEFAULT NULL,
   `Stat1` varchar(45) DEFAULT NULL,
   `Stat2` varchar(45) DEFAULT NULL,
   `Stat3` varchar(45) DEFAULT NULL,
@@ -92,4 +94,19 @@ CREATE TABLE `hist_lineup_optimizers` (
   `RW_MLB` text DEFAULT NULL,
   `RW_NHL` text DEFAULT NULL, 
   PRIMARY KEY (`DataID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8$$
+
+delimiter $$
+
+CREATE TABLE `event_data` (
+  `event_id` varchar(255) CHARACTER NOT NULL,
+  `sport` varchar(45) CHARACTER DEFAULT NULL,
+  `start_date_time` varchar(255) DEFAULT NULL,
+  `season_type` varchar(45) DEFAULT NULL,
+  `away_team` varchar(45) DEFAULT NULL,
+  `home_team` varchar(45) DEFAULT NULL,
+  `stadium` varchar(45) DEFAULT NULL,
+  `temperature` varchar(45) DEFAULT NULL,
+  `wind` varchar(45) DEFAULT NULL,
+  PRIMARY KEY (`event_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8$$

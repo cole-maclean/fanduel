@@ -7,13 +7,21 @@ import os
 import numpy
 import ast
 from openopt import *
-from sklearn.feature_selection import SelectKBest
-from sklearn.feature_selection import chi2
+import Model
+import pandas
 
 class Sport(): #Cole: Class has functions that should be stripped out and place into more appropriate module/class
 	def __init__(self,sport):
 		self.sport = sport
 		self.gameid = None
+
+	def FD_point_model(self,hist_data):
+		for player,data in hist_data.iteritems():
+			player_model_data = self.build_model_dataset(data)
+			player_model = Model.Model().prune_features(player_model_data,'FD_points','day_of_month')
+			#pruned_model_data = {key:data for key,data in player_model_data.iteritems() if key in features}
+			print player_model.features
+		return player_model_data
 
 	def events(self,event_date):
 		self.gameid = None
@@ -32,18 +40,20 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 		self.gameid = game_id
 		return XMLStats.main(self,'boxscore',None)
 
-	def get_daily_game_data(self,event_dates,store = False):#Cole:event_date format is yyyyMMdd, must be a list
+	def get_daily_game_data(self,start_date,end_date,store = False):#Cole:event_date format is yyyyMMdd, must be a list
+		event_dates = [d.strftime('%Y%m%d') for d in pandas.date_range(start_date,end_date)]
 		for event_date in event_dates:
 			day_events = self.events(event_date)
 			event_list = ([game['event_id'] for game in day_events if game['event_status'] == 'completed'
 							 and game['season_type'] == 'regular' or 'post'])
 			all_game_data = {}
-			for game_id in event_list:
+			for indx,game_id in enumerate(event_list):
 				self.gameid = game_id
 				if store == False:
 					game_data = XMLStats.main(self,'boxscore',None)
 				elif store == True and self.gameid not in self.gameids().all_gameids: #Cole: this will make it so this method of the class can only be used if Sport class generated from individual sport class (ie MLB, NHL)
 					print "loading " + game_id
+					self.parse_event_data(day_events[indx])
 					game_data = XMLStats.main(self,'boxscore',None)
 					if game_data != None:
 						parsed_data = self.parse_boxscore_data(game_data)
@@ -79,8 +89,23 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 					dbo.insert_mysql('hist_player_data',cols,data)
 		return self
 
-	def get_db_gamedata(self): #Cole: How do we make it so this only queries X number of games?
-		sql = "SELECT * FROM hist_player_data WHERE Sport = '"+ self.sport +"' ORDER BY Date Desc"
+	def parse_event_data(self,event_data): #Cole: There must be a better way...
+		event_data_dict = {}
+		if event_data:
+			event_data_dict['event_id'] = event_data['event_id']
+			event_data_dict['sport'] = event_data['sport']
+			event_data_dict['start_date_time'] = event_data['start_date_time']
+			event_data_dict['season_type'] = event_data['season_type']
+			event_data_dict['away_team'] = event_data['away_team']['team_id']
+			event_data_dict['home_team'] = event_data['home_team']['team_id']			
+			event_data_dict['stadium'] = event_data['home_team']['site_name']
+			cols = ", ".join(event_data_dict.keys())
+			data = ", ".join(['"' + unicode(v) + '"' for v in event_data_dict.values()])
+			dbo.insert_mysql('event_data',cols,data)
+		return event_data_dict
+
+	def get_db_gamedata(self,start_date,end_date): #Cole: How do we make it so this only queries X number of games?
+		sql = "SELECT * FROM hist_player_data WHERE Sport = '"+ self.sport +"' AND Date BETWEEN '" + start_date +"' AND '" + end_date + "' ORDER BY Date Desc"
 		db_data = dbo.read_from_db(sql,["Player","GameID","Player_Type"],True)
 		player_data_dict = {}
 		for key,player_game in db_data.iteritems():
@@ -124,14 +149,6 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 	def get_FD_player_dict(self,contest_url):
 		return ast.literal_eval(Uds.parse_html(contest_url,"FD.playerpicker.allPlayersFullData = ",";"))
 
-	# def get_model_features(self,model_data,feature_list):
-	# 	for feature in feature_list:
-	# 		sklearn.feature_select #(feature data, traget data, len(feature_list - 1))
-	# 	if spurious_feature in pruned_feature_list:
-	# 		return get_model_features(...)
-	# 	else:
-	# 		return pruned_feature_list
-
 	def optimal_roster(self,forecasted_player_universe):
 		items = ([{key:value for key,value in stats_data.iteritems() if key in self.optimizer_items}
 					 for player_key,stats_data in forecasted_player_universe.iteritems()
@@ -160,6 +177,8 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 		self.inv_db_data_model = {dataset:dict(zip(self.db_data_model[dataset].values(), self.db_data_model[dataset].keys())) for dataset in self.db_data_model}
 		self.data_model = ({'away_batters':self.db_data_model['batter'],'away_pitchers':self.db_data_model['pitcher'],
 							'home_batters':self.db_data_model['batter'],'home_pitchers':self.db_data_model['pitcher']})
+		self.event_data_model = ({'event':{'event_id':'event_id','sport':'sport','start_date_time':'start_date_time','season_type':'season_type'},
+									'away_team':{'team_id':'away_team'},'home_team':{'team_id':'home_team','site_name':'stadium'}})
 		self.optimizer_constraints = lambda values : (
     									values['Salary'] <= 55000,
 									    values['P'] == 1,
@@ -170,8 +189,40 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 									    values['SS'] == 1,
 									    values['OF'] == 3,)
 		self.optimizer_items = ['name','Player','Player_Type','Salary','P','C','1B','2B','3B','SS','OF','FD_points']
-		self.feature_list = {'batter':['avg_FD_points'],'pitcher':['avg_FD_points']}
-	
+		self.avg_stat_chunk_size = 5
+		self.trend_chunk_size = 5
+
+	def build_model_dataset(self,hist_data):#Cole: How do we generalize this method. Some out-of-box method likely exists. Defs need to refactor
+		FD_points = self.FD_points(hist_data)
+		feature_dict = {}
+		feature_dict['FD_points'] = []
+		feature_dict['FD_avg' + str(self.avg_stat_chunk_size)] = []
+		feature_dict['FD_trend' + str(self.trend_chunk_size)] = []
+		feature_dict['day_of_month'] = []
+		for indx,FD_point in enumerate(FD_points):
+			reverse_index = len(FD_points)-indx
+			try:
+				avg_chunk_list = [FD_points[chunk_indx] for chunk_indx in range(reverse_index-self.avg_stat_chunk_size,reverse_index-1)]
+				trend_chunk_list = [FD_points[chunk_indx] for chunk_indx in range(reverse_index-self.trend_chunk_size,reverse_index-1)]
+				feature_dict['FD_points'].append(FD_point)
+				feature_dict['FD_avg' + str(self.avg_stat_chunk_size)].append(self.avg_stat(avg_chunk_list)) 
+				feature_dict['FD_trend' + str(self.trend_chunk_size)].append(self.trend_stat(trend_chunk_list)+FD_points[reverse_index-1]) #Cole: the trend feature is the trend over chunk size plus the last FD_point
+				feature_dict['day_of_month'].append(int(str(hist_data['Date'][indx])[8:10]))
+			except IndexError:
+				break
+		return feature_dict
+
+	def FD_points(self, data):
+		if data['Player_Type'][-1] == 'batter':
+			FD_points = (numpy.array(data['singles'])*1+numpy.array(data['doubles'])*2+numpy.array(data['triples'])*3+
+							numpy.array(data['home_runs'])*4+numpy.array(data['rbi'])*1+numpy.array(data['runs'])*1+
+								numpy.array(data['walks'])*1+numpy.array(data['stolen_bases'])*1+
+								numpy.subtract(numpy.array(data['at_bats']),numpy.array(data['hits']))*-.25)
+		else:
+			FD_points= (numpy.array(data['win'])*4+numpy.array(data['earned_runs'])*-1+
+								numpy.array(data['strike_outs'])*1+numpy.array(data['innings_pitched'])*1)
+		return FD_points
+
 	def build_player_universe(self,contest_url): #Cole: this desperately needs documentation. Entire data structure needs documentation
 		db_player_data = self.get_db_gamedata() #Cole: Stats need to be summarized here (ie avg, max, what ever maths)
 		FD_player_data = self.get_FD_player_dict(contest_url)
@@ -198,42 +249,5 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 				print player_key + ' not in db_player_data'
 		return db_player_data
 
-	def forecast_model(self,points_data):
-		return self.FD_points(points_data) #Cole: this will be updated once we have a model, for now just returns the average historical FD points/player
-
-	def FD_points(self, data):
-		if data['Player_Type'][-1] == 'batter':
-			FD_points = (numpy.array(data['singles'])*1+numpy.array(data['doubles'])*2+numpy.array(data['triples'])*3+
-							numpy.array(data['home_runs'])*4+numpy.array(data['rbi'])*1+numpy.array(data['runs'])*1+
-								numpy.array(data['walks'])*1+numpy.array(data['stolen_bases'])*1+
-								numpy.subtract(numpy.array(data['at_bats']),numpy.array(data['hits']))*-.25)
-		else:
-			FD_points= (numpy.array(data['win'])*4+numpy.array(data['earned_runs'])*-1+
-								numpy.array(data['strike_outs'])*1+numpy.array(data['innings_pitched'])*1)
-		return FD_points
-
-	def build_feature_dataset(self,hist_data):#Cole: How do we generalize this method. Some out-of-box method likely exists. Defs need to refactor
-		feature_data = {}
-		for player,stats_data in hist_data.iteritems():
-			FD_points = self.FD_points(stats_data)
-			feature_dict = {}
-			feature_dict['FD_points'] = []
-			feature_dict['five_day_avg'] = []
-			feature_dict['five_day_trend'] = []
-			feature_dict['day_of_week'] = []
-			for indx,FD_point in enumerate(FD_points):
-				reverse_index = len(FD_points)-indx
-				try:
-					chunk_list = [FD_points[chunk_indx] for chunk_indx in range(reverse_index-5,reverse_index-1)]
-					feature_dict['FD_points'].append(FD_point)
-					feature_dict['five_day_avg'].append(self.avg_stat(chunk_list))
-					feature_dict['five_day_trend'].append(self.trend_stat(chunk_list))
-					feature_dict['day_of_week'].append(int(str(stats_data['Date'][indx])[6:8]))
-				except IndexError:
-					break
-			feature_data[player] = feature_dict
-		return feature_data
-
-
-
-
+#MLB=MLB()
+#MLB.get_daily_game_data("20140301","20150422",True)
