@@ -218,8 +218,8 @@ def build_hist_win_tuples():
 	return hist_perf_tuples
 
 MLB = Sport.MLB()
-#MLB.
-
+#MLB.get_daily_game_data(['20150420','20150419','20150418','20150417','20150416','20150415'],True)
+MLB.get_db_gamedata()
 
 #data_scrapping.update_gamedata('MLB',Cell("Parameters",'clLastGameDataID').value)
 #print output_final_roster(40)

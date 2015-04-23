@@ -22,9 +22,9 @@ def get_NHLgameID_date():
 
 def hist_web_lineups():
     table='hist_lineup_optimizers'
-    recordset=dbo.get_table_last_row(table,'DataID')
+    recordset=dbo.get_table_last_row(table,'Date')
     last_date=Cell('Backtest_Parameters','clLastDate').value
-    if str(recordset[0][1])==str(last_date)[0:10]:
+    if str(recordset[0][0])==str(last_date)[0:10]:
         print "hist_web_lineups: a recordset already exists in table: %s for entered date" % table
         time.sleep(5)   
         return
@@ -70,8 +70,8 @@ def hist_FD_playerdata(Sport,Url,ContestID):
 def hist_FD_contest_salaries():
     todays_date=time.strftime("%Y-%m-%d")
     table='hist_fanduel_data'
-    recordset=dbo.get_table_last_row(table,'DataID')
-    if str(recordset[0][2])==todays_date:
+    recordset=dbo.get_table_last_row(table,'Date')
+    if str(recordset[0][1])==todays_date:
         print "hist_fd_contest_salares: salaries already historized in %s for today " % table
         time.sleep(5)   
         return
@@ -106,10 +106,3 @@ def hist_FD_contest_salaries():
 
 hist_web_lineups()
 hist_FD_contest_salaries()
-
-#Remove duplicate rows SQL statement
-#ALTER IGNORE TABLE hist_backtest_data ADD UNIQUE KEY idx1(date);
-#Append column to table
-#ALTER TABLE hist_fanduel_data ADD contestID TEXT 
-#Delete single row by ID
-#DELETE FROM hist_lineup_optimizers WHERE DataID=8 LIMIT 1
