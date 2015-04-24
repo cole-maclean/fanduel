@@ -18,9 +18,10 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 	def FD_point_model(self,hist_data):
 		for player,data in hist_data.iteritems():
 			player_model_data = self.build_model_dataset(data)
-			player_model = Model.Model().prune_features(player_model_data,'FD_points','day_of_month')
+			player_model = Model.Model(player_model_data)
+			player_model.FD_points_model(True)
 			#pruned_model_data = {key:data for key,data in player_model_data.iteritems() if key in features}
-			print player_model.features
+			#print player_model.feature_labels
 		return player_model_data
 
 	def events(self,event_date):
@@ -189,24 +190,22 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 									    values['SS'] == 1,
 									    values['OF'] == 3,)
 		self.optimizer_items = ['name','Player','Player_Type','Salary','P','C','1B','2B','3B','SS','OF','FD_points']
-		self.avg_stat_chunk_size = 5
-		self.trend_chunk_size = 5
+		self.avg_stat_chunk_size = 3
+		self.trend_chunk_size = 3
 
 	def build_model_dataset(self,hist_data):#Cole: How do we generalize this method. Some out-of-box method likely exists. Defs need to refactor
 		FD_points = self.FD_points(hist_data)
 		feature_dict = {}
 		feature_dict['FD_points'] = []
-		feature_dict['FD_avg' + str(self.avg_stat_chunk_size)] = []
-		feature_dict['FD_trend' + str(self.trend_chunk_size)] = []
+		feature_dict['FD_avg' + str(self.avg_stat_chunk_size) + '_trend' + str(self.trend_chunk_size)] = []
 		feature_dict['day_of_month'] = []
 		for indx,FD_point in enumerate(FD_points):
 			reverse_index = len(FD_points)-indx
 			try:
 				avg_chunk_list = [FD_points[chunk_indx] for chunk_indx in range(reverse_index-self.avg_stat_chunk_size,reverse_index-1)]
 				trend_chunk_list = [FD_points[chunk_indx] for chunk_indx in range(reverse_index-self.trend_chunk_size,reverse_index-1)]
-				feature_dict['FD_points'].append(FD_point)
-				feature_dict['FD_avg' + str(self.avg_stat_chunk_size)].append(self.avg_stat(avg_chunk_list)) 
-				feature_dict['FD_trend' + str(self.trend_chunk_size)].append(self.trend_stat(trend_chunk_list)+FD_points[reverse_index-1]) #Cole: the trend feature is the trend over chunk size plus the last FD_point
+				feature_dict['FD_points'].append(FD_point) #Cole:Need to do some testing on most informative hist FD points data feature(ie avg, trend, combination)
+				feature_dict['FD_avg' + str(self.avg_stat_chunk_size) + '_trend' + str(self.trend_chunk_size)].append(self.avg_stat(avg_chunk_list) + self.trend_stat(trend_chunk_list))  #Cole: this feature takes the FD_points chunk avg and trend to establish a FD_avg + trend prediction
 				feature_dict['day_of_month'].append(int(str(hist_data['Date'][indx])[8:10]))
 			except IndexError:
 				break
