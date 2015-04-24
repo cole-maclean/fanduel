@@ -5,7 +5,8 @@ from sklearn.feature_selection import f_classif
 from sklearn.preprocessing import MinMaxScaler
 import math
 class Model():
-	def __init__(self,model_data): #Cole: Class accepts model_data in form {'feature1':[data],feature2:[data]}
+	def __init__(self,model_data,player): #Cole: Class accepts model_data in form {'feature1':[data],feature2:[data]}
+		self.player = player
 		self.model_data = model_data
 		self.target = 'FD_points'
 		self.dataset_length = len(model_data[self.target])
@@ -48,6 +49,7 @@ class Model():
 		fig = plt.figure()
 		ax = fig.add_subplot(1,1,1)
 		ax.plot()
+		ax.set_title(self.player)
 		ax.set_xlabel(xlabel)
 		ax.set_ylabel(ylabel)
 		ax.scatter(x_data,y_data)

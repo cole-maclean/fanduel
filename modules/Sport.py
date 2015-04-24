@@ -9,19 +9,21 @@ import ast
 from openopt import *
 import Model
 import pandas
+import general_utils as Ugen
 
 class Sport(): #Cole: Class has functions that should be stripped out and place into more appropriate module/class
 	def __init__(self,sport):
 		self.sport = sport
 		self.gameid = None
 
-	def FD_point_model(self,hist_data):
+	def FD_point_model(self,hist_data,visualize = False,model_promt = True):
 		for player,data in hist_data.iteritems():
 			player_model_data = self.build_model_dataset(data)
-			player_model = Model.Model(player_model_data)
-			player_model.FD_points_model(True)
-			#pruned_model_data = {key:data for key,data in player_model_data.iteritems() if key in features}
-			#print player_model.feature_labels
+			player_model = Model.Model(player_model_data,player)
+			player_model.FD_points_model(visualize)
+			if model_promt or visualize:
+				if Ugen.query_yes_no("continue to next model?") == False:
+					break
 		return player_model_data
 
 	def events(self,event_date):
