@@ -16,15 +16,21 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 		self.sport = sport
 		self.gameid = None
 
-	def FD_point_model(self,hist_data,visualize = False,model_promt = True):
+	def FD_points_model(self,hist_data,visualize = False,model_promt = True):
+		projected_FD_points = {}
 		for player,data in hist_data.iteritems():
 			player_model_data = self.build_model_dataset(data)
 			player_model = Model.Model(player_model_data,player)
 			player_model.FD_points_model(visualize)
+			if player_model.modelled:
+				parameters = [self.avg_stat(player_model_data['FD_points'][-self.avg_stat_chunk_size:])]
+				projected_FD_points[player] = player_model.model.predict(parameters)[-1]
+			else:
+				projected_FD_points[player] = 0 #Cole: this is the default model number if player cannot be modelled
 			if model_promt or visualize:
 				if Ugen.query_yes_no("continue to next model?") == False:
 					break
-		return player_model_data
+		return projected_FD_points
 
 	def events(self,event_date):
 		self.gameid = None
@@ -43,7 +49,7 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 		self.gameid = game_id
 		return XMLStats.main(self,'boxscore',None)
 
-	def get_daily_game_data(self,start_date,end_date,store = False):#Cole:event_date format is yyyyMMdd, must be a list
+	def get_daily_game_data(self,start_date,end_date,store = False):
 		event_dates = [d.strftime('%Y%m%d') for d in pandas.date_range(start_date,end_date)]
 		for event_date in event_dates:
 			day_events = self.events(event_date)
@@ -152,11 +158,13 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 	def get_FD_player_dict(self,contest_url):
 		return ast.literal_eval(Uds.parse_html(contest_url,"FD.playerpicker.allPlayersFullData = ",";"))
 
-	def optimal_roster(self,forecasted_player_universe):
+	def optimal_roster(self,contest_url):
+		forecasted_player_universe = self.build_player_universe(contest_url)
+		os.system('pause')
 		items = ([{key:value for key,value in stats_data.iteritems() if key in self.optimizer_items}
 					 for player_key,stats_data in forecasted_player_universe.iteritems()
 					 if 'Salary' in stats_data.keys()])
-		objective = 'FD_points' #Cole: update this to forecast_points once model is built
+		objective = 'projected_FD_points' #Cole: update this to forecast_points once model is built
 		p = KSP(objective, items, goal = 'max', constraints=self.optimizer_constraints)
 		r = p.solve('glpk',iprint = 0)
 		return r
@@ -164,7 +172,7 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 class MLB(Sport): #Cole: data modelling may need to be refactored, might be more elegant solution
 	def __init__(self):
 		Sport.__init__(self,"MLB")
-		self.FD_data_columns = (['FD_Position','FD_name','MatchupID','TeamID','Dummy2','Salary','PPG',
+		self.FD_data_columns = (['FD_Position','name','MatchupID','TeamID','Dummy2','Salary','PPG',
 									'GamesPlayed','Dummy3','Dummy4','Injury','InjuryAge','Dummy5'])
 		self.positions = ['P','C','1B','2B','3B','SS','OF']
 		self.player_type_map = {'away_batters':'batter','home_batters':'batter','away_pitchers':'pitcher','home_pitchers':'pitcher'}
@@ -183,7 +191,7 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 		self.event_data_model = ({'event':{'event_id':'event_id','sport':'sport','start_date_time':'start_date_time','season_type':'season_type'},
 									'away_team':{'team_id':'away_team'},'home_team':{'team_id':'home_team','site_name':'stadium'}})
 		self.optimizer_constraints = lambda values : (
-    									values['Salary'] <= 55000,
+    									values['Salary'] <= 35000,
 									    values['P'] == 1,
 									    values['C'] == 1,
 									    values['1B'] == 1,
@@ -191,7 +199,7 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 									    values['3B'] == 1,
 									    values['SS'] == 1,
 									    values['OF'] == 3,)
-		self.optimizer_items = ['name','Player','Player_Type','Salary','P','C','1B','2B','3B','SS','OF','FD_points']
+		self.optimizer_items = ['name','Player_Type','Salary','P','C','1B','2B','3B','SS','OF','projected_FD_points']
 		self.avg_stat_chunk_size = 3
 		self.trend_chunk_size = 3
 
@@ -199,7 +207,7 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 		FD_points = self.FD_points(hist_data)
 		feature_dict = {}
 		feature_dict['FD_points'] = []
-		feature_dict['FD_avg' + str(self.avg_stat_chunk_size) + '_trend' + str(self.trend_chunk_size)] = []
+		feature_dict['FD_avg' + str(self.avg_stat_chunk_size)] = []
 		feature_dict['day_of_month'] = []
 		for indx,FD_point in enumerate(FD_points):
 			reverse_index = len(FD_points)-indx
@@ -207,8 +215,8 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 				avg_chunk_list = [FD_points[chunk_indx] for chunk_indx in range(reverse_index-self.avg_stat_chunk_size,reverse_index-1)]
 				trend_chunk_list = [FD_points[chunk_indx] for chunk_indx in range(reverse_index-self.trend_chunk_size,reverse_index-1)]
 				feature_dict['FD_points'].append(FD_point) #Cole:Need to do some testing on most informative hist FD points data feature(ie avg, trend, combination)
-				feature_dict['FD_avg' + str(self.avg_stat_chunk_size) + '_trend' + str(self.trend_chunk_size)].append(self.avg_stat(avg_chunk_list) + self.trend_stat(trend_chunk_list))  #Cole: this feature takes the FD_points chunk avg and trend to establish a FD_avg + trend prediction
-				feature_dict['day_of_month'].append(int(str(hist_data['Date'][indx])[8:10]))
+				feature_dict['FD_avg' + str(self.avg_stat_chunk_size)].append(self.avg_stat(avg_chunk_list))
+				feature_dict['day_of_month'].append(int(str(hist_data['Date'][indx])[8:10]))#Cole: used as spurious feature
 			except IndexError:
 				break
 		return feature_dict
@@ -225,30 +233,32 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 		return FD_points
 
 	def build_player_universe(self,contest_url): #Cole: this desperately needs documentation. Entire data structure needs documentation
-		db_player_data = self.get_db_gamedata() #Cole: Stats need to be summarized here (ie avg, max, what ever maths)
+		db_data = self.get_db_gamedata("20140401","20150422") #Cole: Stats need to be summarized here (ie avg, max, what ever maths)
+		projected_FD_points = self.FD_points_model(db_data,False,False)
 		FD_player_data = self.get_FD_player_dict(contest_url)
+		player_universe = {}
 		for FD_playerid,data in FD_player_data.iteritems():
-			FD_data_index = 0
-			FD_name = data[1]
 			if data[0] == 'P': #Cole: If this can be generalized (ie sport player type map, the entire function can be generalized as a Sport method)
 				player_type = 'pitcher'
 			else:
 				player_type = 'batter'
 			player_key = data[1] + '_' + player_type
-			try:
-				db_player_data[player_key]['FD_playerid'] = FD_playerid
-				for FD_data in data:
+			player_universe[player_key] = {}
+			player_universe[player_key]['FD_playerid'] = FD_playerid
+			if player_key in projected_FD_points.keys():
+				player_universe[player_key]['projected_FD_points'] = projected_FD_points[player_key]
+				player_universe[player_key]['Player_Type'] = player_type
+				for indx,FD_data in enumerate(data):
 					try:
-						db_player_data[player_key][self.FD_data_columns[FD_data_index]] = float(FD_data)
+						player_universe[player_key][self.FD_data_columns[indx]] = float(FD_data)
 					except ValueError:
-						db_player_data[player_key][self.FD_data_columns[FD_data_index]] = FD_data
-					FD_data_index = FD_data_index + 1
-				position_map = {key:1 if key == db_player_data[player_key]['FD_Position'] else 0 for key in self.positions}
+						player_universe[player_key][self.FD_data_columns[indx]] = FD_data
+				position_map = {key:1 if key == player_universe[player_key]['FD_Position'] else 0 for key in self.positions}
 				tmp_dict = position_map.copy()
-				db_player_data[player_key].update(tmp_dict)
-			except KeyError: #Cole: need to map mis-matched names
+				player_universe[player_key].update(tmp_dict)
+			else:
 				print player_key + ' not in db_player_data'
-		return db_player_data
+		return player_universe
 
 #MLB=MLB()
 #MLB.get_daily_game_data("20140301","20150422",True)
