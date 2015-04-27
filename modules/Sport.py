@@ -17,26 +17,24 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 		self.sport = sport
 		self.gameid = None
 
-	def FD_points_model(self,hist_data,visualize = False,model_promt = True):
+	def FD_points_model(self,player,hist_data,visualize = False,model_promt = True):
 		FD_projection= collections.namedtuple("FD_projection", ["projected_points", "confidence"])
-		projected_FD_points = {}
-		for player,data in hist_data.iteritems() :
-				self.player_model_data = self.build_model_dataset(data)
-				player_model = Model.Model(self.player_model_data,player)
-				player_model.FD_points_model(visualize)
-				if player_model.modelled:	#Cole: need to develop parameters for each player
-					parameters = self.get_parameters(player_model.feature_labels)
-					if len(player_model.test_feature_matrix) > 1: #Test dataset needs to contain at least 2 datapoints to compute score
-						projected_FD_points[player] = (FD_projection(player_model.model.predict(parameters)[-1],
-														player_model.model.score(player_model.test_feature_matrix,player_model.test_target_matrix)))
-					else:
-						projected_FD_points[player] = FD_projection(player_model.model.predict(parameters)[-1],0)
-				else:
-					projected_FD_points[player] = FD_projection(0,0) #Cole: this is the default model prediction and confidence if player cannot be modelled
-				if model_promt or visualize:
-					if Ugen.query_yes_no("continue to next model?") == False:
-						break
-				player_model = None
+		self.player_model_data = self.build_model_dataset(data)
+		player_model = Model.Model(self.player_model_data,player)
+		player_model.FD_points_model(visualize)
+		if player_model.modelled:	#Cole: need to develop parameters for each player
+			parameters = self.get_parameters(player_model.feature_labels)
+			if len(player_model.test_feature_matrix) > 1: #Test dataset needs to contain at least 2 datapoints to compute score
+				projected_FD_points[player] = (FD_projection(player_model.model.predict(parameters)[-1],
+												player_model.model.score(player_model.test_feature_matrix,player_model.test_target_matrix)))
+			else:
+				projected_FD_points = FD_projection(player_model.model.predict(parameters)[-1],0)
+		else:
+			projected_FD_points = FD_projection(0,0) #Cole: this is the default model prediction and confidence if player cannot be modelled
+		if model_promt or visualize:
+			if Ugen.query_yes_no("continue to next model?") == False:
+				break
+		player_model = None
 		return projected_FD_points
 
 	def events(self,event_date):
@@ -259,10 +257,11 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 
 	def build_player_universe(self,contest_url): #Cole: this desperately needs documentation. Entire data structure needs documentation
 		db_data = self.get_db_gamedata("20140401","20150422") #Cole: Stats need to be summarized here (ie avg, max, what ever maths)
-		projected_FD_points = self.FD_points_model(db_data,True,False)
-		FD_player_data = self.get_FD_player_dict(contest_url)
+		FD_player_data = self.get_FD_player_dict(contest_url)#Cole:need to build some sort of test that FD_names and starting lineup names match
+		starting_lineups = ds.mlb_starting_lineups()
+		FD_starting_player_data = {FD_playerid:data for FD_playerid,data in FD_player_data.iteritems if data[1] in starting_lineups.values()} #data[1] if FD_player_name
 		player_universe = {}
-		for FD_playerid,data in FD_player_data.iteritems():
+		for FD_playerid,data in FD_starting_player_data.iteritems():
 			if data[0] == 'P': #Cole: If this can be generalized (ie sport player type map, the entire function can be generalized as a Sport method)
 				player_type = 'pitcher'
 			else:
@@ -271,8 +270,9 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 			player_universe[player_key] = {}
 			player_universe[player_key]['FD_playerid'] = FD_playerid
 			if player_key in projected_FD_points.keys():
-				player_universe[player_key]['projected_FD_points'] = projected_FD_points[player_key].projected_points
-				player_universe[player_key]['confidence'] = projected_FD_points[player_key].confidence
+				projected_FD_points = self.FD_points_model(db_data[player_key],True,False)
+				player_universe[player_key]['projected_FD_points'] = projected_FD_points.projected_points
+				player_universe[player_key]['confidence'] = projected_FD_points.confidence
 				player_universe[player_key]['Player_Type'] = player_type
 				for indx,FD_data in enumerate(data):
 					try:
@@ -286,6 +286,7 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 				print player_key + ' not in db_player_data'
 		return player_universe
 MLB=MLB()
-r =MLB.optimal_roster("https://www.fanduel.com/e/Game/12181?tableId=12221165&fromLobby=true")
+r =MLB.optimal_roster("https://www.fanduel.com/e/Game/12191?tableId=12257873&fromLobby=true")
 print r.xf
 os.system('pause')
+

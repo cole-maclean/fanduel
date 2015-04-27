@@ -300,3 +300,5 @@ def mlb_starting_lineups(date=time.strftime("%Y-%m-%d")): #take date as string '
 			j=j+1	
 		i=i+1
 	return lineups_list
+print mlb_starting_lineups()
+os.system('pause')
