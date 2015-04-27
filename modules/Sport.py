@@ -17,7 +17,7 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 		self.sport = sport
 		self.gameid = None
 
-	def FD_points_model(self,player,hist_data,visualize = False,model_promt = True):
+	def FD_points_model(self,player,hist_data,visualize = False):
 		FD_projection= collections.namedtuple("FD_projection", ["projected_points", "confidence"])
 		self.player_model_data = self.build_model_dataset(data)
 		player_model = Model.Model(self.player_model_data,player)
@@ -31,9 +31,6 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 				projected_FD_points = FD_projection(player_model.model.predict(parameters)[-1],0)
 		else:
 			projected_FD_points = FD_projection(0,0) #Cole: this is the default model prediction and confidence if player cannot be modelled
-		if model_promt or visualize:
-			if Ugen.query_yes_no("continue to next model?") == False:
-				break
 		player_model = None
 		return projected_FD_points
 
@@ -272,7 +269,7 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 			player_universe[player_key] = {}
 			player_universe[player_key]['FD_playerid'] = FD_playerid
 			if player_key in projected_FD_points.keys():
-				projected_FD_points = self.FD_points_model(db_data[player_key],True,False)
+				projected_FD_points = self.FD_points_model(db_data[player_key],True)
 				player_universe[player_key]['projected_FD_points'] = projected_FD_points.projected_points
 				player_universe[player_key]['confidence'] = projected_FD_points.confidence
 				player_universe[player_key]['Player_Type'] = player_type
@@ -287,7 +284,7 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 			else:
 				print player_key + ' not in db_player_data'
 		return player_universe
-MLB=MLB()
-r =MLB.optimal_roster("https://www.fanduel.com/e/Game/12191?tableId=12257873&fromLobby=true")
-print r.xf
-os.system('pause')
+# MLB=MLB()
+# r =MLB.optimal_roster("https://www.fanduel.com/e/Game/12191?tableId=12257873&fromLobby=true")
+# print r.xf
+# os.system('pause')
