@@ -37,3 +37,4 @@ def test_chunk_size(MLB,hist_data):#Cole: How do we generalize this method. Some
 		else:
 			model_confidence[chunk_size] = 0
 	return model_confidence
+

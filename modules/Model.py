@@ -16,17 +16,14 @@ class Model():
 		self.target_matrix = numpy.array(model_data[self.target]).astype(float)
 		self.feature_matrix = numpy.array([[model_data[key][index] for key in model_data.keys() if key != self.target] for index in range(0,len(model_data[self.target]))]).astype(float)
 		self.feature_labels = [feature for feature in  model_data.keys() if feature !=self.target]
-	def linear_regression(self):
-		if len(set(self.training_target_matrix)) > 1 and len(self.training_target_matrix) > 3: #Cole: data must contain sufficent datapoints to model
-			try:
-				regr = linear_model.RANSACRegressor(linear_model.LinearRegression()) #Cole: Need to investigate more to find best model to use
-				regr.fit(self.training_feature_matrix,self.training_target_matrix)
-				self.modelled = True
-				return regr
-			except ValueError:
-				self.modelled = False
-				return None
-		else:
+	def linear_regression(self,X,y):
+		try:
+			regr = linear_model.LinearRegression() #Cole: Need to investigate more to find best model to use
+			regr.fit(X,y)
+			self.modelled = True
+			return regr
+		except ValueError,e:
+			print e
 			self.modelled = False
 			return None
 
@@ -40,33 +37,20 @@ class Model():
 		return rescaled_feature
 
 	def FD_points_model(self,visualize = False): #Cole: need to indentify minimum dataset required to model, flag if player unmodelled
-		#self.prune_features('day_of_month')
+		self.prune_features('day_of_month')
 		self.split_training_test_data(0.9)
-		self.model = self.linear_regression()
+		self.model = self.linear_regression(self.training_feature_matrix,self.training_target_matrix)
 		if self.modelled:
 			if visualize:
-				if len(self.feature_labels) == 1:
+				for indx,feature in enumerate(self.feature_labels):
 					fig = plt.figure()
 					ax = fig.add_subplot(1,1,1)
 					ax.plot()
 					ax.set_title(self.player)
-					ax.set_xlabel(self.feature_labels[0])
+					ax.set_xlabel(self.feature_labels[indx])
 					ax.set_ylabel(self.target)
-					ax.scatter(self.training_feature_matrix, self.training_target_matrix,  color='black')
-					plt.plot(self.training_feature_matrix, self.model.predict(self.training_feature_matrix), color='blue',linewidth=3)
-					plt.scatter(self.test_feature_matrix, self.test_target_matrix,  color='red')
-					plt.show()
-				elif len(self.feature_labels) == 2:
-					fig = plt.figure(figsize=(14,6))
-					ax = fig.add_subplot(1, 2, 1, projection='3d')
-					ax.scatter(self.training_feature_matrix[:,0],self.training_feature_matrix[:,1], self.training_target_matrix)
-					ax.set_title(self.player)
-					ax.set_xlabel(self.feature_labels[0])
-					ax.set_ylabel(self.feature_labels[1])
-					ax.set_zlabel(self.target)
-					plt.show()
-				else:
-					print "higher dimensions unplottable"				
+					ax.scatter(self.training_feature_matrix[:,indx], self.training_target_matrix,  color='black')
+					plt.show()	
 		else:
 			print self.player + " not modelled"
 		return self
