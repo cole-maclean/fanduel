@@ -75,7 +75,6 @@ def insert_mysql(table, columns, data,placeholders=False):
     else:
         sql = "INSERT INTO " + table + " (%s) VALUES (%s)" % (columns, data)
     cur = get_connection_cursor()
-    #Cell("output",1,1).value = sql
     try:
         if placeholders:
             cur.execute(sql,data)

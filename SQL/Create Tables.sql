@@ -72,7 +72,6 @@ CREATE TABLE `hist_player_data` (
 delimiter $$
 
 CREATE TABLE `hist_fanduel_data` (
-  `DataID` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `Sport` varchar(45) DEFAULT NULL,
   `Date` date DEFAULT NULL,
   `Player` varchar(45) DEFAULT NULL,
@@ -81,7 +80,7 @@ CREATE TABLE `hist_fanduel_data` (
   `FD_FPPG` varchar(45) DEFAULT NULL, 
   `FD_GP` varchar(45) DEFAULT NULL,
   `contestID` varchar(45) DEFAULT NULL,   
-  PRIMARY KEY (`DataID`)
+  PRIMARY KEY (`Date`, `Player`,`Position`,`contestID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8$$
 
 delimiter $$
@@ -92,8 +91,9 @@ CREATE TABLE `hist_lineup_optimizers` (
   `DFN_NBA` text DEFAULT NULL,
   `RW_NBA` text DEFAULT NULL, 
   `RW_MLB` text DEFAULT NULL,
-  `RW_NHL` text DEFAULT NULL, 
-  PRIMARY KEY (`DataID`)
+  `RW_NHL` text DEFAULT NULL,
+  `MLB_ODDS` text DEFAULT NULL, 
+  PRIMARY KEY (`Date`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8$$
 
 delimiter $$
@@ -110,3 +110,4 @@ CREATE TABLE `event_data` (
   `wind` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`event_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8$$
+

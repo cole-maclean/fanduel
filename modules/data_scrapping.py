@@ -15,6 +15,8 @@ import requests
 import FD_operations as fdo
 import general_utils as Ugen
 import subprocess
+import string
+
 def update_gamedata(sport,LastGameDataID): #TODO: add optional paramters for which tables to update, check team roster for player #s, consideration for other sports
 	print 'Only update game data when no games are currently in progress'
 	os.system('pause')
@@ -253,3 +255,48 @@ def get_contest_utlity(avg_top_wins,time_remaining,wins_data,bin_size):
 		print 'wins data bin for ' + str(avg_top_wins) + ' does not exist'
 		contest_utility = 0
 	return contest_utility,future_utility
+
+def mlb_starting_lineups(date=time.strftime("%Y-%m-%d")): #take date as string 'YYYY-MM-DD'. Needs refactoring.
+	url='http://www.baseballpress.com/lineups/'+date
+	content= urllib2.urlopen(url).read()
+	soup = BeautifulSoup(content)
+	team_map = Ugen.excel_mapping("Team Map",8,6)
+	team_list,pitcher_list,lineups_list,gametime_list,weather_list=([] for i in range(5))
+
+	for event_date in soup.findAll("div",{"class":"game-time"}):
+		gametime_list.append(event_date.text)
+	for forecast in soup.findAll("a",{"target":"forecast"}):
+		forecast_string=filter(lambda x: x in string.printable, forecast.text).split('Forecast: ')[1].split(' PoP')[0].replace(" ","-").replace("--","-").replace('F','degF')
+		if len(forecast_string.split('-'))==4:
+			forecast_string=forecast_string.split('-')[0]+'-'+forecast_string.split('-')[1]+' '+forecast_string.split('-')[2]+'-'+forecast_string.split('-')[3]
+		weather_list.append(forecast_string)
+	for team in soup.findAll("div",{"class":"team-data"}):
+		team_list.append(team_map[team.find("div",{"class":"team-name"}).get_text()])
+		pitcher_list.append(team.find("a",{"class":"player-link"}).get_text())
+	for table in soup.findAll("div",{"class":"cssDialog clearfix"}):
+		table_string=table.get_text()
+		home_lineup=[]  
+		away_lineup=[]
+		if table_string.count("9. ")==2:
+			for j in range(1,10):
+				name_list_raw=table_string[table_string.find(str(j)+". ")+3:].split(" (")
+				home_lineup.append(name_list_raw[0])
+				name_list_raw=table_string[table_string.find((str(j)+". "),table_string.find(str(j)+". ")+3)+3:].split(" (")
+				away_lineup.append(name_list_raw[0])
+			lineups_list.append(home_lineup)
+			lineups_list.append(away_lineup)
+		else:
+			lineups_list.append(['no home_lineup listed'])
+			lineups_list.append(['no away_lineup listed'])
+	i=j=0
+	while i<len(lineups_list):#Ugly, probably a better way of doing this. 
+		lineups_list[i].reverse()
+		lineups_list[i].append(pitcher_list[i])
+		lineups_list[i].append(weather_list[j])
+		lineups_list[i].append(gametime_list[j])
+		lineups_list[i].append(team_list[i])
+		lineups_list[i].reverse()
+		if i%2 !=0:
+			j=j+1	
+		i=i+1
+	return lineups_list
