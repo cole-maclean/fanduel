@@ -99,14 +99,14 @@ CREATE TABLE `hist_lineup_optimizers` (
 delimiter $$
 
 CREATE TABLE `event_data` (
-  `event_id` varchar(255) CHARACTER NOT NULL,
-  `sport` varchar(45) CHARACTER DEFAULT NULL,
+  `event_id` varchar(255) NOT NULL,
+  `sport` varchar(45) DEFAULT NULL,
   `start_date_time` varchar(255) DEFAULT NULL,
   `season_type` varchar(45) DEFAULT NULL,
   `away_team` varchar(45) DEFAULT NULL,
   `home_team` varchar(45) DEFAULT NULL,
   `stadium` varchar(45) DEFAULT NULL,
-  `temperature` varchar(45) DEFAULT NULL,
+  `forecast` varchar(45) DEFAULT NULL,
   `wind` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`event_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8$$

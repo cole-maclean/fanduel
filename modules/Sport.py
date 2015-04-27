@@ -67,7 +67,7 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 					game_data = XMLStats.main(self,'boxscore',None)
 				elif store == True and self.gameid not in self.gameids().all_gameids: #Cole: this will make it so this method of the class can only be used if Sport class generated from individual sport class (ie MLB, NHL)
 					print "loading " + game_id
-					self.parse_event_data(day_events[indx])
+					self.parse_event_data(day_events[indx],event_date)
 					game_data = XMLStats.main(self,'boxscore',None)
 					if game_data != None:
 						parsed_data = self.parse_boxscore_data(game_data)
@@ -103,7 +103,7 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 					dbo.insert_mysql('hist_player_data',cols,data)
 		return self
 
-	def parse_event_data(self,event_data): #Cole: There must be a better way...
+	def parse_event_data(self,event_data,event_date): #Cole: There must be a better way...
 		event_data_dict = {}
 		if event_data:
 			event_data_dict['event_id'] = event_data['event_id']
@@ -113,6 +113,8 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 			event_data_dict['away_team'] = event_data['away_team']['team_id']
 			event_data_dict['home_team'] = event_data['home_team']['team_id']			
 			event_data_dict['stadium'] = event_data['home_team']['site_name']
+			home_team = event_data['home_team']['team_id'] #Cole: This will need to be mapped to the team id from mlb_starting_lineups. team_abr might work
+			event_data_dict['forecast'] = ds.mlb_starting_lineups(event_date)[home_team][1]
 			cols = ", ".join(event_data_dict.keys())
 			data = ", ".join(['"' + unicode(v) + '"' for v in event_data_dict.values()])
 			dbo.insert_mysql('event_data',cols,data)
@@ -289,4 +291,3 @@ MLB=MLB()
 r =MLB.optimal_roster("https://www.fanduel.com/e/Game/12191?tableId=12257873&fromLobby=true")
 print r.xf
 os.system('pause')
-
