@@ -19,7 +19,7 @@ class Model():
 	def linear_regression(self):
 		if len(set(self.training_target_matrix)) > 1 and len(self.training_target_matrix) > 3: #Cole: data must contain sufficent datapoints to model
 			try:
-				regr = linear_model.LinearRegression() #Cole: Need to investigate more to find best model to use
+				regr = linear_model.RANSACRegressor(linear_model.LinearRegression()) #Cole: Need to investigate more to find best model to use
 				regr.fit(self.training_feature_matrix,self.training_target_matrix)
 				self.modelled = True
 				return regr
@@ -40,7 +40,7 @@ class Model():
 		return rescaled_feature
 
 	def FD_points_model(self,visualize = False): #Cole: need to indentify minimum dataset required to model, flag if player unmodelled
-		self.prune_features('day_of_month')
+		#self.prune_features('day_of_month')
 		self.split_training_test_data(0.9)
 		self.model = self.linear_regression()
 		if self.modelled:

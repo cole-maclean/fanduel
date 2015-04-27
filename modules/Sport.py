@@ -213,10 +213,14 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 									    values['SS'] == 1,
 									    values['OF'] == 3,)
 		self.optimizer_items = ['name','Player_Type','Salary','P','C','1B','2B','3B','SS','OF','projected_FD_points']
-		self.avg_stat_chunk_size = 3
+		self.avg_stat_chunk_size = {'batter':13,'pitcher':15} #Cole: might need to play with these
 		self.trend_chunk_size = 3
 
 	def build_model_dataset(self,hist_data):#Cole: How do we generalize this method. Some out-of-box method likely exists. Defs need to refactor
+		if hist_data['Position'][-1] == 'P': #Cole: If this can be generalized (ie sport player type map, the entire function can be generalized as a Sport method)
+			player_type = 'pitcher'
+		else:
+			player_type = 'batter'
 		FD_points = self.FD_points(hist_data)
 		feature_dict = {}
 		feature_dict['FD_points'] = []
@@ -226,7 +230,7 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 		for indx,FD_point in enumerate(FD_points):
 			reverse_index = len(FD_points)-indx -1
 			try:
-				avg_chunk_list = [FD_points[chunk_indx] for chunk_indx in range(reverse_index-self.avg_stat_chunk_size,reverse_index-1)]
+				avg_chunk_list = [FD_points[chunk_indx] for chunk_indx in range(reverse_index-self.avg_stat_chunk_size[player_type],reverse_index-1)]
 				feature_dict['FD_points'].append(FD_points[reverse_index]) #Cole:Need to do some testing on most informative hist FD points data feature(ie avg, trend, combination)
 				feature_dict['FD_avg' + str(self.avg_stat_chunk_size)].append(self.avg_stat(avg_chunk_list))
 				feature_dict['rest_time'].append(self.time_between(hist_data['start_date_time'][reverse_index-1],hist_data['start_date_time'][reverse_index])) #this will include rest_days between season, need to remove
