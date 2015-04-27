@@ -177,13 +177,18 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 		return ast.literal_eval(Uds.parse_html(contest_url,"FD.playerpicker.allPlayersFullData = ",";"))
 
 	def optimal_roster(self,contest_url):
-		forecasted_player_universe = self.build_player_universe(contest_url)
+		DB_parameters=Ugen.ConfigSectionMap('local text')
+		player_universe = self.build_player_universe(contest_url)
 		items = ([{key:value for key,value in stats_data.iteritems() if key in self.optimizer_items}
-					 for player_key,stats_data in forecasted_player_universe.iteritems()
+					 for player_key,stats_data in player_universe.iteritems()
 					 if 'Salary' in stats_data.keys()])
 		objective = 'projected_FD_points' #Cole: update this to forecast_points once model is built
 		p = KSP(objective, items, goal = 'max', constraints=self.optimizer_constraints)
 		r = p.solve('glpk',iprint = 0)
+		roster_data.append([player_universe[player]['Position'],player_universe[player]['PlayerID'],player_universe[player]['MatchupID'],player_universe[player]['TeamID']])
+		sorted_roster = sorted(roster_data, key=self.positions)
+		with open(DB_parameters['rostertext'],"w") as myfile: #Ian: replaced hard-coded folder path with reference to config file
+			myfile.write(str(sorted_roster).replace(' ',''))
 		return r
 
 class MLB(Sport): #Cole: data modelling may need to be refactored, might be more elegant solution
@@ -191,7 +196,7 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 		Sport.__init__(self,"MLB")
 		self.FD_data_columns = (['FD_Position','name','MatchupID','TeamID','Dummy2','Salary','PPG',
 									'GamesPlayed','Dummy3','Dummy4','Injury','InjuryAge','Dummy5'])
-		self.positions = ['P','C','1B','2B','3B','SS','OF']
+		self.positions = {'P':1,'C':2,'1B':3,'2B':4,'3B':5,'SS':6,'OF':7}
 		self.player_type_map = {'away_batters':'batter','home_batters':'batter','away_pitchers':'pitcher','home_pitchers':'pitcher'}
 		self.db_data_model = collections.OrderedDict({'meta':{'gameid':'GameID','sport':'Sport','type':'Player_Type'}, #Cole: prefix with $ to denote a hard coded value
 							'batter':{'display_name':'Player','position':'Position','team_abbreviation':'Team',
@@ -289,7 +294,7 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 						player_universe[player_key][self.FD_data_columns[indx]] = float(FD_data)
 					except ValueError:
 						player_universe[player_key][self.FD_data_columns[indx]] = FD_data
-				position_map = {key:1 if key == player_universe[player_key]['FD_Position'] else 0 for key in self.positions}
+				position_map = {key:1 if key == player_universe[player_key]['FD_Position'] else 0 for key in self.positions.keys()}
 				tmp_dict = position_map.copy()
 				player_universe[player_key].update(tmp_dict)
 			else:
