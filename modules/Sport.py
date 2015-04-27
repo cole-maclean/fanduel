@@ -215,8 +215,9 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 									    values['2B'] == 1,
 									    values['3B'] == 1,
 									    values['SS'] == 1,
-									    values['OF'] == 3,)
-		self.optimizer_items = ['name','Player_Type','Salary','P','C','1B','2B','3B','SS','OF','projected_FD_points']
+									    values['OF'] == 3,
+									    values['confidence'] >=0)
+		self.optimizer_items = ['name','Player_Type','Salary','P','C','1B','2B','3B','SS','OF','projected_FD_points','confidence']
 		self.avg_stat_chunk_size = {'batter':13,'pitcher':15} #Cole: might need to play with these
 
 	def build_model_dataset(self,hist_data):#Cole: How do we generalize this method. Some out-of-box method likely exists. Defs need to refactor
