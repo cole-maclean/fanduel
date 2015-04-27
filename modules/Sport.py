@@ -9,6 +9,7 @@ import ast
 from openopt import *
 import Model
 import pandas
+import datetime, dateutil.parser
 import general_utils as Ugen
 
 class Sport(): #Cole: Class has functions that should be stripped out and place into more appropriate module/class
@@ -17,19 +18,25 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 		self.gameid = None
 
 	def FD_points_model(self,hist_data,visualize = False,model_promt = True):
+		FD_projection= collections.namedtuple("FD_projection", ["projected_points", "confidence"])
 		projected_FD_points = {}
-		for player,data in hist_data.iteritems():
-			player_model_data = self.build_model_dataset(data)
-			player_model = Model.Model(player_model_data,player)
-			player_model.FD_points_model(visualize)
-			if player_model.modelled:
-				parameters = [self.avg_stat(player_model_data['FD_points'][-self.avg_stat_chunk_size:])]
-				projected_FD_points[player] = player_model.model.predict(parameters)[-1]
-			else:
-				projected_FD_points[player] = 0 #Cole: this is the default model number if player cannot be modelled
-			if model_promt or visualize:
-				if Ugen.query_yes_no("continue to next model?") == False:
-					break
+		for player,data in hist_data.iteritems() :
+				self.player_model_data = self.build_model_dataset(data)
+				player_model = Model.Model(self.player_model_data,player)
+				player_model.FD_points_model(visualize)
+				if player_model.modelled:	#Cole: need to develop parameters for each player
+					parameters = self.get_parameters(player_model.feature_labels)
+					if len(player_model.test_feature_matrix) > 1: #Test dataset needs to contain at least 2 datapoints to compute score
+						projected_FD_points[player] = (FD_projection(player_model.model.predict(parameters)[-1],
+														player_model.model.score(player_model.test_feature_matrix,player_model.test_target_matrix)))
+					else:
+						projected_FD_points[player] = FD_projection(player_model.model.predict(parameters)[-1],0)
+				else:
+					projected_FD_points[player] = FD_projection(0,0) #Cole: this is the default model prediction and confidence if player cannot be modelled
+				if model_promt or visualize:
+					if Ugen.query_yes_no("continue to next model?") == False:
+						break
+				player_model = None
 		return projected_FD_points
 
 	def events(self,event_date):
@@ -113,8 +120,11 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 			dbo.insert_mysql('event_data',cols,data)
 		return event_data_dict
 
-	def get_db_gamedata(self,start_date,end_date): #Cole: How do we make it so this only queries X number of games?
-		sql = "SELECT * FROM hist_player_data WHERE Sport = '"+ self.sport +"' AND Date BETWEEN '" + start_date +"' AND '" + end_date + "' ORDER BY Date Desc"
+	def get_db_gamedata(self,start_date,end_date):
+		sql = ("SELECT hist_player_data.*, event_data.* FROM hist_player_data "
+				 "INNER JOIN event_data ON hist_player_data.GameID=event_data.event_id "
+				   "WHERE hist_player_data.Sport = '"+ self.sport +"' AND Date BETWEEN '" + start_date +"' AND "
+				    "'" + end_date + "' ORDER BY Date ASC")
 		db_data = dbo.read_from_db(sql,["Player","GameID","Player_Type"],True)
 		player_data_dict = {}
 		for key,player_game in db_data.iteritems():
@@ -155,12 +165,18 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 		array = numpy.array([xi,matrix_ones])
 		return numpy.linalg.lstsq(array.T,stats_data)[0][0]
 
+	def time_between(self,start_time,end_time):
+		secondsdelta = (dateutil.parser.parse(end_time) - dateutil.parser.parse(start_time)).seconds
+		if  abs(secondsdelta) < 864000: #Timedelta needs to be less then 10days to ensure exclusion of rest_time between seasons
+			return float(secondsdelta)
+		else:
+			return 0.0
+
 	def get_FD_player_dict(self,contest_url):
 		return ast.literal_eval(Uds.parse_html(contest_url,"FD.playerpicker.allPlayersFullData = ",";"))
 
 	def optimal_roster(self,contest_url):
 		forecasted_player_universe = self.build_player_universe(contest_url)
-		os.system('pause')
 		items = ([{key:value for key,value in stats_data.iteritems() if key in self.optimizer_items}
 					 for player_key,stats_data in forecasted_player_universe.iteritems()
 					 if 'Salary' in stats_data.keys()])
@@ -208,18 +224,27 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 		feature_dict = {}
 		feature_dict['FD_points'] = []
 		feature_dict['FD_avg' + str(self.avg_stat_chunk_size)] = []
+		feature_dict['rest_time'] = []
 		feature_dict['day_of_month'] = []
 		for indx,FD_point in enumerate(FD_points):
-			reverse_index = len(FD_points)-indx
+			reverse_index = len(FD_points)-indx -1
 			try:
 				avg_chunk_list = [FD_points[chunk_indx] for chunk_indx in range(reverse_index-self.avg_stat_chunk_size,reverse_index-1)]
-				trend_chunk_list = [FD_points[chunk_indx] for chunk_indx in range(reverse_index-self.trend_chunk_size,reverse_index-1)]
-				feature_dict['FD_points'].append(FD_point) #Cole:Need to do some testing on most informative hist FD points data feature(ie avg, trend, combination)
+				feature_dict['FD_points'].append(FD_points[reverse_index]) #Cole:Need to do some testing on most informative hist FD points data feature(ie avg, trend, combination)
 				feature_dict['FD_avg' + str(self.avg_stat_chunk_size)].append(self.avg_stat(avg_chunk_list))
-				feature_dict['day_of_month'].append(int(str(hist_data['Date'][indx])[8:10]))#Cole: used as spurious feature
+				feature_dict['rest_time'].append(self.time_between(hist_data['start_date_time'][reverse_index-1],hist_data['start_date_time'][reverse_index])) #this will include rest_days between season, need to remove
+				feature_dict['day_of_month'].append(int(str(hist_data['Date'][reverse_index])[8:10]))#Cole: used as spurious feature
 			except IndexError:
 				break
 		return feature_dict
+	def get_parameters(self,features):
+		parameters = []
+		for feature in features:
+			if feature == 'rest_time':
+				parameters.append(86400) #Cole: default 1 day for now
+			elif feature == 'FD_avg' + str(self.avg_stat_chunk_size):
+				 parameters.append(self.avg_stat(self.player_model_data['FD_points'][-self.avg_stat_chunk_size:]))
+		return parameters
 
 	def FD_points(self, data):
 		if data['Player_Type'][-1] == 'batter':
@@ -234,7 +259,7 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 
 	def build_player_universe(self,contest_url): #Cole: this desperately needs documentation. Entire data structure needs documentation
 		db_data = self.get_db_gamedata("20140401","20150422") #Cole: Stats need to be summarized here (ie avg, max, what ever maths)
-		projected_FD_points = self.FD_points_model(db_data,False,False)
+		projected_FD_points = self.FD_points_model(db_data,True,False)
 		FD_player_data = self.get_FD_player_dict(contest_url)
 		player_universe = {}
 		for FD_playerid,data in FD_player_data.iteritems():
@@ -246,7 +271,8 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 			player_universe[player_key] = {}
 			player_universe[player_key]['FD_playerid'] = FD_playerid
 			if player_key in projected_FD_points.keys():
-				player_universe[player_key]['projected_FD_points'] = projected_FD_points[player_key]
+				player_universe[player_key]['projected_FD_points'] = projected_FD_points[player_key].projected_points
+				player_universe[player_key]['confidence'] = projected_FD_points[player_key].confidence
 				player_universe[player_key]['Player_Type'] = player_type
 				for indx,FD_data in enumerate(data):
 					try:
@@ -259,6 +285,7 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 			else:
 				print player_key + ' not in db_player_data'
 		return player_universe
-
-#MLB=MLB()
-#MLB.get_daily_game_data("20140301","20150422",True)
+MLB=MLB()
+r =MLB.optimal_roster("https://www.fanduel.com/e/Game/12181?tableId=12221165&fromLobby=true")
+print r.xf
+os.system('pause')
