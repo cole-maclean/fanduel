@@ -9,6 +9,7 @@ import ast
 from openopt import *
 import Model
 import pandas
+import datetime, dateutil.parser
 import general_utils as Ugen
 
 class Sport(): #Cole: Class has functions that should be stripped out and place into more appropriate module/class
@@ -16,20 +17,21 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 		self.sport = sport
 		self.gameid = None
 
-	def FD_points_model(self,hist_data,visualize = False,model_promt = True):
-		projected_FD_points = {}
-		for player,data in hist_data.iteritems():
-			player_model_data = self.build_model_dataset(data)
-			player_model = Model.Model(player_model_data,player)
-			player_model.FD_points_model(visualize)
-			if player_model.modelled:
-				parameters = [self.avg_stat(player_model_data['FD_points'][-self.avg_stat_chunk_size:])]
-				projected_FD_points[player] = player_model.model.predict(parameters)[-1]
+	def FD_points_model(self,player,hist_data,visualize = False):
+		FD_projection= collections.namedtuple("FD_projection", ["projected_points", "confidence"])
+		self.player_model_data = self.build_model_dataset(data)
+		player_model = Model.Model(self.player_model_data,player)
+		player_model.FD_points_model(visualize)
+		if player_model.modelled:	#Cole: need to develop parameters for each player
+			parameters = self.get_parameters(player_model.feature_labels)
+			if len(player_model.test_feature_matrix) > 1: #Test dataset needs to contain at least 2 datapoints to compute score
+				projected_FD_points[player] = (FD_projection(player_model.model.predict(parameters)[-1],
+												player_model.model.score(player_model.test_feature_matrix,player_model.test_target_matrix)))
 			else:
-				projected_FD_points[player] = 0 #Cole: this is the default model number if player cannot be modelled
-			if model_promt or visualize:
-				if Ugen.query_yes_no("continue to next model?") == False:
-					break
+				projected_FD_points = FD_projection(player_model.model.predict(parameters)[-1],0)
+		else:
+			projected_FD_points = FD_projection(0,0) #Cole: this is the default model prediction and confidence if player cannot be modelled
+		player_model = None
 		return projected_FD_points
 
 	def events(self,event_date):
@@ -62,7 +64,7 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 					game_data = XMLStats.main(self,'boxscore',None)
 				elif store == True and self.gameid not in self.gameids().all_gameids: #Cole: this will make it so this method of the class can only be used if Sport class generated from individual sport class (ie MLB, NHL)
 					print "loading " + game_id
-					self.parse_event_data(day_events[indx])
+					self.parse_event_data(day_events[indx],event_date)
 					game_data = XMLStats.main(self,'boxscore',None)
 					if game_data != None:
 						parsed_data = self.parse_boxscore_data(game_data)
@@ -98,7 +100,7 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 					dbo.insert_mysql('hist_player_data',cols,data)
 		return self
 
-	def parse_event_data(self,event_data): #Cole: There must be a better way...
+	def parse_event_data(self,event_data,event_date): #Cole: There must be a better way...
 		event_data_dict = {}
 		if event_data:
 			event_data_dict['event_id'] = event_data['event_id']
@@ -108,13 +110,18 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 			event_data_dict['away_team'] = event_data['away_team']['team_id']
 			event_data_dict['home_team'] = event_data['home_team']['team_id']			
 			event_data_dict['stadium'] = event_data['home_team']['site_name']
+			home_team = event_data['home_team']['team_id'] #Cole: This will need to be mapped to the team id from mlb_starting_lineups. team_abr might work
+			event_data_dict['forecast'] = ds.mlb_starting_lineups(event_date)[home_team][1]
 			cols = ", ".join(event_data_dict.keys())
 			data = ", ".join(['"' + unicode(v) + '"' for v in event_data_dict.values()])
 			dbo.insert_mysql('event_data',cols,data)
 		return event_data_dict
 
-	def get_db_gamedata(self,start_date,end_date): #Cole: How do we make it so this only queries X number of games?
-		sql = "SELECT * FROM hist_player_data WHERE Sport = '"+ self.sport +"' AND Date BETWEEN '" + start_date +"' AND '" + end_date + "' ORDER BY Date Desc"
+	def get_db_gamedata(self,start_date,end_date):
+		sql = ("SELECT hist_player_data.*, event_data.* FROM hist_player_data "
+				 "INNER JOIN event_data ON hist_player_data.GameID=event_data.event_id "
+				   "WHERE hist_player_data.Sport = '"+ self.sport +"' AND Date BETWEEN '" + start_date +"' AND "
+				    "'" + end_date + "' ORDER BY Date ASC")
 		db_data = dbo.read_from_db(sql,["Player","GameID","Player_Type"],True)
 		player_data_dict = {}
 		for key,player_game in db_data.iteritems():
@@ -141,6 +148,10 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 						player_data_dict[player_key][stat_key] = [player_data]
 		return player_data_dict
 
+	def get_stadium_data(self):
+		sql = "SELECT * FROM stadium_data"
+		return dbo.read_from_db(sql,['stadiumid'],True)
+
 	def avg_stat(self,stats_data):
 		np_array = numpy.array(stats_data)
 		avg =numpy.mean(np_array)
@@ -155,18 +166,29 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 		array = numpy.array([xi,matrix_ones])
 		return numpy.linalg.lstsq(array.T,stats_data)[0][0]
 
+	def time_between(self,start_time,end_time):
+		secondsdelta = (dateutil.parser.parse(end_time) - dateutil.parser.parse(start_time)).seconds
+		if  abs(secondsdelta) < 864000: #Timedelta needs to be less then 10days to ensure exclusion of rest_time between seasons
+			return float(secondsdelta)
+		else:
+			return 0.0
+
 	def get_FD_player_dict(self,contest_url):
 		return ast.literal_eval(Uds.parse_html(contest_url,"FD.playerpicker.allPlayersFullData = ",";"))
 
 	def optimal_roster(self,contest_url):
-		forecasted_player_universe = self.build_player_universe(contest_url)
-		os.system('pause')
+		DB_parameters=Ugen.ConfigSectionMap('local text')
+		player_universe = self.build_player_universe(contest_url)
 		items = ([{key:value for key,value in stats_data.iteritems() if key in self.optimizer_items}
-					 for player_key,stats_data in forecasted_player_universe.iteritems()
+					 for player_key,stats_data in player_universe.iteritems()
 					 if 'Salary' in stats_data.keys()])
 		objective = 'projected_FD_points' #Cole: update this to forecast_points once model is built
 		p = KSP(objective, items, goal = 'max', constraints=self.optimizer_constraints)
 		r = p.solve('glpk',iprint = 0)
+		roster_data.append([player_universe[player]['Position'],player_universe[player]['PlayerID'],player_universe[player]['MatchupID'],player_universe[player]['TeamID']])
+		sorted_roster = sorted(roster_data, key=self.positions)
+		with open(DB_parameters['rostertext'],"w") as myfile: #Ian: replaced hard-coded folder path with reference to config file
+			myfile.write(str(sorted_roster).replace(' ',''))
 		return r
 
 class MLB(Sport): #Cole: data modelling may need to be refactored, might be more elegant solution
@@ -174,7 +196,7 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 		Sport.__init__(self,"MLB")
 		self.FD_data_columns = (['FD_Position','name','MatchupID','TeamID','Dummy2','Salary','PPG',
 									'GamesPlayed','Dummy3','Dummy4','Injury','InjuryAge','Dummy5'])
-		self.positions = ['P','C','1B','2B','3B','SS','OF']
+		self.positions = {'P':1,'C':2,'1B':3,'2B':4,'3B':5,'SS':6,'OF':7}
 		self.player_type_map = {'away_batters':'batter','home_batters':'batter','away_pitchers':'pitcher','home_pitchers':'pitcher'}
 		self.db_data_model = collections.OrderedDict({'meta':{'gameid':'GameID','sport':'Sport','type':'Player_Type'}, #Cole: prefix with $ to denote a hard coded value
 							'batter':{'display_name':'Player','position':'Position','team_abbreviation':'Team',
@@ -198,28 +220,44 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 									    values['2B'] == 1,
 									    values['3B'] == 1,
 									    values['SS'] == 1,
-									    values['OF'] == 3,)
-		self.optimizer_items = ['name','Player_Type','Salary','P','C','1B','2B','3B','SS','OF','projected_FD_points']
-		self.avg_stat_chunk_size = 3
-		self.trend_chunk_size = 3
+									    values['OF'] == 3,
+									    values['confidence'] >=0)
+		self.optimizer_items = ['name','Player_Type','Salary','P','C','1B','2B','3B','SS','OF','projected_FD_points','confidence']
+		self.avg_stat_chunk_size = {'batter':13,'pitcher':15} #Cole: might need to play with these
 
 	def build_model_dataset(self,hist_data):#Cole: How do we generalize this method. Some out-of-box method likely exists. Defs need to refactor
+		player_type = hist_data['Player_Type'][-1]
 		FD_points = self.FD_points(hist_data)
 		feature_dict = {}
 		feature_dict['FD_points'] = []
-		feature_dict['FD_avg' + str(self.avg_stat_chunk_size)] = []
+		feature_dict['FD_avg'] = []
+		feature_dict['HR_ballpark_factor'] = [] #Cole:tempory parameter until batter handedness is figured out
+		#feature_dict['rest_time'] = []
+		#feature_dict['LHB_ballpark_factor'] = [] #Cole: do we split feature into RH\LH based on batter?
+		#feature_dict['RHB_ballpark_factor'] = []
 		feature_dict['day_of_month'] = []
 		for indx,FD_point in enumerate(FD_points):
-			reverse_index = len(FD_points)-indx
+			reverse_index = len(FD_points)-indx -1
 			try:
-				avg_chunk_list = [FD_points[chunk_indx] for chunk_indx in range(reverse_index-self.avg_stat_chunk_size,reverse_index-1)]
-				trend_chunk_list = [FD_points[chunk_indx] for chunk_indx in range(reverse_index-self.trend_chunk_size,reverse_index-1)]
-				feature_dict['FD_points'].append(FD_point) #Cole:Need to do some testing on most informative hist FD points data feature(ie avg, trend, combination)
-				feature_dict['FD_avg' + str(self.avg_stat_chunk_size)].append(self.avg_stat(avg_chunk_list))
-				feature_dict['day_of_month'].append(int(str(hist_data['Date'][indx])[8:10]))#Cole: used as spurious feature
+				avg_chunk_list = [FD_points[chunk_indx] for chunk_indx in range(reverse_index-self.avg_stat_chunk_size[player_type],reverse_index-1)]
+				feature_dict['FD_points'].append(FD_points[reverse_index]) #Cole:Need to do some testing on most informative hist FD points data feature(ie avg, trend, combination)
+				feature_dict['FD_avg'].append(self.avg_stat(avg_chunk_list))
+				feature_dict['HR_ballpark_factor'].append(float(self.get_stadium_data()[hist_data['stadium'][reverse_index]]['HR']))
+				#feature_dict['rest_time'].append(self.time_between(hist_data['start_date_time'][reverse_index-1],hist_data['start_date_time'][reverse_index])) #this will include rest_days between season, need to remove
+				#feature_dict['LHB_ballpark_factor'].append(float(self.get_stadium_data()[hist_data['stadium'][reverse_index]]['LHB']))
+				#feature_dict['RHB_ballpark_factor'].append(float(self.get_stadium_data()[hist_data['stadium'][reverse_index]]['RHB']))
+				feature_dict['day_of_month'].append(int(str(hist_data['Date'][reverse_index])[8:10]))#Cole: used as spurious feature
 			except IndexError:
 				break
 		return feature_dict
+	def get_parameters(self,features):
+		parameters = []
+		for feature in features:
+			if feature == 'rest_time':
+				parameters.append(86400) #Cole: default 1 day for now
+			elif feature == 'FD_avg' + str(self.avg_stat_chunk_size):
+				 parameters.append(self.avg_stat(self.player_model_data['FD_points'][-self.avg_stat_chunk_size:]))
+		return parameters
 
 	def FD_points(self, data):
 		if data['Player_Type'][-1] == 'batter':
@@ -234,10 +272,11 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 
 	def build_player_universe(self,contest_url): #Cole: this desperately needs documentation. Entire data structure needs documentation
 		db_data = self.get_db_gamedata("20140401","20150422") #Cole: Stats need to be summarized here (ie avg, max, what ever maths)
-		projected_FD_points = self.FD_points_model(db_data,False,False)
-		FD_player_data = self.get_FD_player_dict(contest_url)
+		FD_player_data = self.get_FD_player_dict(contest_url)#Cole:need to build some sort of test that FD_names and starting lineup names match
+		starting_lineups = ds.mlb_starting_lineups()
+		FD_starting_player_data = {FD_playerid:data for FD_playerid,data in FD_player_data.iteritems if data[1] in starting_lineups.values()} #data[1] if FD_player_name
 		player_universe = {}
-		for FD_playerid,data in FD_player_data.iteritems():
+		for FD_playerid,data in FD_starting_player_data.iteritems():
 			if data[0] == 'P': #Cole: If this can be generalized (ie sport player type map, the entire function can be generalized as a Sport method)
 				player_type = 'pitcher'
 			else:
@@ -246,19 +285,22 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 			player_universe[player_key] = {}
 			player_universe[player_key]['FD_playerid'] = FD_playerid
 			if player_key in projected_FD_points.keys():
-				player_universe[player_key]['projected_FD_points'] = projected_FD_points[player_key]
+				projected_FD_points = self.FD_points_model(db_data[player_key],True)
+				player_universe[player_key]['projected_FD_points'] = projected_FD_points.projected_points
+				player_universe[player_key]['confidence'] = projected_FD_points.confidence
 				player_universe[player_key]['Player_Type'] = player_type
 				for indx,FD_data in enumerate(data):
 					try:
 						player_universe[player_key][self.FD_data_columns[indx]] = float(FD_data)
 					except ValueError:
 						player_universe[player_key][self.FD_data_columns[indx]] = FD_data
-				position_map = {key:1 if key == player_universe[player_key]['FD_Position'] else 0 for key in self.positions}
+				position_map = {key:1 if key == player_universe[player_key]['FD_Position'] else 0 for key in self.positions.keys()}
 				tmp_dict = position_map.copy()
 				player_universe[player_key].update(tmp_dict)
 			else:
 				print player_key + ' not in db_player_data'
 		return player_universe
-
-#MLB=MLB()
-#MLB.get_daily_game_data("20140301","20150422",True)
+# MLB=MLB()
+# r =MLB.optimal_roster("https://www.fanduel.com/e/Game/12191?tableId=12257873&fromLobby=true")
+# print r.xf
+# os.system('pause')
