@@ -56,8 +56,8 @@ def test_selenium():
 	results=soup.find("tbody",{"class":"lineupopt-lineup"}).get_text()
 	return html
 
-a=data_scrapping.mlb_starting_lineups('2015-04-09')
-Cell('Output',1,1).value=a
+a,b=data_scrapping.mlb_starting_lineups('2015-04-25')
+Cell('Output',1,1).value=b
 time.sleep(5)
 
 

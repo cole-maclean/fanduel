@@ -262,7 +262,8 @@ def mlb_starting_lineups(date=time.strftime("%Y-%m-%d")): #take date as string '
 	soup = BeautifulSoup(content)
 	team_map = Ugen.excel_mapping("Team Map",8,6)
 	team_list,pitcher_list,lineups_list,gametime_list,weather_list=([] for i in range(5))
-
+	teamid_dict={}
+	playerid_dict={}
 	for event_date in soup.findAll("div",{"class":"game-time"}):
 		gametime_list.append(event_date.text)
 	for forecast in soup.findAll("a",{"target":"forecast"}):
@@ -289,14 +290,21 @@ def mlb_starting_lineups(date=time.strftime("%Y-%m-%d")): #take date as string '
 			lineups_list.append(['no home_lineup listed'])
 			lineups_list.append(['no away_lineup listed'])
 	i=j=0
-	while i<len(lineups_list):#Ugly, probably a better way of doing this. 
-		lineups_list[i].reverse()
+	while i<len(lineups_list):
 		lineups_list[i].append(pitcher_list[i])
-		lineups_list[i].append(weather_list[j])
-		lineups_list[i].append(gametime_list[j])
-		lineups_list[i].append(team_list[i])
-		lineups_list[i].reverse()
+		teamid_dict[team_list[i]]=[gametime_list[j]]
+		teamid_dict[team_list[i]].append(weather_list[j])
+		teamid_dict[team_list[i]].append(lineups_list[i])
 		if i%2 !=0:
 			j=j+1	
 		i=i+1
-	return lineups_list
+	i=j=0
+	while i<len(lineups_list):
+		for e in lineups_list[i]:
+			playerid_dict[e]=[gametime_list[j]]
+			playerid_dict[e].append(weather_list[j])
+			playerid_dict[e].append(team_list[i])
+		if i%2 !=0:
+			j=j+1	
+		i=i+1	
+	return teamid_dict,playerid_dict
