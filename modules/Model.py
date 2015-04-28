@@ -9,9 +9,6 @@ from sklearn.cross_validation import train_test_split
 import math
 class Model():
 	def __init__(self,model_data,player): #Cole: Class accepts model_data in form {'feature1':[data],feature2:[data]}
-		self.version = '0.0.0001'
-		self.description = "Lasso Linear regression on Avg_FD and Stadium HR factors"
-		self.mean_score = -1.70
 		self.player = player
 		self.model_data = model_data
 		self.target = 'FD_points'
@@ -19,6 +16,7 @@ class Model():
 		self.target_matrix = numpy.array(model_data[self.target]).astype(float)
 		self.feature_matrix = numpy.array([[model_data[key][index] for key in model_data.keys() if key != self.target] for index in range(0,len(model_data[self.target]))]).astype(float)
 		self.feature_labels = [feature for feature in  model_data.keys() if feature !=self.target]
+		
 	def linear_regression(self,X,y):
 		try:
 			regr = linear_model.Lasso(alpha = 0.1) #Cole: Need to investigate more to find best model to use

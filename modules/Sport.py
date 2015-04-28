@@ -19,19 +19,24 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 
 	def FD_points_model(self,player,hist_data,visualize = False):
 		FD_projection= collections.namedtuple("FD_projection", ["projected_points", "confidence"])
-		self.player_model_data = self.build_model_dataset(data)
+		self.player_model_data = self.build_model_dataset(hist_data)
 		player_model = Model.Model(self.player_model_data,player)
 		player_model.FD_points_model(visualize)
 		if player_model.modelled:	#Cole: need to develop parameters for each player
-			parameters = self.get_parameters(player_model.feature_labels)
+			parameters = self.get_parameters(player_model.feature_labels,player)
+			print parameters
 			if len(player_model.test_feature_matrix) > 1: #Test dataset needs to contain at least 2 datapoints to compute score
-				projected_FD_points[player] = (FD_projection(player_model.model.predict(parameters)[-1],
+				projected_FD_points = (FD_projection(player_model.model.predict(parameters)[-1],
 												player_model.model.score(player_model.test_feature_matrix,player_model.test_target_matrix)))
+				print projected_FD_points
 			else:
 				projected_FD_points = FD_projection(player_model.model.predict(parameters)[-1],0)
 		else:
-			default_projection = self.player_model_data['FD_avg'][-1]
-			projected_FD_points = FD_projection(default_projection,0) #Cole: this is the default model prediction and confidence if player cannot be modelled
+			try:
+				default_projection = self.player_model_data['FD_median'][-1]
+				projected_FD_points = FD_projection(default_projection,0) #Cole: this is the default model prediction and confidence if player cannot be modelled
+			except:
+				projected_FD_points = FD_projection(0,0)
 		player_model = None
 		return projected_FD_points
 
@@ -63,7 +68,7 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 				self.gameid = game_id
 				if store == False:
 					game_data = XMLStats.main(self,'boxscore',None)
-				elif store == True and self.gameid not in self.gameids().all_gameids: #Cole: this will make it so this method of the class can only be used if Sport class generated from individual sport class (ie MLB, NHL)
+				elif store == True and self.gameid not in self.gameids().all_gameids:
 					print "loading " + game_id
 					self.parse_event_data(day_events[indx],event_date)
 					game_data = XMLStats.main(self,'boxscore',None)
@@ -101,7 +106,7 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 					dbo.insert_mysql('hist_player_data',cols,data)
 		return self
 
-	def parse_event_data(self,event_data,event_date): #Cole: There must be a better way...
+	def parse_event_data(self,event_data,event_date): #Cole: How to generaize parsing event data for each sport?
 		event_data_dict = {}
 		if event_data:
 			event_data_dict['event_id'] = event_data['event_id']
@@ -113,9 +118,13 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 			event_data_dict['stadium'] = event_data['home_team']['site_name']
 			home_team = event_data['home_team']['abbreviation'] #Cole: This will need to be mapped to the team id from mlb_starting_lineups. team_abr might work
 			event_date = event_date[0:4] + "-" + event_date[4:6] + "-" + event_date[6:8]
-			print event_date
-			event_data_dict['forecast'] = ds.mlb_starting_lineups(event_date)[0][home_team][1]
-			print event_data_dict['forecast']
+			day_time_data = ds.mlb_starting_lineups(event_date)
+			event_data_dict['forecast'] = day_time_data[0][home_team][1]
+			if day_time_data[0][home_team][0] == 'PPD':
+				event_data_dict['PPD'] = True
+			else:
+				event_data_dict['PPD'] = False
+			print day_time_data[0][home_team][0]
 			cols = ", ".join(event_data_dict.keys())
 			data = ", ".join(['"' + unicode(v) + '"' for v in event_data_dict.values()])
 			dbo.insert_mysql('event_data',cols,data)
@@ -152,27 +161,27 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 						player_data_dict[player_key][stat_key] = [player_data]
 		return player_data_dict
 
-	def get_stadium_data(self):
+	def get_stadium_data(self,prime_key = 'stadium'):
 		sql = "SELECT * FROM stadium_data"
-		return dbo.read_from_db(sql,['stadiumid'],True)
+		return dbo.read_from_db(sql,[prime_key],True)
 
 	def avg_stat(self,stats_data,include_zero = True):
+		np_array = numpy.array(stats_data)
 		if include_zero:
-			np_array = numpy.array(stats_data)
 			avg =numpy.mean(np_array)
 		else:
-			avg =numpy.mean(np_array[numpy.nonzero(numpy_array)])
+			avg =numpy.mean(np_array[numpy.nonzero(np_array)])
 		if numpy.isnan(avg):
 			return 0
 		else:
 			return avg
 
 	def median_stat(self,stats_data,include_zero=True):
+		np_array = numpy.array(stats_data)
 		if include_zero:
-			np_array = numpy.array(stats_data)
 			median =numpy.median(np_array)
 		else:
-			median =numpy.median(np_array[numpy.nonzero(numpy_array)])
+			median =numpy.median(np_array[numpy.nonzero(np_array)])
 		if numpy.isnan(median):
 			return 0
 		else:
@@ -203,8 +212,18 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 		objective = 'projected_FD_points' #Cole: update this to forecast_points once model is built
 		p = KSP(objective, items, goal = 'max', constraints=self.optimizer_constraints)
 		r = p.solve('glpk',iprint = 0)
-		roster_data.append([player_universe[player]['Position'],player_universe[player]['PlayerID'],player_universe[player]['MatchupID'],player_universe[player]['TeamID']])
-		sorted_roster = sorted(roster_data, key=self.positions)
+		roster_data = []
+		rw = 2
+		for player in r.xf:
+			roster_data.append([player_universe[player]['FD_Position'],str(int(player_universe[player]['FD_playerid'])),str(int(player_universe[player]['MatchupID'])),str(int(player_universe[player]['TeamID']])))
+			Cell("Roster",rw,1).value = player
+			Cell("Roster",rw,2).value = player_universe[player]['TeamID']
+			Cell("Roster",rw,3).value = player_universe[player]['FD_Position']
+			Cell("Roster",rw,4).value = player_universe[player]['projected_FD_points']
+			Cell("Roster",rw,5).value = player_universe[player]['confidence']
+			Cell("Roster",rw,6).value = player_universe[player]['Salary']
+			rw = rw + 1
+		sorted_roster = sorted(roster_data, key=self.sort_positions)
 		with open(DB_parameters['rostertext'],"w") as myfile: #Ian: replaced hard-coded folder path with reference to config file
 			myfile.write(str(sorted_roster).replace(' ',''))
 		return r
@@ -212,7 +231,7 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 class MLB(Sport): #Cole: data modelling may need to be refactored, might be more elegant solution
 	def __init__(self):
 		Sport.__init__(self,"MLB")
-		self.FD_data_columns = (['FD_Position','name','MatchupID','TeamID','Dummy2','Salary','PPG',
+		self.FD_data_columns = (['FD_Position','FD_name','MatchupID','TeamID','Dummy2','Salary','PPG',
 									'GamesPlayed','Dummy3','Dummy4','Injury','InjuryAge','Dummy5'])
 		self.positions = {'P':1,'C':2,'1B':3,'2B':4,'3B':5,'SS':6,'OF':7}
 		self.player_type_map = {'away_batters':'batter','home_batters':'batter','away_pitchers':'pitcher','home_pitchers':'pitcher'}
@@ -239,16 +258,22 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 									    values['3B'] == 1,
 									    values['SS'] == 1,
 									    values['OF'] == 3,
-									    values['confidence'] >=0)
+									    values['confidence'] >=-10)
 		self.optimizer_items = ['name','Player_Type','Salary','P','C','1B','2B','3B','SS','OF','projected_FD_points','confidence']
-		self.avg_stat_chunk_size = {'batter':13,'pitcher':15} #Cole: might need to play with these
+		self.median_stat_chunk_size = {'batter':13,'pitcher':15} #Cole: might need to play with these
+		self.model_version = '0.0.0001'
+		self.model_description = "Lasso Linear regression on median_FD and Stadium HR factors"
+		self.model_mean_score = -1.70
+
+	def sort_positions(self,sort_list):
+		return self.positions[sort_list[0]]
 
 	def build_model_dataset(self,hist_data):#Cole: How do we generalize this method. Some out-of-box method likely exists. Defs need to refactor
 		player_type = hist_data['Player_Type'][-1]
 		FD_points = self.FD_points(hist_data)
 		feature_dict = {}
 		feature_dict['FD_points'] = []
-		feature_dict['FD_avg'] = []
+		feature_dict['FD_median'] = []
 		feature_dict['HR_ballpark_factor'] = [] #Cole:tempory parameter until batter handedness is figured out
 		#feature_dict['rest_time'] = []
 		#feature_dict['LHB_ballpark_factor'] = [] #Cole: do we split feature into RH\LH based on batter?
@@ -257,9 +282,9 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 		for indx,FD_point in enumerate(FD_points):
 			reverse_index = len(FD_points)-indx -1
 			try:
-				avg_chunk_list = [FD_points[chunk_indx] for chunk_indx in range(reverse_index-self.avg_stat_chunk_size[player_type],reverse_index-1)]
+				median_chunk_list = [FD_points[chunk_indx] for chunk_indx in range(reverse_index-self.median_stat_chunk_size[player_type],reverse_index-1)]
 				feature_dict['FD_points'].append(FD_points[reverse_index]) #Cole:Need to do some testing on most informative hist FD points data feature(ie avg, trend, combination)
-				feature_dict['FD_avg'].append(self.avg_stat(avg_chunk_list))
+				feature_dict['FD_median'].append(self.median_stat(median_chunk_list,False))
 				feature_dict['HR_ballpark_factor'].append(float(self.get_stadium_data()[hist_data['stadium'][reverse_index]]['HR']))
 				#feature_dict['rest_time'].append(self.time_between(hist_data['start_date_time'][reverse_index-1],hist_data['start_date_time'][reverse_index])) #this will include rest_days between season, need to remove
 				#feature_dict['LHB_ballpark_factor'].append(float(self.get_stadium_data()[hist_data['stadium'][reverse_index]]['LHB']))
@@ -268,15 +293,24 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 			except IndexError:
 				break
 		return feature_dict
-	def get_parameters(self,features):
+
+	def get_parameters(self,features,player):
+		player_id =player.split("_")
+		player_name = player_id[0]
+		player_type = player_id[1]
+		player_gtd = game_time_data = ds.mlb_starting_lineups()[1][player_name]
+		team_abr = player_gtd[2]
+		stadium_data = self.get_stadium_data('home_team')[team_abr]
 		parameters = []
 		for feature in features:
 			if feature == 'rest_time':
 				parameters.append(86400) #Cole: default 1 day for now
-			elif feature == 'FD_avg' + str(self.avg_stat_chunk_size):
-				 parameters.append(self.avg_stat(self.player_model_data['FD_points'][-self.avg_stat_chunk_size:]))
+			elif feature == 'FD_median':
+				 parameters.append(self.median_stat(self.player_model_data['FD_points'][-self.median_stat_chunk_size[player_type]:]))
+			elif feature == 'HR_ballpark_factor':
+				parameters.append(float(stadium_data['HR']))
 			elif feature == 'temp':
-				pass
+				parameters.append(stadium_data['forecast'].split('oF')[0]) 
 		return parameters
 
 	def FD_points(self, data):
@@ -291,10 +325,11 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 		return FD_points
 
 	def build_player_universe(self,contest_url): #Cole: this desperately needs documentation. Entire data structure needs documentation
-		db_data = self.get_db_gamedata("20140401","20150422") #Cole: Stats need to be summarized here (ie avg, max, what ever maths)
+		db_data = self.get_db_gamedata("20120401","20170422")
 		FD_player_data = self.get_FD_player_dict(contest_url)#Cole:need to build some sort of test that FD_names and starting lineup names match
 		starting_lineups = ds.mlb_starting_lineups()[1]
-		FD_starting_player_data = {FD_playerid:data for FD_playerid,data in FD_player_data.iteritems if data[1] in starting_lineups.keys()} #data[1] if FD_player_name
+		starting_players = [player for player in starting_lineups.keys() if 'PPD' not in starting_lineups[player][1]]
+		FD_starting_player_data = {FD_playerid:data for FD_playerid,data in FD_player_data.iteritems() if data[1] in starting_players} #data[1] if FD_player_name
 		player_universe = {}
 		for FD_playerid,data in FD_starting_player_data.iteritems():
 			if data[0] == 'P': #Cole: If this can be generalized (ie sport player type map, the entire function can be generalized as a Sport method)
@@ -302,13 +337,14 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 			else:
 				player_type = 'batter'
 			player_key = data[1] + '_' + player_type
-			player_universe[player_key] = {}
-			player_universe[player_key]['FD_playerid'] = FD_playerid
-			if player_key in projected_FD_points.keys():
-				projected_FD_points = self.FD_points_model(db_data[player_key],True)
+			if player_key in db_data.keys():
+				player_universe[player_key] = {}
+				player_universe[player_key]['FD_playerid'] = FD_playerid
+				projected_FD_points = self.FD_points_model(player_key,db_data[player_key],False)
 				player_universe[player_key]['projected_FD_points'] = projected_FD_points.projected_points
 				player_universe[player_key]['confidence'] = projected_FD_points.confidence
 				player_universe[player_key]['Player_Type'] = player_type
+				player_universe[player_key]['name'] = player_key
 				for indx,FD_data in enumerate(data):
 					try:
 						player_universe[player_key][self.FD_data_columns[indx]] = float(FD_data)
@@ -321,7 +357,8 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 				print player_key + ' not in db_player_data'
 		return player_universe
 MLB=MLB()
-MLB.get_daily_game_data("20120401","20130426",True)
+MLB.optimal_roster("https://www.fanduel.com/e/Game/12206?tableId=12297429&fromLobby=true")
+# MLB.get_daily_game_data("20120401","20130426",True)
 # r =MLB.optimal_roster("https://www.fanduel.com/e/Game/12191?tableId=12257873&fromLobby=true")
 # print r.xf
 # os.system('pause')

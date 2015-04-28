@@ -13,6 +13,9 @@ import time
 import TeamOdds
 import Sport
 
+def run_program(sport_list,update_model_interval):
+	pass
+
 def build_player_universe(full_playerlist,goalie_list):
 	delkeys = []
 	for key,data in full_playerlist.iteritems():
@@ -217,13 +220,13 @@ def build_hist_win_tuples():
 			hist_perf_tuples.append((rw[0],0))
 	return hist_perf_tuples
 
-MLB = Sport.MLB()
-#MLB.get_daily_game_data(['20150420','20150419','20150418','20150417','20150416','20150415'],True)
-MLB.get_db_gamedata()
+# MLB = Sport.MLB()
+# #MLB.get_daily_game_data(['20150420','20150419','20150418','20150417','20150416','20150415'],True)
+# MLB.get_db_gamedata()
 
-#data_scrapping.update_gamedata('MLB',Cell("Parameters",'clLastGameDataID').value)
-#print output_final_roster(40)
-#print run_enter_best_contests(100,25)#paramter passing getting out of hand, need to figure out how refactor. Classes?
-#dbo.load_csv_into_db('C:/Users/Cole/Desktop/FanDuel/fanduel entry history.csv','hist_performance')
-#print Ugen.output_dict(build_pWins_vs_topwins_dict(5))
-os.system('pause')
+# #data_scrapping.update_gamedata('MLB',Cell("Parameters",'clLastGameDataID').value)
+# #print output_final_roster(40)
+# #print run_enter_best_contests(100,25)#paramter passing getting out of hand, need to figure out how refactor. Classes?
+# #dbo.load_csv_into_db('C:/Users/Cole/Desktop/FanDuel/fanduel entry history.csv','hist_performance')
+# #print Ugen.output_dict(build_pWins_vs_topwins_dict(5))
+# os.system('pause')

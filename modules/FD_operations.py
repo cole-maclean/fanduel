@@ -44,6 +44,4 @@ def enter_contest(s,session_id,contest_url,player_data):
 		print 'entry failed with HTTP error ' + r.status_code
 		entry_id = 0
 		entry_status = 'failed'
-	with open('C:/Users/Cole/Desktop/Fanduel/fanduel/response.txt',"w") as myfile:
-		myfile.write(str(r.text))
 	return entry_id, entry_status
