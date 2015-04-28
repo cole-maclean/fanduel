@@ -14,7 +14,14 @@ import TeamOdds
 import Sport
 
 def run_program(sport_list,update_model_interval):
-	pass
+	#last contest_time = get_last_contest_time() - return last time for latest contest tonight
+	#while current_time < last_contest_time:
+		if run_time < update_model_interval:
+			if 'MLB' in sport_list:
+				MLB= Sport.MLB()
+				contest_models = {}
+				for contest,url in MLB.daily_contests.iteritems():
+					pass
 
 def build_player_universe(full_playerlist,goalie_list):
 	delkeys = []

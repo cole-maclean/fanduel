@@ -210,7 +210,7 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 					 for player_key,stats_data in player_universe.iteritems()
 					 if 'Salary' in stats_data.keys()])
 		objective = 'projected_FD_points' #Cole: update this to forecast_points once model is built
-		p = KSP(objective, items, goal = 'max', constraints=self.optimizer_constraints)
+		p = KSP(objective, items, goal = 'max', constraints=self.get_constraints())
 		r = p.solve('glpk',iprint = 0)
 		roster_data = []
 		rw = 2
@@ -249,21 +249,25 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 							'home_batters':self.db_data_model['batter'],'home_pitchers':self.db_data_model['pitcher']})
 		self.event_data_model = ({'event':{'event_id':'event_id','sport':'sport','start_date_time':'start_date_time','season_type':'season_type'},
 									'away_team':{'team_id':'away_team'},'home_team':{'team_id':'home_team','site_name':'stadium'}})
-		self.optimizer_constraints = lambda values : (
-    									values['Salary'] <= 35000,
-									    values['P'] == 1,
-									    values['C'] == 1,
-									    values['1B'] == 1,
-									    values['2B'] == 1,
-									    values['3B'] == 1,
-									    values['SS'] == 1,
-									    values['OF'] == 3,
-									    values['confidence'] >=-10)
+
 		self.optimizer_items = ['name','Player_Type','Salary','P','C','1B','2B','3B','SS','OF','projected_FD_points','confidence']
 		self.median_stat_chunk_size = {'batter':13,'pitcher':15} #Cole: might need to play with these
 		self.model_version = '0.0.0001'
 		self.model_description = "Lasso Linear regression on median_FD and Stadium HR factors"
 		self.model_mean_score = -1.70
+		#self.daily_contests = get_daily_contests return {contestid:url} for unique sport contest in FD contest table
+
+	def get_constraints(confidence=0):
+		return lambda values : (
+								values['Salary'] <= 35000,
+							    values['P'] == 1,
+							    values['C'] == 1,
+							    values['1B'] == 1,
+							    values['2B'] == 1,
+							    values['3B'] == 1,
+							    values['SS'] == 1,
+							    values['OF'] == 3,
+							    values['confidence'] >=-confidence)
 
 	def sort_positions(self,sort_list):
 		return self.positions[sort_list[0]]
