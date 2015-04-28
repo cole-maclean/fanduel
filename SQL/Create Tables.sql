@@ -111,3 +111,14 @@ CREATE TABLE `event_data` (
   PRIMARY KEY (`event_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8$$
 
+delimiter $$
+
+CREATE TABLE `stadium_data` (
+  `stadium` varchar(45) NOT NULL,
+  `home_team` varchar(45) DEFAULT NULL,
+  `LHB` varchar(45) DEFAULT NULL,
+  `RHB` varchar(45) DEFAULT NULL,
+  `HR` varchar(45) DEFAULT NULL,
+  PRIMARY KEY (`stadium`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8$$
+

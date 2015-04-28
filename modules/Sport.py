@@ -24,7 +24,6 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 		player_model.FD_points_model(visualize)
 		if player_model.modelled:	#Cole: need to develop parameters for each player
 			parameters = self.get_parameters(player_model.feature_labels,player)
-			print parameters
 			if len(player_model.test_feature_matrix) > 1: #Test dataset needs to contain at least 2 datapoints to compute score
 				projected_FD_points = (FD_projection(player_model.model.predict(parameters)[-1],
 												player_model.model.score(player_model.test_feature_matrix,player_model.test_target_matrix)))
@@ -332,7 +331,7 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 		db_data = self.get_db_gamedata("20120401","20170422")
 		FD_player_data = self.get_FD_player_dict(contest_url)#Cole:need to build some sort of test that FD_names and starting lineup names match
 		starting_lineups = ds.mlb_starting_lineups()[1]
-		starting_players = [player for player in starting_lineups.keys() if 'PPD' not in starting_lineups[player][1]]
+		starting_players = [player for player in starting_lineups.keys() if 'PPD' not in starting_lineups[player][1]] #Cole: is the PPD working?
 		FD_starting_player_data = {FD_playerid:data for FD_playerid,data in FD_player_data.iteritems() if data[1] in starting_players} #data[1] if FD_player_name
 		player_universe = {}
 		for FD_playerid,data in FD_starting_player_data.iteritems():
@@ -362,7 +361,7 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 		return player_universe
 MLB=MLB()
 #MLB.optimal_roster("https://www.fanduel.com/e/Game/12206?tableId=12297429&fromLobby=true")
-MLB.get_daily_game_data("20120611","20150426",True)
+MLB.get_daily_game_data("20130301","20150426",True)
 # r =MLB.optimal_roster("https://www.fanduel.com/e/Game/12191?tableId=12257873&fromLobby=true")
 # print r.xf
 # os.system('pause')
