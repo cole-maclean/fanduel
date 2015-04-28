@@ -24,13 +24,13 @@ def test_chunk_size(MLB,hist_data):#Cole: How do we generalize this method. Some
 	for chunk_size in range(22,23):
 		feature_dict = {}
 		feature_dict['FD_points'] = []
-		feature_dict['FD_avg' + str(chunk_size)] = []
+		feature_dict['FD_median' + str(chunk_size)] = []
 		for indx,FD_point in enumerate(FD_points):
 			reverse_index = len(FD_points)-indx -1
 			try:
 				avg_chunk_list = [FD_points[chunk_indx] for chunk_indx in range(reverse_index-chunk_size,reverse_index-1)]
 				feature_dict['FD_points'].append(FD_points[reverse_index]) #Cole:Need to do some testing on most informative hist FD points data feature(ie avg, trend, combination)
-				feature_dict['FD_avg' + str(chunk_size)].append(MLB.avg_stat(avg_chunk_list))
+				feature_dict['FD_avg' + str(chunk_size)].append(MLB.median_stat(avg_chunk_list))
 			except IndexError:
 				break
 		model = Model.Model(feature_dict,chunk_size)

@@ -9,7 +9,7 @@ from sklearn.cross_validation import train_test_split
 import math
 class Model():
 	def __init__(self,model_data,player): #Cole: Class accepts model_data in form {'feature1':[data],feature2:[data]}
-		self.version = 0.0.0001
+		self.version = '0.0.0001'
 		self.description = "Lasso Linear regression on Avg_FD and Stadium HR factors"
 		self.mean_score = -1.70
 		self.player = player

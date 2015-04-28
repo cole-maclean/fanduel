@@ -111,8 +111,11 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 			event_data_dict['away_team'] = event_data['away_team']['team_id']
 			event_data_dict['home_team'] = event_data['home_team']['team_id']			
 			event_data_dict['stadium'] = event_data['home_team']['site_name']
-			home_team = event_data['home_team']['team_id'] #Cole: This will need to be mapped to the team id from mlb_starting_lineups. team_abr might work
-			event_data_dict['forecast'] = ds.mlb_starting_lineups(event_date)[home_team][1]
+			home_team = event_data['home_team']['abbreviation'] #Cole: This will need to be mapped to the team id from mlb_starting_lineups. team_abr might work
+			event_date = event_date[0:4] + "-" + event_date[4:6] + "-" + event_date[6:8]
+			print event_date
+			event_data_dict['forecast'] = ds.mlb_starting_lineups(event_date)[0][home_team][1]
+			print event_data_dict['forecast']
 			cols = ", ".join(event_data_dict.keys())
 			data = ", ".join(['"' + unicode(v) + '"' for v in event_data_dict.values()])
 			dbo.insert_mysql('event_data',cols,data)
@@ -163,7 +166,7 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 			return 0
 		else:
 			return avg
-			
+
 	def median_stat(self,stats_data,include_zero=True):
 		if include_zero:
 			np_array = numpy.array(stats_data)
@@ -272,6 +275,8 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 				parameters.append(86400) #Cole: default 1 day for now
 			elif feature == 'FD_avg' + str(self.avg_stat_chunk_size):
 				 parameters.append(self.avg_stat(self.player_model_data['FD_points'][-self.avg_stat_chunk_size:]))
+			elif feature == 'temp':
+				pass
 		return parameters
 
 	def FD_points(self, data):
@@ -288,8 +293,8 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 	def build_player_universe(self,contest_url): #Cole: this desperately needs documentation. Entire data structure needs documentation
 		db_data = self.get_db_gamedata("20140401","20150422") #Cole: Stats need to be summarized here (ie avg, max, what ever maths)
 		FD_player_data = self.get_FD_player_dict(contest_url)#Cole:need to build some sort of test that FD_names and starting lineup names match
-		starting_lineups = ds.mlb_starting_lineups()
-		FD_starting_player_data = {FD_playerid:data for FD_playerid,data in FD_player_data.iteritems if data[1] in starting_lineups.values()} #data[1] if FD_player_name
+		starting_lineups = ds.mlb_starting_lineups()[1]
+		FD_starting_player_data = {FD_playerid:data for FD_playerid,data in FD_player_data.iteritems if data[1] in starting_lineups.keys()} #data[1] if FD_player_name
 		player_universe = {}
 		for FD_playerid,data in FD_starting_player_data.iteritems():
 			if data[0] == 'P': #Cole: If this can be generalized (ie sport player type map, the entire function can be generalized as a Sport method)
@@ -315,7 +320,8 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 			else:
 				print player_key + ' not in db_player_data'
 		return player_universe
-# MLB=MLB()
+MLB=MLB()
+MLB.get_daily_game_data("20120401","20130426",True)
 # r =MLB.optimal_roster("https://www.fanduel.com/e/Game/12191?tableId=12257873&fromLobby=true")
 # print r.xf
 # os.system('pause')
