@@ -209,13 +209,13 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 		items = ([{key:value for key,value in stats_data.iteritems() if key in self.optimizer_items}
 					 for player_key,stats_data in player_universe.iteritems()
 					 if 'Salary' in stats_data.keys()])
-		objective = 'projected_FD_points' #Cole: update this to forecast_points once model is built
+		objective = 'projected_FD_points'
 		p = KSP(objective, items, goal = 'max', constraints=self.get_constraints())
 		r = p.solve('glpk',iprint = 0)
 		roster_data = []
 		rw = 2
 		for player in r.xf:
-			roster_data.append([player_universe[player]['FD_Position'],str(int(player_universe[player]['FD_playerid'])),str(int(player_universe[player]['MatchupID'])),str(int(player_universe[player]['TeamID']])))
+			roster_data.append([player_universe[player]['FD_Position'],str(int(player_universe[player]['FD_playerid'])),str(int(player_universe[player]['MatchupID'])),str(int(player_universe[player]['TeamID']))])
 			Cell("Roster",rw,1).value = player
 			Cell("Roster",rw,2).value = player_universe[player]['TeamID']
 			Cell("Roster",rw,3).value = player_universe[player]['FD_Position']
@@ -361,8 +361,8 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 				print player_key + ' not in db_player_data'
 		return player_universe
 MLB=MLB()
-MLB.optimal_roster("https://www.fanduel.com/e/Game/12206?tableId=12297429&fromLobby=true")
-# MLB.get_daily_game_data("20120401","20130426",True)
+#MLB.optimal_roster("https://www.fanduel.com/e/Game/12206?tableId=12297429&fromLobby=true")
+MLB.get_daily_game_data("20120611","20150426",True)
 # r =MLB.optimal_roster("https://www.fanduel.com/e/Game/12191?tableId=12257873&fromLobby=true")
 # print r.xf
 # os.system('pause')

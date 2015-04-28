@@ -17,11 +17,16 @@ def run_program(sport_list,update_model_interval):
 	#last contest_time = get_last_contest_time() - return last time for latest contest tonight
 	#while current_time < last_contest_time:
 		if run_time < update_model_interval:
+			contest_rosters = {}
 			if 'MLB' in sport_list:
+				MLB_rosters = {}
 				MLB= Sport.MLB()
-				contest_models = {}
 				for contest,url in MLB.daily_contests.iteritems():
-					pass
+					contest_type_rosters ={}
+					for contest_type in MLB.contest_types.keys():
+						pass
+
+
 
 def build_player_universe(full_playerlist,goalie_list):
 	delkeys = []
