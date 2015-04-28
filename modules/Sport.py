@@ -30,7 +30,8 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 			else:
 				projected_FD_points = FD_projection(player_model.model.predict(parameters)[-1],0)
 		else:
-			projected_FD_points = FD_projection(0,0) #Cole: this is the default model prediction and confidence if player cannot be modelled
+			default_projection = self.player_model_data['FD_avg'][-1]
+			projected_FD_points = FD_projection(default_projection,0) #Cole: this is the default model prediction and confidence if player cannot be modelled
 		player_model = None
 		return projected_FD_points
 
@@ -152,13 +153,27 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 		sql = "SELECT * FROM stadium_data"
 		return dbo.read_from_db(sql,['stadiumid'],True)
 
-	def avg_stat(self,stats_data):
-		np_array = numpy.array(stats_data)
-		avg =numpy.mean(np_array)
+	def avg_stat(self,stats_data,include_zero = True):
+		if include_zero:
+			np_array = numpy.array(stats_data)
+			avg =numpy.mean(np_array)
+		else:
+			avg =numpy.mean(np_array[numpy.nonzero(numpy_array)])
 		if numpy.isnan(avg):
 			return 0
 		else:
 			return avg
+			
+	def median_stat(self,stats_data,include_zero=True):
+		if include_zero:
+			np_array = numpy.array(stats_data)
+			median =numpy.median(np_array)
+		else:
+			median =numpy.median(np_array[numpy.nonzero(numpy_array)])
+		if numpy.isnan(median):
+			return 0
+		else:
+			return median
 
 	def trend_stat(self,stats_data):
 		xi = numpy.arange(0,len(stats_data))
@@ -235,7 +250,7 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 		#feature_dict['rest_time'] = []
 		#feature_dict['LHB_ballpark_factor'] = [] #Cole: do we split feature into RH\LH based on batter?
 		#feature_dict['RHB_ballpark_factor'] = []
-		feature_dict['day_of_month'] = []
+		#feature_dict['day_of_month'] = []
 		for indx,FD_point in enumerate(FD_points):
 			reverse_index = len(FD_points)-indx -1
 			try:
@@ -246,7 +261,7 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 				#feature_dict['rest_time'].append(self.time_between(hist_data['start_date_time'][reverse_index-1],hist_data['start_date_time'][reverse_index])) #this will include rest_days between season, need to remove
 				#feature_dict['LHB_ballpark_factor'].append(float(self.get_stadium_data()[hist_data['stadium'][reverse_index]]['LHB']))
 				#feature_dict['RHB_ballpark_factor'].append(float(self.get_stadium_data()[hist_data['stadium'][reverse_index]]['RHB']))
-				feature_dict['day_of_month'].append(int(str(hist_data['Date'][reverse_index])[8:10]))#Cole: used as spurious feature
+				#feature_dict['day_of_month'].append(int(str(hist_data['Date'][reverse_index])[8:10]))#Cole: used as spurious feature
 			except IndexError:
 				break
 		return feature_dict

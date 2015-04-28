@@ -9,6 +9,9 @@ from sklearn.cross_validation import train_test_split
 import math
 class Model():
 	def __init__(self,model_data,player): #Cole: Class accepts model_data in form {'feature1':[data],feature2:[data]}
+		self.version = 0.0.0001
+		self.description = "Lasso Linear regression on Avg_FD and Stadium HR factors"
+		self.mean_score = -1.70
 		self.player = player
 		self.model_data = model_data
 		self.target = 'FD_points'
@@ -18,7 +21,7 @@ class Model():
 		self.feature_labels = [feature for feature in  model_data.keys() if feature !=self.target]
 	def linear_regression(self,X,y):
 		try:
-			regr = linear_model.LinearRegression() #Cole: Need to investigate more to find best model to use
+			regr = linear_model.Lasso(alpha = 0.1) #Cole: Need to investigate more to find best model to use
 			regr.fit(X,y)
 			self.modelled = True
 			return regr
@@ -37,7 +40,7 @@ class Model():
 		return rescaled_feature
 
 	def FD_points_model(self,visualize = False): #Cole: need to indentify minimum dataset required to model, flag if player unmodelled
-		self.prune_features('day_of_month')
+		#self.prune_features('day_of_month') #Cole: Lasso regression automates feature selection
 		self.split_training_test_data(0.9)
 		self.model = self.linear_regression(self.training_feature_matrix,self.training_target_matrix)
 		if self.modelled:

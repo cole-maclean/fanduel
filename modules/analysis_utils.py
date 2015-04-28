@@ -3,6 +3,7 @@ import Model
 import matplotlib.pyplot as plt
 import operator
 from scipy.stats import norm
+import numpy as np
 
 def best_chunk_size():
 	MLB= Sport.MLB()
@@ -35,7 +36,7 @@ def test_chunk_size(MLB,hist_data):#Cole: How do we generalize this method. Some
 		model = Model.Model(feature_dict,chunk_size)
 		model.FD_points_model(True)
 		if model.modelled:
-			model_confidence[chunk_size] = model.model.estimator_.coef_
+			model_confidence[chunk_size] = model.model.score(model.test_feature_matrix,model.test_target_matrix)
 		else:
 			model_confidence[chunk_size] = 0
 	return model_confidence
@@ -57,10 +58,13 @@ def check_model_accuracy():
 def plot_model_accuracy():
 	accuracies = check_model_accuracy()
 	# Fit a normal distribution to the data:
-	data = accuracies.values()
+	data = np.array(accuracies.values())
+	print data
+	print np.mean(data[np.nonzero(data)])
+	print np.median(data[np.nonzero(data)])
 	mu, std = norm.fit(data)
 	# Plot the histogram.
-	plt.hist(data, bins=25, normed=True, alpha=0.6, color='g')
+	plt.hist(data, bins=250, normed=True, alpha=0.6, color='g')
 	# Plot the PDF.
 	xmin, xmax = plt.xlim()
 	x = np.linspace(xmin, xmax, 100)
