@@ -118,12 +118,14 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 			home_team = event_data['home_team']['abbreviation'] #Cole: This will need to be mapped to the team id from mlb_starting_lineups. team_abr might work
 			event_date = event_date[0:4] + "-" + event_date[4:6] + "-" + event_date[6:8]
 			day_time_data = ds.mlb_starting_lineups(event_date)
-			event_data_dict['forecast'] = day_time_data[0][home_team][1]
-			if day_time_data[0][home_team][0] == 'PPD':
-				event_data_dict['PPD'] = True
-			else:
-				event_data_dict['PPD'] = False
-			print day_time_data[0][home_team][0]
+			try:
+				event_data_dict['forecast'] = day_time_data[0][home_team][1]
+				if day_time_data[0][home_team][0] == 'PPD':
+					event_data_dict['PPD'] = True
+				else:
+					event_data_dict['PPD'] = False
+			except:
+				pass
 			cols = ", ".join(event_data_dict.keys())
 			data = ", ".join(['"' + unicode(v) + '"' for v in event_data_dict.values()])
 			dbo.insert_mysql('event_data',cols,data)
@@ -202,17 +204,18 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 	def get_FD_player_dict(self,contest_url):
 		return ast.literal_eval(Uds.parse_html(contest_url,"FD.playerpicker.allPlayersFullData = ",";"))
 
-	def optimal_roster(self,contest_url):
+	def optimal_roster(self,contest_url,confidence = 0):
 		DB_parameters=Ugen.ConfigSectionMap('local text')
 		player_universe = self.build_player_universe(contest_url)
 		items = ([{key:value for key,value in stats_data.iteritems() if key in self.optimizer_items}
 					 for player_key,stats_data in player_universe.iteritems()
 					 if 'Salary' in stats_data.keys()])
 		objective = 'projected_FD_points'
-		p = KSP(objective, items, goal = 'max', constraints=self.get_constraints())
+		p = KSP(objective, items, goal = 'max', constraints=self.get_constraints(confidence))
 		r = p.solve('glpk',iprint = 0)
 		roster_data = []
 		rw = 2
+		sum_confidence = 0
 		for player in r.xf:
 			roster_data.append([player_universe[player]['FD_Position'],str(int(player_universe[player]['FD_playerid'])),str(int(player_universe[player]['MatchupID'])),str(int(player_universe[player]['TeamID']))])
 			Cell("Roster",rw,1).value = player
@@ -221,11 +224,12 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 			Cell("Roster",rw,4).value = player_universe[player]['projected_FD_points']
 			Cell("Roster",rw,5).value = player_universe[player]['confidence']
 			Cell("Roster",rw,6).value = player_universe[player]['Salary']
+			sum_confidence = sum_confidence + player_universe[player]['confidence']
 			rw = rw + 1
 		sorted_roster = sorted(roster_data, key=self.sort_positions)
 		with open(DB_parameters['rostertext'],"w") as myfile: #Ian: replaced hard-coded folder path with reference to config file
 			myfile.write(str(sorted_roster).replace(' ',''))
-		return r
+		return {'confidence':sum_confidence,'roster':sorted_roster}
 
 class MLB(Sport): #Cole: data modelling may need to be refactored, might be more elegant solution
 	def __init__(self):
@@ -254,9 +258,9 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 		self.model_version = '0.0.0001'
 		self.model_description = "Lasso Linear regression on median_FD and Stadium HR factors"
 		self.model_mean_score = -1.70
-		#self.daily_contests = get_daily_contests return {contestid:url} for unique sport contest in FD contest table
+		self.contest_types = {"{'50_50': 1, 'standard': 1}":-10}
 
-	def get_constraints(confidence=0):
+	def get_constraints(self,confidence=0):
 		return lambda values : (
 								values['Salary'] <= 35000,
 							    values['P'] == 1,
@@ -266,7 +270,7 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 							    values['3B'] == 1,
 							    values['SS'] == 1,
 							    values['OF'] == 3,
-							    values['confidence'] >=-confidence)
+							    values['confidence'] >=confidence)
 
 	def sort_positions(self,sort_list):
 		return self.positions[sort_list[0]]
@@ -328,9 +332,10 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 		return FD_points
 
 	def build_player_universe(self,contest_url): #Cole: this desperately needs documentation. Entire data structure needs documentation
+		mapped_names = Ugen.excel_mapping("Player Map",5,6)
 		db_data = self.get_db_gamedata("20120401","20170422")
 		FD_player_data = self.get_FD_player_dict(contest_url)#Cole:need to build some sort of test that FD_names and starting lineup names match
-		starting_lineups = ds.mlb_starting_lineups()[1]
+		starting_lineups = ds.mlb_starting_lineups()[1] #Cole: need to write verification that all required teams have lineups
 		starting_players = [player for player in starting_lineups.keys() if 'PPD' not in starting_lineups[player][1]] #Cole: is the PPD working?
 		FD_starting_player_data = {FD_playerid:data for FD_playerid,data in FD_player_data.iteritems() if data[1] in starting_players} #data[1] if FD_player_name
 		player_universe = {}
@@ -339,7 +344,13 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 				player_type = 'pitcher'
 			else:
 				player_type = 'batter'
-			player_key = data[1] + '_' + player_type
+			if data[1] in mapped_names.keys():
+				try:
+					player_key = mapped_names[data[1]].decode('latin_1') + '_' + player_type
+				except:
+					player_key = data[1] + '_' + player_type
+			else:
+				player_key = data[1]+ '_' + player_type	
 			if player_key in db_data.keys():
 				player_universe[player_key] = {}
 				player_universe[player_key]['FD_playerid'] = FD_playerid
@@ -359,9 +370,9 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 			else:
 				print player_key + ' not in db_player_data'
 		return player_universe
-MLB=MLB()
-#MLB.optimal_roster("https://www.fanduel.com/e/Game/12206?tableId=12297429&fromLobby=true")
-MLB.get_daily_game_data("20130301","20150426",True)
+# MLB=MLB()
+# #MLB.optimal_roster("https://www.fanduel.com/e/Game/12206?tableId=12297429&fromLobby=true")
+#MLB.get_daily_game_data("20130711","20150426",True)
 # r =MLB.optimal_roster("https://www.fanduel.com/e/Game/12191?tableId=12257873&fromLobby=true")
 # print r.xf
 # os.system('pause')
