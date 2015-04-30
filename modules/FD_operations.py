@@ -7,6 +7,7 @@ import json
 import string_utils as Ustr
 import ast
 import datetime
+import data_scrapping_utils as Uds
 
 def get_fanduel_session():#Refactor - think this needs to be turned into a class
 	Fanduel_login=Ugen.ConfigSectionMap('fanduel') #Ian added ref to config file to avoid hardcoding
@@ -71,3 +72,14 @@ def enter_contest(s,session_id,contest_url,player_data):
 		entry_id = 0
 		entry_status = 'failed'
 	return entry_id, entry_status
+
+def get_FD_player_dict(contest_url):
+	return ast.literal_eval(Uds.parse_html(contest_url,"FD.playerpicker.allPlayersFullData = ",";"))
+
+def get_contest_teams(contest_url):
+	team_dict= ast.literal_eval(Uds.parse_html(contest_url,"FD.playerpicker.teamIdToFixtureCompactString = ",";"))
+	team_list = []
+	for team,matchup in team_dict.iteritems():
+		team_list.append(matchup.split('<b>')[1][0:3])
+	return team_list
+

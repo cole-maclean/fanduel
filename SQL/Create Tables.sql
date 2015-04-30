@@ -82,7 +82,7 @@ CREATE TABLE `hist_player_data` (
   `Stat12` varchar(45) DEFAULT NULL,
   `Stat13` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`Player`,`GameID`,`Player_Type`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1$$
+) ENGINE=InnoDB DEFAULT CHARSET=utf8$$
 
 delimiter $$
 
@@ -111,18 +111,23 @@ CREATE TABLE `hist_lineup_optimizers` (
   PRIMARY KEY (`Date`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8$$
 
+DROP TABLE IF EXISTS event_data;
+
 delimiter $$
 
 CREATE TABLE `event_data` (
-  `event_id` varchar(255) NOT NULL,
-  `sport` varchar(45) DEFAULT NULL,
-  `start_date_time` varchar(255) DEFAULT NULL,
-  `season_type` varchar(45) DEFAULT NULL,
-  `away_team` varchar(45) DEFAULT NULL,
-  `home_team` varchar(45) DEFAULT NULL,
-  `stadium` varchar(45) DEFAULT NULL,
-  `forecast` varchar(45) DEFAULT NULL,
-  `wind` varchar(45) DEFAULT NULL,
+  `event_id` varchar(255) CHARACTER SET latin1 NOT NULL,
+  `sport` varchar(45) CHARACTER SET latin1 DEFAULT NULL,
+  `start_date_time` varchar(255) CHARACTER SET latin1 DEFAULT NULL,
+  `season_type` varchar(45) CHARACTER SET latin1 DEFAULT NULL,
+  `away_team` varchar(45) CHARACTER SET latin1 DEFAULT NULL,
+  `home_team` varchar(45) CHARACTER SET latin1 DEFAULT NULL,
+  `stadium` varchar(45) CHARACTER SET latin1 DEFAULT NULL,
+  `forecast` varchar(45) CHARACTER SET latin1 DEFAULT NULL,
+  `wind` varchar(45) CHARACTER SET latin1 DEFAULT NULL,
+  `PPD` varchar(45) DEFAULT NULL,
+  `away_starting_lineup` blob,
+  `home_starting_lineup` blob,
   PRIMARY KEY (`event_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8$$
 
