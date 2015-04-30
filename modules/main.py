@@ -42,6 +42,7 @@ def run_program(sport_list,update_model_interval):
 				if entry_status == 'success':
 					contest['entry_id'] = entry_id
 					contest['timestamp'] = str(datetime.now())
+					contest['model_confidence'] = roster_data['confidence']
 					cols = ", ".join([key for key in contest.keys()])
 					data = ", ".join(['"' + str(v) + '"' for v in contest.values()])
 					dbo.insert_mysql('fanduel_contests',cols,data)

@@ -1,23 +1,38 @@
 delimiter $$
 DROP TABLE IF EXISTS fd_table_contests;
 
-CREATE TABLE `fd_table_contests` (
-  `idFD_table_contests` int(11) NOT NULL AUTO_INCREMENT,
-  `contest_id` varchar(45) DEFAULT NULL,
-  `entry_id` varchar(45) DEFAULT NULL,
+delimiter $$
+
+CREATE TABLE `fanduel_contests` (
+  `uniqueId` varchar(45) DEFAULT NULL,
+  `gameId` varchar(45) DEFAULT NULL,
+  `dateCreated` varchar(45) DEFAULT NULL,
+  `entryHTML` varchar(45) DEFAULT NULL,
+  `tab` varchar(45) DEFAULT NULL,
+  `entryURL` varchar(45) DEFAULT NULL,
   `sport` varchar(45) DEFAULT NULL,
-  `entryFee` int(11) DEFAULT NULL,
-  `size` int(11) DEFAULT NULL,
-  `entriesData` int(11) DEFAULT NULL,
+  `cap` varchar(45) DEFAULT NULL,
   `startTime` varchar(45) DEFAULT NULL,
-  `entry_wins_dict` blob,
-  `gameType` varchar(255) DEFAULT NULL,
-  `strat_params` varchar(255) DEFAULT NULL,
   `startString` varchar(45) DEFAULT NULL,
-  `game_id` varchar(45) DEFAULT NULL,
+  `title` varchar(45) DEFAULT NULL,
+  `tableSpecId` varchar(45) DEFAULT NULL,
+  `entryFee` varchar(45) DEFAULT NULL,
+  `entryFeeFormatted` varchar(45) DEFAULT NULL,
+  `prizes` varchar(45) DEFAULT NULL,
+  `prizeBreakdown` varchar(45) DEFAULT NULL,
+  `prizeSummary` varchar(45) DEFAULT NULL,
+  `size` varchar(45) DEFAULT NULL,
+  `maxEntriesPerUser` varchar(45) DEFAULT NULL,
+  `flags` varchar(45) DEFAULT NULL,
+  `seatCode` varchar(45) DEFAULT NULL,
+  `entriesData` varchar(45) DEFAULT NULL,
+  `dateUpdated` varchar(45) DEFAULT NULL,
+  `entries_win_dict` blob,
+  `model_confidence` varchar(45) DEFAULT NULL,
   `timestamp` varchar(45) DEFAULT NULL,
-  PRIMARY KEY (`idFD_table_contests`)
-) ENGINE=InnoDB AUTO_INCREMENT=755 DEFAULT CHARSET=utf8$$
+  `entry_id` varchar(45) NOT NULL,
+  PRIMARY KEY (`entry_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8$$
 
 delimiter $$
 DROP TABLE IF EXISTS hist_performance;
@@ -67,7 +82,7 @@ CREATE TABLE `hist_player_data` (
   `Stat12` varchar(45) DEFAULT NULL,
   `Stat13` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`Player`,`GameID`,`Player_Type`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8$$
+) ENGINE=InnoDB DEFAULT CHARSET=latin1$$
 
 delimiter $$
 

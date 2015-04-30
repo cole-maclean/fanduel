@@ -81,6 +81,7 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 		return all_game_data
 
 	def parse_boxscore_data(self,boxscore_data):
+		player_map = Ugen.excel_mapping("Player Map",6,5)
 		if boxscore_data:
 			for dataset,data_model in self.data_model.iteritems():
 				for player in boxscore_data[dataset]:
@@ -97,6 +98,11 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 							player_data[datum] = 1
 						elif player[datum] ==False:
 							player_data[datum] = 0
+						elif datum == 'display_name': #Cole: this deals with the player mapping on the front end, so whats in db matches FD 
+							if player[datum] in player_map.keys():
+								player_data[datum] = player_map[player[datum]]
+							else:
+								player_data[datum] = player[datum]
 						else:
 							player_data[datum] = player[datum]
 					data_cols = [data_model[datum] for datum in player_data.keys() if datum in data_model.keys()]
@@ -332,7 +338,6 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 		return FD_points
 
 	def build_player_universe(self,contest_url): #Cole: this desperately needs documentation. Entire data structure needs documentation
-		mapped_names = Ugen.excel_mapping("Player Map",5,6)
 		db_data = self.get_db_gamedata("20120401","20170422")
 		FD_player_data = self.get_FD_player_dict(contest_url)#Cole:need to build some sort of test that FD_names and starting lineup names match
 		starting_lineups = ds.mlb_starting_lineups()[1] #Cole: need to write verification that all required teams have lineups
@@ -344,13 +349,7 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 				player_type = 'pitcher'
 			else:
 				player_type = 'batter'
-			if data[1] in mapped_names.keys():
-				try:
-					player_key = mapped_names[data[1]].decode('latin_1') + '_' + player_type
-				except:
-					player_key = data[1] + '_' + player_type
-			else:
-				player_key = data[1]+ '_' + player_type	
+ 			player_key = data[1]+ '_' + player_type	
 			if player_key in db_data.keys():
 				player_universe[player_key] = {}
 				player_universe[player_key]['FD_playerid'] = FD_playerid
@@ -370,9 +369,16 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 			else:
 				print player_key + ' not in db_player_data'
 		return player_universe
-# MLB=MLB()
-# #MLB.optimal_roster("https://www.fanduel.com/e/Game/12206?tableId=12297429&fromLobby=true")
-#MLB.get_daily_game_data("20130711","20150426",True)
+MLB=MLB()
+db_data = MLB.get_db_gamedata("20120405","20160504")
+print db_data['Eduardo Nunez' + '_batter']
+# player_map = Ugen.excel_mapping("Player Map",5,6)
+# for player,mapped_player in player_map.iteritems():
+# 	print player
+# 	print mapped_player
+# 	print db_data[mapped_player.encode('latin-1') + '_pitcher']
+# # # # #MLB.optimal_roster("https://www.fanduel.com/e/Game/12206?tableId=12297429&fromLobby=true")
+MLB.get_daily_game_data("20130401","20150428",True)
 # r =MLB.optimal_roster("https://www.fanduel.com/e/Game/12191?tableId=12257873&fromLobby=true")
 # print r.xf
 # os.system('pause')
