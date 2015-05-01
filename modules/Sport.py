@@ -361,7 +361,7 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 		return player_universe
 MLB=MLB()
 #MLB.optimal_roster("https://www.fanduel.com/e/Game/12206?tableId=12297429&fromLobby=true")
-MLB.get_daily_game_data("20130301","20150426",True)
+MLB.get_daily_game_data("20150401","20150428",True)
 # r =MLB.optimal_roster("https://www.fanduel.com/e/Game/12191?tableId=12257873&fromLobby=true")
 # print r.xf
 # os.system('pause')

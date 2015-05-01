@@ -108,6 +108,7 @@ CREATE TABLE `event_data` (
   `stadium` varchar(45) DEFAULT NULL,
   `forecast` varchar(45) DEFAULT NULL,
   `wind` varchar(45) DEFAULT NULL,
+  `PPD` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`event_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8$$
 
