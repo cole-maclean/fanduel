@@ -5,6 +5,10 @@ import os
 from bs4 import BeautifulSoup
 import json
 import string_utils as Ustr
+import ast
+import datetime
+import data_scrapping_utils as Uds
+
 def get_fanduel_session():#Refactor - think this needs to be turned into a class
 	Fanduel_login=Ugen.ConfigSectionMap('fanduel') #Ian added ref to config file to avoid hardcoding
 	s = requests.session()
@@ -16,9 +20,32 @@ def get_fanduel_session():#Refactor - think this needs to be turned into a class
 	'cc_success_url':'https://www.fanduel.com/p/home','email':Fanduel_login['email'],'password':Fanduel_login['password'],'login':'Log in'}
 	s.post('https://www.fanduel.com/c/CCAuth',data,headers=headers)
 	return s, session_id
+
 def end_fanduel_session(s):
 	r = s.get('https://www.fanduel.com/c/CCAuth?cc_action=cca_logout&cc_success_url=https//www.fanduel.com/&cc_failure_url=https//www.fanduel.com/')
 	return r.headers
+
+def get_FD_contests(s):
+	data = s.get('https://www.fanduel.com/p/Home').text
+	data= data.replace('false',"False")
+	data= data.replace('true',"True")
+	data= data.replace('null',"")
+	intStart = data.find('LobbyConnection.initialData = ')
+	intEnd = data.find('};',intStart)
+	parsed_html = data[intStart:intEnd + 1].replace('LobbyConnection.initialData = ',"")
+	parsed_html = parsed_html.replace(':,',':0,')
+	contest_dict = ast.literal_eval(parsed_html)
+	return contest_dict['additions']
+
+def get_daily_contests(sport):
+	daily_contests = {}
+	FD_ses,ses_id = get_fanduel_session()
+	FD_contests = get_FD_contests(FD_ses)
+	for contest in FD_contests:
+		if datetime.date.fromtimestamp(contest['startTime']).day == datetime.date.today().day and contest['gameId'] not in daily_contests and contest['sport']==sport.lower():
+			daily_contests[contest['gameId']] = 'https://www.fanduel.com/e/Game/' + str(contest['gameId']) + '?tableId=' + str(contest['uniqueId']) + '&fromLobby=true'
+	return daily_contests
+
 def enter_contest(s,session_id,contest_url,player_data):
 	player_data = player_data.replace(' ','')
 	player_data = player_data.replace("'",'"')
@@ -45,3 +72,14 @@ def enter_contest(s,session_id,contest_url,player_data):
 		entry_id = 0
 		entry_status = 'failed'
 	return entry_id, entry_status
+
+def get_FD_player_dict(contest_url):
+	return ast.literal_eval(Uds.parse_html(contest_url,"FD.playerpicker.allPlayersFullData = ",";"))
+
+def get_contest_teams(contest_url):
+	team_dict= ast.literal_eval(Uds.parse_html(contest_url,"FD.playerpicker.teamIdToFixtureCompactString = ",";"))
+	team_list = []
+	for team,matchup in team_dict.iteritems():
+		team_list.append(matchup.split('<b>')[1][0:3])
+	return team_list
+
