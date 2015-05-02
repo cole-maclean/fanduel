@@ -27,6 +27,7 @@ def run_program(sport_list,update_model_interval,max_bet):
 			print daily_contests
 			MLB= Sport.MLB()
 			for contest,url in daily_contests.iteritems():
+				print contest
 				for contest_type,confidence in MLB.contest_types.iteritems():
 					model_roster = MLB.optimal_roster(url,confidence)
 					print model_roster
@@ -37,7 +38,7 @@ def run_program(sport_list,update_model_interval,max_bet):
 		if int(contest['entryFee']) <=25 and (contest['sport'].upper() + '_' + str(contest['gameId']) + '_' + str(contest['flags'])) in contest_rosters.keys():
 			roster_data =contest_rosters[(contest['sport'].upper() + '_' + str(contest['gameId']) + '_' + str(contest['flags']))]
 			entry_decision,contest = enter_contest_decider(contest)
-			if entry_decision == True:
+			if entry_decision == True and current_bet <=max_bet:
 				entry_id,entry_status =fdo.enter_contest(FD_session,session_id,'https://www.fanduel.com/e/Game/' + str(contest['gameId']) + '?tableId=' + str(contest['uniqueId']) + '&fromLobby=true',str(roster_data['roster']))
 				print str(contest['gameId']) + " entry attempt"
 				if entry_status == 'success':
@@ -99,3 +100,4 @@ print run_program(["MLB"],10,30)
 # #dbo.load_csv_into_db('C:/Users/Cole/Desktop/FanDuel/fanduel entry history.csv','hist_performance')
 # #print Ugen.output_dict(build_pWins_vs_topwins_dict(5))
 # os.system('pause')
+run_program(["MLB"],10,100)

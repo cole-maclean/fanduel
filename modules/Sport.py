@@ -44,6 +44,10 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 		self.gameid = None
 		return XMLStats.main(self,'events',{'sport':self.sport,'date':event_date})['event']
 
+	def get_db_event_data(self):
+		sql = "SELECT * FROM event_data"
+		return dbo.read_from_db(sql,"event_id",True)
+
 	def gameids(self): #Cole: Returns namedtuple of [lastgameid,list of all gameids in db]
 		gameid_data = collections.namedtuple("gameid_data", ["lastgameid", "all_gameids"])
 		sql = "SELECT hist_player_data.GameID FROM hist_player_data WHERE Sport = '"+ self.sport +"'"
@@ -59,12 +63,14 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 
 	def get_daily_game_data(self,start_date,end_date,store = False):
 		event_dates = [d.strftime('%Y%m%d') for d in pandas.date_range(start_date,end_date)]
+		#db_eventids = self.get_db_event_data()
 		for event_date in event_dates:
 			day_events = self.events(event_date)
 			event_list = ([game['event_id'] for game in day_events if game['event_status'] == 'completed'
 							 and game['season_type'] == 'regular' or 'post'])
 			all_game_data = {}
 			for indx,game_id in enumerate(event_list):
+				#if game_id not in db_eventids.key():
 				self.gameid = game_id
 				if store == False:
 					game_data = XMLStats.main(self,'boxscore',None)
@@ -126,16 +132,16 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 			away_team = event_data['away_team']['abbreviation']
 			event_date = event_date[0:4] + "-" + event_date[4:6] + "-" + event_date[6:8]
 			team_dict,player_dict = ds.mlb_starting_lineups(event_date)
-			event_data_dict['home_starting_lineup'] = team_dict[home_team][2]
-			event_data_dict['away_starting_lineup'] = team_dict[away_team][2]
 			try:
 				event_data_dict['forecast'] = team_dict[home_team][1]
 				if team_dict[home_team][0] == 'PPD':
 					event_data_dict['PPD'] = True
 				else:
 					event_data_dict['PPD'] = False
+				event_data_dict['home_starting_lineup'] = team_dict[home_team][2]
+				event_data_dict['away_starting_lineup'] = team_dict[away_team][2]
 			except:
-				pass
+				print "dont think this is a real event"
 			cols = ", ".join(event_data_dict.keys())
 			data = ", ".join(['"' + unicode(v) + '"' for v in event_data_dict.values()])
 			dbo.insert_mysql('event_data',cols,data)
@@ -378,17 +384,18 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 				player_universe[player_key].update(tmp_dict)
 			else:
 				print player_key + ' not in db_player_data'
-		return player_universe
-MLB=MLB()
-# # db_data = MLB.get_db_gamedata("20120405","20160504")
-# # print db_data['Eduardo Nunez' + '_batter']
-# # player_map = Ugen.excel_mapping("Player Map",5,6)
-# # for player,mapped_player in player_map.iteritems():
-# # 	print player
-# # 	print mapped_player
-# # 	print db_data[mapped_player.encode('latin-1') + '_pitcher']
-# # # # # #MLB.optimal_roster("https://www.fanduel.com/e/Game/12206?tableId=12297429&fromLobby=true")
-MLB.get_daily_game_data("20130410","20150428",True)
+# 		return player_universe
+# MLB=MLB()
+# # # # db_data = MLB.get_db_gamedata("20120405","20160504")
+# # # # print db_data['Eduardo Nunez' + '_batter']
+# # # # player_map = Ugen.excel_mapping("Player Map",5,6)
+# # # # for player,mapped_player in player_map.iteritems():
+# # # # 	print player
+# # # # 	print mapped_player
+# # # # 	print db_data[mapped_player.encode('latin-1') + '_pitcher']
+# # # # # # # #MLB.optimal_roster("https://www.fanduel.com/e/Game/12206?tableId=12297429&fromLobby=true")
+# MLB.get_daily_game_data("20140420","20150430",True)
 # r =MLB.optimal_roster("https://www.fanduel.com/e/Game/12191?tableId=12257873&fromLobby=true")
 # print r.xf
 # os.system('pause')
+
