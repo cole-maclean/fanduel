@@ -386,17 +386,3 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 			else:
 				print player_key + ' not in db_player_data'
 		return player_universe
-# MLB=MLB()
-# # # # # # # db_data = MLB.get_db_gamedata("20120405","20160504")
-# # # # # # # print db_data['Eduardo Nunez' + '_batter']
-# # # # # # # player_map = Ugen.excel_mapping("Player Map",5,6)
-# # # # # # # for player,mapped_player in player_map.iteritems():
-# # # # # # # 	print player
-# # # # # # # 	print mapped_player
-# # # # # # # 	print db_data[mapped_player.encode('latin-1') + '_pitcher']
-# # # # # # # # # # #MLB.optimal_roster("https://www.fanduel.com/e/Game/12206?tableId=12297429&fromLobby=true")
-# MLB.get_daily_game_data("20150402","20150501",True)
-# r =MLB.optimal_roster("https://www.fanduel.com/e/Game/12191?tableId=12257873&fromLobby=true")
-# print r.xf
-# os.system('pause')
-
