@@ -147,10 +147,10 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 			dbo.insert_mysql('event_data',cols,data)
 		return event_data_dict
 
-	def get_db_gamedata(self,start_date,end_date):
+	def get_db_gamedata(self,start_date,end_date,player):
 		sql = ("SELECT hist_player_data.*, event_data.* FROM hist_player_data "
 				 "INNER JOIN event_data ON hist_player_data.GameID=event_data.event_id "
-				   "WHERE hist_player_data.Sport = '"+ self.sport +"' AND Date BETWEEN '" + start_date +"' AND "
+				   "WHERE hist_player_data.Sport = '"+ self.sport +"' AND Player = '"+ player +"' AND Date BETWEEN '" + start_date +"' AND "
 				    "'" + end_date + "' ORDER BY Date ASC")
 		db_data = dbo.read_from_db(sql,["Player","GameID","Player_Type"],True)
 		player_data_dict = {}
@@ -349,18 +349,19 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 
 	def build_player_universe(self,contest_url): #Cole: this desperately needs documentation. Entire data structure needs documentation
 		team_map = Ugen.excel_mapping("Team Map",9,6)
-		db_data = self.get_db_gamedata("20120401","20170422")
 		FD_player_data = fdo.get_FD_player_dict(contest_url)#Cole:need to build some sort of test that FD_names and starting lineup names match
 		teams,starting_lineups = ds.mlb_starting_lineups() #Cole: need to write verification that all required teams have lineups
 		missing_lineups = [team for team in teams.keys() if len(teams[team][2])<8] #Cole: this whole method needs to be split out into more reasonable functions
 		contest_teams = fdo.get_contest_teams(contest_url) #Cole: This needs mapping
 		FD_missing_lineups = [team for team in contest_teams if team_map[team] in missing_lineups]
+		print FD_missing_lineups
 		if FD_missing_lineups: #Check that no required lineups are missing
 			return {}
 		starting_players = [player for player in starting_lineups.keys() if 'PPD' not in starting_lineups[player][1]] #Cole: is the PPD working?
 		FD_starting_player_data = {FD_playerid:data for FD_playerid,data in FD_player_data.iteritems() if data[1] in starting_players} #data[1] if FD_player_name
 		player_universe = {}
 		for FD_playerid,data in FD_starting_player_data.iteritems():
+			db_data = self.get_db_gamedata("20120401","20170422",data[1])
 			if data[0] == 'P': #Cole: If this can be generalized (ie sport player type map, the entire function can be generalized as a Sport method)
 				player_type = 'pitcher'
 			else:
@@ -384,17 +385,17 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 				player_universe[player_key].update(tmp_dict)
 			else:
 				print player_key + ' not in db_player_data'
-# 		return player_universe
+		return player_universe
 # MLB=MLB()
-# # # # db_data = MLB.get_db_gamedata("20120405","20160504")
-# # # # print db_data['Eduardo Nunez' + '_batter']
-# # # # player_map = Ugen.excel_mapping("Player Map",5,6)
-# # # # for player,mapped_player in player_map.iteritems():
-# # # # 	print player
-# # # # 	print mapped_player
-# # # # 	print db_data[mapped_player.encode('latin-1') + '_pitcher']
-# # # # # # # #MLB.optimal_roster("https://www.fanduel.com/e/Game/12206?tableId=12297429&fromLobby=true")
-# MLB.get_daily_game_data("20140420","20150430",True)
+# # # # # # # db_data = MLB.get_db_gamedata("20120405","20160504")
+# # # # # # # print db_data['Eduardo Nunez' + '_batter']
+# # # # # # # player_map = Ugen.excel_mapping("Player Map",5,6)
+# # # # # # # for player,mapped_player in player_map.iteritems():
+# # # # # # # 	print player
+# # # # # # # 	print mapped_player
+# # # # # # # 	print db_data[mapped_player.encode('latin-1') + '_pitcher']
+# # # # # # # # # # #MLB.optimal_roster("https://www.fanduel.com/e/Game/12206?tableId=12297429&fromLobby=true")
+# MLB.get_daily_game_data("20150402","20150501",True)
 # r =MLB.optimal_roster("https://www.fanduel.com/e/Game/12191?tableId=12257873&fromLobby=true")
 # print r.xf
 # os.system('pause')
