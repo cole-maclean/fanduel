@@ -3,7 +3,7 @@ import time
 import datetime
 import ast
 import database_operations as dbo
-import data_scrapping
+import data_scrapping as ds
 import data_scrapping_utils as Uds
 import re
 import requests
@@ -80,7 +80,7 @@ def hist_FD_contest_salaries():
         time.sleep(5)   
         return
     s,session_id=fdo.get_fanduel_session()
-    contest_dict=data_scrapping.get_FD_contests(s)
+    contest_dict=fdo.get_FD_contests(s)
     sports_list=['mlb','nba','nhl','nfl'] #pick this option if you wanna historize all sports
     #sports_list=['mlb','nba']
     for sport in sports_list:
@@ -107,6 +107,19 @@ def hist_FD_contest_salaries():
                 i=i+1
     fdo.end_fanduel_session(s)
     return
+
+Cell('Backtest_Parameters','clRWNBA').value=''
+Cell('Backtest_Parameters','clRWMLB').value=''
+Cell('Backtest_Parameters','clRWNHL').value=''
+Cell('Backtest_Parameters','clDFNNBA').value=''
+
+Cell('Backtest_Parameters','clRWNBA').value=ds.get_rw_optimal_lineups('NBA')
+Cell('Backtest_Parameters','clRWMLB').value=ds.get_rw_optimal_lineups('MLB')
+Cell('Backtest_Parameters','clRWNHL').value=ds.get_rw_optimal_lineups('NHL')
+Cell('Backtest_Parameters','clDFNNBA').value=ds.dfn_nba()
+
+'print about to historize lineups'
+os.system('pause')
 
 hist_web_lineups()
 hist_FD_contest_salaries()

@@ -4,113 +4,81 @@ from bs4 import BeautifulSoup
 import urllib2
 import ast
 import data_scrapping_utils as uds
-import data_scrapping
+import data_scrapping as ds
 import general_utils as Ugen
 from selenium import webdriver
 import string
+import pandas
 
-
-player_list='Adam Wainwright, Derek Norris, Edwin Encarnacion, Brian Dozier, Luis Valbuena, Marcus Semien, Kole Calhoun, George Springer, Mookie Betts'
-Date='20150419'
-#sql=
-
-def fanduel_lineup_points(playerlist,Date): #Need to incorporate cole's sport class, already has a similar func
+def fanduel_lineup_points(playerlist,Date): #Need to incorporate cole's sport class, already has a similar func. Needs refactoring.
 	player_list=playerlist.split(', ')
-	#build dict of stats for lineup on given date
+	not_starting_dict={}
 	player_dict={}
-	for player in player_list:
+	player_map=Ugen.excel_mapping('Player Map',8,5)
+	for player in player_list:#build dict of stats for lineup on given date
+		if player in player_map:
+			player=player_map[player]
 		sql="SELECT * FROM hist_player_data WHERE Sport = 'MLB' AND Player = "+ "'" +player+"'" + " AND Date = "+ "'" +Date+"'"
 		player_data=dbo.read_from_db(sql,["Player","GameID","Player_Type"],True)
-		#print if a certain player was not found!!
+		if len(player_data)==0:
+			print 'no db_data found for %s'%player
+			not_starting_dict[player+' '+Date]=0
 		for player_key,stat_dict in player_data.iteritems():
-			player_dict[player]=stat_dict
+			player_dict[player]=stat_dict	
 	FD_points=0
+	player_map=Ugen.excel_mapping('Player Map',5,7)
 	for player,stats in player_dict.iteritems():
-		# print player
-		# os.system('pause')
-		outs=0
-		if (int(stats['Stat5'])-int(stats['Stat7']))>0:
-				outs=int(stats['Stat5'])-int(stats['Stat7'])
+		team_dict,lineup_dict=ds.mlb_starting_lineups(Date)
 		if stats['Player_Type']== 'batter':
-				FD_points= (int(stats['Stat1'])*1 + int(stats['Stat2'])*2 + int(stats['Stat3'])*3 + int(stats['Stat4'])*4 + int(stats['Stat6'])*1 + int(stats['Stat10'])*1
-											 + int(stats['Stat11'])*1 + int(stats['Stat8'])*1 + int(stats['Stat13']) * 1 - ((int(stats['Stat5'])-int(stats['Stat7']))*.25))+FD_points
+				player_points= (int(stats['Stat1'])*1 + int(stats['Stat2'])*2 + int(stats['Stat3'])*3 + int(stats['Stat4'])*4 + int(stats['Stat6'])*1 + int(stats['Stat10'])*1
+											 + int(stats['Stat11'])*1 + int(stats['Stat8'])*1 + int(stats['Stat13']) * 1 - ((int(stats['Stat5'])-int(stats['Stat7']))*.25))
 		elif stats['Player_Type']== 'pitcher':
-			FD_points = (int(stats['Stat1'])*4 - int(stats['Stat7'])*1 + int(stats['Stat9'])*1 + float(stats['Stat4'])*1)+FD_points
+			player_points = (int(stats['Stat1'])*4 - int(stats['Stat7'])*1 + int(stats['Stat9'])*1 + float(stats['Stat4'])*1)
 		else:
 			print 'unknown positions for %s' %player
-	#Cell('Output',1,1).value=player_dict
-	return FD_points
+		FD_points=FD_points+player_points
 
-# points=fanduel_lineup_points(player_list,Date)
-# print points
+		#All this below is to test if player wasn't in starting lineups that day, can be removed in future
+		if player in player_map:
+			mapped_name=player_map[player]
+		else:
+			mapped_name=player
+		if mapped_name not in lineup_dict:
+			print "%s was not found in starting lineups dict"%mapped_name
+			not_starting_dict[mapped_name+' '+Date]=player_points
+	return FD_points,not_starting_dict
 
-def get_rw_optimal_lineups(sport): #Ian: Need to remove time.sleep's and change to loops till pages are loaded
-	driver = webdriver.Chrome() #Ian: use this for debugging
-	#driver = webdriver.PhantomJS()
-	driver.get("http://www.rotowire.com/daily/"+sport+"/optimizer.htm")
-	time.sleep(5)
-	html=driver.page_source 
-	soup = BeautifulSoup(html)
-	results=soup.find("tbody",{"id":"players"})
-	for row in results.findAll("tr",{"class":"playerSet"}): 
-		player_name=row.find("td",{"class":"firstleft lineupopt-name"}).get_text()
-		if len(player_name.split(', ')[1].split())>1:
-			data_value=row.find("td",{"class":"lineupopt-exclude"})['data-value']
-			driver.find_element_by_css_selector(".lineupopt-exclude[data-value="+"'"+str(data_value)+"']").click()
-	button=driver.find_element_by_css_selector('.offset2.btn.btn-primary.btn-large.optimize-'+sport.lower()+'lineup')
-	button.click()
-	time.sleep(20)
-	html=driver.page_source 
-	soup = BeautifulSoup(html)
-	results=soup.find("tbody",{"class":"lineupopt-lineup"})
-	optimal_lineup=[]
-	if sport=='NBA' or sport=='NHL':
-		for row in results.findAll("td",{"style":"text-align:left;padding-left:3px;"}):
-			optimal_lineup.append(row.get_text())
-	elif sport=='MLB':
-		for row in results.findAll("td",{"style":"text-align:left;"}):
-			optimal_lineup.append(row.get_text())
-	driver.close()
-	lineup_string=''
-	for e in optimal_lineup:
-		first_name=e.split(', ')[1]
-		last_name=e.split(', ')[0]
-		lineup_string=lineup_string+first_name+' '+last_name+', '
-	return lineup_string.rsplit(', ',1)[0]
+def rotowire_lineup_points():
+	sql = "SELECT * FROM hist_lineup_optimizers"
+	db_data= dbo.read_from_db(sql,["Date"],True)
+	hist_points={}
+	not_starting_list=[]
+	for date,lineup in db_data.iteritems():
+		mlb_lineup=lineup['RW_MLB']
+		print "now calculating points for %s"%date
+		lineup_points,not_starting=fanduel_lineup_points(mlb_lineup,date)
+		hist_points[date]=lineup_points
+		not_starting_list.append(not_starting)
+	return hist_points,not_starting_list
 
-def dfn_nba():
-	driver = webdriver.Chrome() #Ian: use this for debugging
-	#driver = webdriver.PhantomJS()
-	driver.get("https://dailyfantasynerd.com/optimizer/fanduel/nba")
-	time.sleep(5)
-	driver.find_element_by_id('input-username').send_keys('iwhitest')
-	driver.find_element_by_id('input-password').send_keys('clover2010')
-	#driver.find_element_by_css_selector(".text[id='input-username']")
-	driver.find_element_by_css_selector('.btn.btn-success').click()
-	time.sleep(10)
-	driver.find_element_by_css_selector('.btn.btn-info.generate').click()
-	time.sleep(5)
-	html=driver.page_source 
-	soup = BeautifulSoup(html)
-	lineup=[]
-	for player in soup.findAll('td',{"class":"pl-col playerName"}):
-		if len(lineup)<=8:
-			lineup.append(player.get_text())
-	lineup_string=''
-	for e in lineup:
-		lineup_string=lineup_string+e+', '
-	driver.close()
-	return lineup_string.rsplit(', ',1)[0]
+points,not_starting=rotowire_lineup_points()
 
-
-Cell('Backtest_Parameters','clRWNBA').value=get_rw_optimal_lineups('NBA')
-Cell('Backtest_Parameters','clRWMLB').value=get_rw_optimal_lineups('MLB')
-Cell('Backtest_Parameters','clRWNHL').value=get_rw_optimal_lineups('NHL')
-Cell('Backtest_Parameters','clDFNNBA').value=dfn_nba()
-
-
-
+i=1
+for e in not_starting:
+	Cell('Output',i,1).value=e
+	i=i+1
+os.system('pause')
 #PLAYER MAPPING
+
+# sql = "SELECT * FROM hist_lineup_optimizers"
+# db_data= dbo.read_from_db(sql,["Date"],True)
+
+# rw_player_list=[]
+# for date,lineup in db_data.iteritems():
+# 	player_names=lineup['RW_MLB'].split(', ')
+# 	for e in player_names:
+# 		if e not in rw_player_list:
+# 			rw_player_list.append(e)
 
 # sql = "SELECT * FROM hist_player_data WHERE Sport = 'MLB'"
 # db_data= dbo.read_from_db(sql,["Player","GameID","Player_Type"],True)
@@ -120,6 +88,17 @@ Cell('Backtest_Parameters','clDFNNBA').value=dfn_nba()
 #     if Player not in xml_team_list:
 #         xml_team_list.append(Player)
 
+# i=2
+# for e in rw_player_list:
+# 	if e not in xml_team_list:
+# 		Cell('Output',i,1).value=e
+# 		i=i+1
+
+# i=2
+# for e in xml_team_list:
+# 	if e not in rw_player_list:
+# 		Cell('Output',i,3).value=e
+# 		i=i+1
 
 # sql = "SELECT * FROM hist_fanduel_data WHERE Sport = 'MLB'"
 # db_data = dbo.read_from_db(sql,["Date","Player","Position","contestID"],True)
@@ -130,58 +109,34 @@ Cell('Backtest_Parameters','clDFNNBA').value=dfn_nba()
 #     if Player not in fanduel_team_list:
 #         fanduel_team_list.append(Player)
 
-# # print xml_team_list
 
-# player_map=Ugen.excel_mapping("Player Map",6,5)
+# start_date='2015-04-01'
+# end_date='2015-05-02'
+# event_dates = [d.strftime('%Y-%m-%d') for d in pandas.date_range(start_date,end_date)]
+# lineups_name_list=[]
+# for event_date in event_dates:
+# 	print 'now loading %s' % event_date
+# 	team_dict,player_dict=ds.mlb_starting_lineups(event_date)
+# 	for player in player_dict:
+# 		if player not in lineups_name_list:
+# 			lineups_name_list.append(player)
 
-# for test_player in player_map:
-# 	if test_player.encode('latin_1') in xml_team_list:
-# 	    print 'player found in list'
-# 	else:
-# 	    print '%s player not found in list' % test_player
+# # player_map=Ugen.excel_mapping("Player Map",6,5)
 
-#os.system('pause')
 
 # i=2
-# for e in xml_team_list:
-# 	if e.decode('latin_1') not in player_map and e.decode('latin_1') not in fanduel_team_list:
-# 		Cell('Sheet1',i,1).value=e.decode('latin_1')
+# for e in lineups_name_list:
+# 	if e not in fanduel_team_list:
+# 		Cell('Output',i,1).value=e
 # 		i=i+1
 
 # i=2
 # for e in fanduel_team_list:
-#     if e not in xml_team_list and e not in player_map:
-#         split_name=e.split(' ',1)
-#         Cell('Sheet1',i,1).value=split_name[0]
-#         Cell('Sheet1',i,2).value=split_name[1]
-#         i=i+1
+# 	if e not in lineups_name_list:
+# 		Cell('Output',i,3).value=e
+# 		i=i+1
 
-# i=2
-# for e in xml_team_list:
-#     if e not in fanduel_team_list:
-#         split_name=e.decode('latin_1').split(' ',1)
-#         Cell('Output',i,3).value=split_name[0]
-#         Cell('Output',i,4).value=split_name[1]
-#         i=i+1
 
-# new_player_list=[]
-# not_found_list=[]
-# for e in xml_team_list:
-# 	if e.decode('latin_1') in player_map:
-# 		new_player_list.append(player_map[e.decode('latin_1')])
-# 	elif e.decode('latin_1') in fanduel_team_list:
-# 		new_player_list.append(e.decode('latin_1'))
-# 	else:
-# 		not_found_list.append(e.decode('latin_1'))
-
-# Cell('Sheet1',1,1).value=new_player_list
-# Cell('Sheet1',2,1).value=not_found
-
-# trial_list=[]
-# for e in xml_team_list:
-# 	trial_list.append(e.decode('latin_1'))
-
-# Cell('Sheet1',3,1).value=trial_list
 
 #Remove duplicate rows SQL statement
 #ALTER IGNORE TABLE hist_backtest_data ADD UNIQUE KEY idx1(date);
@@ -189,3 +144,17 @@ Cell('Backtest_Parameters','clDFNNBA').value=dfn_nba()
 #ALTER TABLE hist_fanduel_data ADD contestID TEXT 
 #Delete single row by ID
 #DELETE FROM hist_lineup_optimizers WHERE DataID=8 LIMIT 1
+
+#LOAD CSV FILE INTO DB
+# LOAD DATA LOCAL INFILE 'C:/Users/Ian Whitestone/Documents/Python Projects/Fanduel-master/fanduel/stadium_data.csv' 
+# INTO TABLE stadium_data
+# FIELDS TERMINATED BY ',' 
+# ENCLOSED BY '"'
+# LINES TERMINATED BY '\n'
+# IGNORE 1 ROWS;
+
+
+# Delete FROM autotrader.hist_player_data WHERE Date='2014-04-14';
+# Delete FROM autotrader.event_data WHERE event_id='20140414-washington-nationals-at-miami-marlins';
+# Delete FROM autotrader.event_data WHERE event_id='20140414-tampa-bay-rays-at-baltimore-orioles';
+# Delete FROM autotrader.event_data WHERE event_id='20140414-atlanta-braves-at-philadelphia-phillies';

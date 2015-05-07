@@ -90,5 +90,5 @@ def get_team_odds(sport):
                     #odds_list[team1]=round(odds_to_prob(moneyline1[0],'American Moneyline'),2)
                     #odds_list[team2]=round(odds_to_prob(moneyline1[1],'American Moneyline'),2)
             i=i+1
-    Cell("Output",1,1).value=odds_list
+    # Cell("Output",1,1).value=odds_list
     return [odds_list,date]

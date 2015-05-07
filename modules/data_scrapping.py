@@ -16,6 +16,7 @@ import FD_operations as fdo
 import general_utils as Ugen
 import subprocess
 import string
+from selenium import webdriver
 
 def get_NHL_gamedata(sGameSeason,sGameID):
 	game_stats_Url = 'http://live.nhle.com/GameData/' + sGameSeason + '/' + sGameID + '/gc/gcbx.jsonp'
@@ -163,12 +164,12 @@ def get_contest_utlity(avg_top_wins,time_remaining,wins_data,bin_size):
 		contest_utility = 0
 	return contest_utility,future_utility
 
-def mlb_starting_lineups(date=time.strftime("%Y-%m-%d")): #take date as string 'YYYY-MM-DD'. Needs refactoring.
+def mlb_starting_lineups(date=time.strftime("%Y-%m-%d")): #take date as string 'YYYY-MM-DD'. [desperately] Needs refactoring.
 	url='http://www.baseballpress.com/lineups/'+date
 	content= urllib2.urlopen(url).read()
 	soup = BeautifulSoup(content)
 	team_map = Ugen.excel_mapping("Team Map",8,6)
-	team_list,pitcher_list,lineups_list,gametime_list,weather_list=([] for i in range(5))
+	team_list,pitcher_list,lineups_list,gametime_list,weather_list,pitcher_arm_list,player_arm_list=([] for i in range(7))
 	teamid_dict={}
 	playerid_dict={}
 	for event_date in soup.findAll("div",{"class":"game-time"}):
@@ -179,41 +180,151 @@ def mlb_starting_lineups(date=time.strftime("%Y-%m-%d")): #take date as string '
 			forecast_string=forecast_string.split('-')[0]+'-'+forecast_string.split('-')[1]+' '+forecast_string.split('-')[2]+'-'+forecast_string.split('-')[3]
 		weather_list.append(forecast_string)
 	for team in soup.findAll("div",{"class":"team-data"}):
-		team_list.append(team_map[team.find("div",{"class":"team-name"}).get_text()])
-		pitcher_list.append(team.find("a",{"class":"player-link"}).get_text())
+		try:
+			team_name=team.find("div",{"class":"team-name"}).get_text()
+		except:
+			team_name=''
+		try:
+			pitcher_name=team.find("a",{"class":"player-link"}).get_text()
+			if "'" in pitcher_name:
+				try:
+					pitcher_name=pitcher_name.split("'")[0].split()[0]+' '+pitcher_name.split("'")[0].split()[1]+pitcher_name.split("'")[1] #Ian: this assumes apostrophe in last name
+				except:
+					pitcher_name=pitcher_name.split("'")[0]+pitcher_name.split("'")[1].split()[0]+' '+pitcher_name.split("'")[1].split()[1]
+		except:
+			pitcher_name=''
+		try:
+			pitcher_arm=team.find('div',{"class":"text"}).get_text().split('(')[1].split(')')[0]
+		except:
+			pitcher_arm=''
+		if team_name in team_map: #Ian: Check if team name has been listed
+			team_list.append(team_map[team_name])
+		else:
+			team_list.append(team_name)
+		pitcher_list.append(pitcher_name)
+		pitcher_arm_list.append(pitcher_arm)
 	for table in soup.findAll("div",{"class":"cssDialog clearfix"}):
 		table_string=table.get_text()
-		home_lineup=[]  
-		away_lineup=[]
-		if table_string.count("9. ")==2:
+		home_lineup,away_lineup,home_lineup_arms,away_lineup_arms=([] for i in range(4))  
+		if table_string.count("9. ")==2: #Ian: rethink-checks that both teams lineups have been listed. What if only one has been.. 
 			for j in range(1,10):
 				name_list_raw=table_string[table_string.find(str(j)+". ")+3:].split(" (")
-				home_lineup.append(name_list_raw[0])
+				player=name_list_raw[0]
+				if "'" in player:
+					try:
+						player=player.split("'")[0].split()[0]+' '+player.split("'")[0].split()[1]+player.split("'")[1] #Ian: this assumes apostrophe in last name
+					except:
+						player=player.split("'")[0]+player.split("'")[1].split()[0]+' '+player.split("'")[1].split()[1]
+				home_lineup_arms.append(name_list_raw[1].split(')')[0])
+				home_lineup.append(player)
 				name_list_raw=table_string[table_string.find((str(j)+". "),table_string.find(str(j)+". ")+3)+3:].split(" (")
-				away_lineup.append(name_list_raw[0])
+				player=name_list_raw[0]
+				if "'" in player:
+					try:
+						player=player.split("'")[0].split()[0]+' '+player.split("'")[0].split()[1]+player.split("'")[1] #Ian: this assumes apostrophe in last name
+					except:
+						player=player.split("'")[0]+player.split("'")[1].split()[0]+' '+player.split("'")[1].split()[1]
+				away_lineup_arms.append(name_list_raw[1].split(')')[0])
+				away_lineup.append(player)
 			lineups_list.append(home_lineup)
 			lineups_list.append(away_lineup)
+			player_arm_list.append(home_lineup_arms)
+			player_arm_list.append(away_lineup_arms)
 		else:
 			lineups_list.append(['no home_lineup listed'])
 			lineups_list.append(['no away_lineup listed'])
+			player_arm_list.append(['no hitting style listed'])
+			player_arm_list.append(['no hitting style listed'])
 	i=j=0
 	while i<len(lineups_list):
-		lineups_list[i].append(pitcher_list[i])
-		teamid_dict[team_list[i]]=[gametime_list[j]]
-		teamid_dict[team_list[i]].append(weather_list[j])
-		teamid_dict[team_list[i]].append(lineups_list[i])
+		if pitcher_list[i] not in lineups_list[i]:
+			lineups_list[i].append(pitcher_list[i])
+			player_arm_list[i].append(pitcher_arm_list[i])
+		teamid_dict[team_list[i]]={}
+		teamid_dict[team_list[i]]['start_time']=gametime_list[j]
+		teamid_dict[team_list[i]]['weather_forecast']=weather_list[j]
+		player_arm_dict={}
+		for player,arm in zip(lineups_list[i],player_arm_list[i]):
+			player_arm_dict[player]=arm
+		teamid_dict[team_list[i]]['lineup']=player_arm_dict
 		if i%2 !=0:
-			j=j+1	
+			j=j+1
+			teamid_dict[team_list[i]]['HOA']='Home'
+		else:
+			teamid_dict[team_list[i]]['HOA']='Away'	
 		i=i+1
 	i=j=0
 	while i<len(lineups_list):
-		for e in lineups_list[i]:
-			playerid_dict[e]=[gametime_list[j]]
-			playerid_dict[e].append(weather_list[j])
-			playerid_dict[e].append(team_list[i])
+		z=1
+		for player,arm in zip(lineups_list[i],player_arm_list[i]):
+			playerid_dict[player]={}
+			playerid_dict[player]['start_time']=gametime_list[j]
+			playerid_dict[player]['weather_forecast']=weather_list[j]
+			playerid_dict[player]['teamid']=team_list[i]
+			playerid_dict[player]['arm']=arm
+			playerid_dict[player]['HOA']=teamid_dict[playerid_dict[player]['teamid']]['HOA']
+			playerid_dict[player]['batting_order']=str(z)
+			z=z+1
 		if i%2 !=0:
 			j=j+1	
 		i=i+1	
 	return teamid_dict,playerid_dict
-# print mlb_starting_lineups()
-# os.system('pause')
+
+def get_rw_optimal_lineups(sport): #Ian: Need to remove time.sleep's and change to loops till pages are loaded
+	driver = webdriver.Chrome() #Ian: use this for debugging
+	#driver = webdriver.PhantomJS()
+	driver.get("http://www.rotowire.com/daily/"+sport+"/optimizer.htm")
+	time.sleep(10)
+	html=driver.page_source 
+	soup = BeautifulSoup(html)
+	results=soup.find("tbody",{"id":"players"})
+	#Dont need this stuff below anymore since you cant exclude players.
+	# for row in results.findAll("tr",{"class":"playerSet"}):
+		# player_name=row.find("td",{"class":"firstleft lineupopt-name"}).get_text()
+		# if len(player_name.split(', ')[1].split())>1:
+		# 	data_value=row.find("td",{"class":"lineupopt-exclude"})['data-value']
+		# 	driver.find_element_by_css_selector(".lineupopt-exclude[data-value="+"'"+str(data_value)+"']").click()
+	button=driver.find_element_by_css_selector('.offset2.btn.btn-primary.btn-large.optimize-'+sport.lower()+'lineup')
+	button.click()
+	time.sleep(20)
+	html=driver.page_source 
+	soup = BeautifulSoup(html)
+	results=soup.find("tbody",{"class":"lineupopt-lineup"})
+	optimal_lineup=[]
+	if sport=='NBA' or sport=='NHL':
+		for row in results.findAll("td",{"style":"text-align:left;padding-left:3px;"}):
+			optimal_lineup.append(row.get_text())
+	elif sport=='MLB':
+		for row in results.findAll("td",{"style":"text-align:left;"}):
+			optimal_lineup.append(row.get_text())
+	driver.close()
+	lineup_string=''
+	for e in optimal_lineup:
+		first_name=e.split(', ')[1]
+		last_name=e.split(', ')[0]
+		lineup_string=lineup_string+first_name+' '+last_name+', '
+	return lineup_string.rsplit(', ',1)[0]
+
+def dfn_nba():
+	driver = webdriver.Chrome() #Ian: use this for debugging
+	#driver = webdriver.PhantomJS()
+	driver.get("https://dailyfantasynerd.com/optimizer/fanduel/nba")
+	time.sleep(5)
+	driver.find_element_by_id('input-username').send_keys('iwhitest')
+	driver.find_element_by_id('input-password').send_keys('clover2010')
+	#driver.find_element_by_css_selector(".text[id='input-username']")
+	driver.find_element_by_css_selector('.btn.btn-success').click()
+	time.sleep(10)
+	driver.find_element_by_css_selector('.btn.btn-info.generate').click()
+	time.sleep(5)
+	html=driver.page_source 
+	soup = BeautifulSoup(html)
+	lineup=[]
+	for player in soup.findAll('td',{"class":"pl-col playerName"}):
+		if len(lineup)<=8:
+			lineup.append(player.get_text())
+	lineup_string=''
+	for e in lineup:
+		lineup_string=lineup_string+e+', '
+	driver.close()
+	return lineup_string.rsplit(', ',1)[0]

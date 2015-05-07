@@ -53,7 +53,6 @@ def main(Sport,method,parameters):
 
     # Pass method, format, and parameters to build request url
     url = build_url(host, sport, method, game_id, data_format, parameters)
-
     req = urllib2.Request(url)
     # Set Authorization header
     req.add_header("Authorization", "Bearer " + access_token)

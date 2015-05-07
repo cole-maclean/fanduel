@@ -122,7 +122,7 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 					dbo.insert_mysql('hist_player_data',cols,data)
 		return self
 
-	def parse_event_data(self,event_data,event_date): #Cole: How to generaize parsing event data for each sport?
+	def parse_event_data(self,event_data,event_date): #Cole: How to generalize parsing event data for each sport?
 		event_data_dict = {}
 		if event_data:
 			event_data_dict['event_id'] = event_data['event_id']
@@ -137,8 +137,10 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 			event_date = event_date[0:4] + "-" + event_date[4:6] + "-" + event_date[6:8]
 			team_dict,player_dict = ds.mlb_starting_lineups(event_date)
 			try:
-				event_data_dict['forecast'] = team_dict[home_team][1]
-				if team_dict[home_team][0] == 'PPD':
+				event_data_dict['home_starting_lineup'] = team_dict[home_team]['lineup'] #Ian: on 20140414 they didnt have any info for listed game..
+				event_data_dict['away_starting_lineup'] = team_dict[away_team]['lineup']
+				event_data_dict['forecast'] = team_dict[home_team]['weather_forecast']
+				if team_dict[home_team]['start_time'] == 'PPD':
 					event_data_dict['PPD'] = True
 				else:
 					event_data_dict['PPD'] = False
@@ -407,5 +409,3 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 			else:
 				print player_key + ' not in db_player_data'
 		return player_universe
-# MLB=MLB()
-# MLB.get_daily_game_data("20150505","20150506",True)
