@@ -62,8 +62,10 @@ def enter_contest_decider(contest):
 	contest_user_wins = ds.get_contest_userwins(contest)
 	print contest_user_wins
 	print numpy.mean(contest_user_wins[contest['sport'].upper()])
-	print int(contest['entriesData'])/int(contest['size'])
-	if numpy.mean(contest_user_wins[contest['sport'].upper()]) <= 10000: #Cole: this is where the decision clasifier will be used to determine contest entry
+	print float(contest['entriesData'])
+	print float(contest['size'])
+	print float(contest['entriesData'])/float(contest['size'])
+	if numpy.mean(contest_user_wins[contest['sport'].upper()]) <= 10000 and float(contest['entriesData'])/float(contest['size']) >=0.5: #Cole: this is where the decision clasifier will be used to determine contest entry
 		contest['entries_win_dict'] = contest_user_wins
 		return True,contest
 	else:

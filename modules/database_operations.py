@@ -69,6 +69,7 @@ def write_to_db(table,static_columns,static_data,write_data={}):
     for i in range(1,len(row_data) + 1):
         columns = columns + ', Stat' + str(i)
     insert_mysql(table,columns, placeholders, static_data)
+    
 def insert_mysql(table, columns, data,placeholders=False):
     if placeholders:
         sql = "INSERT INTO " + table + " (%s) VALUES (%s)" % (columns, placeholders)

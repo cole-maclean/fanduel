@@ -1,6 +1,7 @@
 import data_scrapping as ds
 import data_scrapping_utils as Uds
 import database_operations as dbo
+import string_utils as Ustr
 import collections
 import XMLStats
 import os
@@ -12,6 +13,9 @@ import pandas
 import datetime, dateutil.parser
 import general_utils as Ugen
 import FD_operations as fdo
+from sklearn.cross_validation import train_test_split
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.feature_extraction import DictVectorizer
 
 class Sport(): #Cole: Class has functions that should be stripped out and place into more appropriate module/class
 	def __init__(self,sport):
@@ -297,7 +301,7 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 		feature_dict = {}
 		feature_dict['FD_points'] = []
 		feature_dict['FD_median'] = []
-		feature_dict['HR_ballpark_factor'] = [] #Cole:tempory parameter until batter handedness is figured out
+		#feature_dict['HR_ballpark_factor'] = [] #Cole:tempory parameter until batter handedness is figured out
 		#feature_dict['rest_time'] = []
 		#feature_dict['LHB_ballpark_factor'] = [] #Cole: do we split feature into RH\LH based on batter?
 		#feature_dict['RHB_ballpark_factor'] = []
@@ -308,7 +312,7 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 				median_chunk_list = [FD_points[chunk_indx] for chunk_indx in range(reverse_index-self.median_stat_chunk_size[player_type],reverse_index-1)]
 				feature_dict['FD_points'].append(FD_points[reverse_index]) #Cole:Need to do some testing on most informative hist FD points data feature(ie avg, trend, combination)
 				feature_dict['FD_median'].append(self.median_stat(median_chunk_list,False))
-				feature_dict['HR_ballpark_factor'].append(float(self.get_stadium_data()[hist_data['stadium'][reverse_index]]['HR']))
+				#feature_dict['HR_ballpark_factor'].append(float(self.get_stadium_data()[hist_data['stadium'][reverse_index]]['HR']))
 				#feature_dict['rest_time'].append(self.time_between(hist_data['start_date_time'][reverse_index-1],hist_data['start_date_time'][reverse_index])) #this will include rest_days between season, need to remove
 				#feature_dict['LHB_ballpark_factor'].append(float(self.get_stadium_data()[hist_data['stadium'][reverse_index]]['LHB']))
 				#feature_dict['RHB_ballpark_factor'].append(float(self.get_stadium_data()[hist_data['stadium'][reverse_index]]['RHB']))
@@ -321,7 +325,8 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 		player_id =player.split("_")
 		player_name = player_id[0]
 		player_type = player_id[1]
-		player_gtd = game_time_data = ds.mlb_starting_lineups()[1][player_name]
+		player_gtd = ds.mlb_starting_lineups()[1][player_name]
+		FD_contest_teams = fdo.get_contest_teams
 		team_abr = player_gtd[2]
 		stadium_data = self.get_stadium_data('home_team')[team_abr]
 		parameters = []
@@ -347,17 +352,33 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 								numpy.array(data['strike_outs'])*1+numpy.array(data['innings_pitched'])*1)
 		return FD_points
 
+	def weather_checker(self,stadium,forecast):
+		sql = "SELECT * FROM event_data WHERE stadium = '" + stadium +"'"
+		event_data = dbo.read_from_db(sql,['event_id'],True)
+		forecast_data =[{'forecast':data['forecast'].split("-")[1],'PoP':float(data['forecast'].split("-")[-1].replace("%",""))} for data in event_data.values()]
+		vec = DictVectorizer()
+		transformed_forecast_data = vec.fit_transform(forecast_data).toarray()
+		print transformed_forecast_data
+		PPD_data = numpy.array([0.0 if data['PPD'] == 'False' else 1.0 for data in event_data.values()])
+		clf = DecisionTreeClassifier(min_samples_split=1).fit(transformed_forecast_data, PPD_data)
+		PPD_pred =clf.predict(vec.transform(forecast))
+		return PPD_pred
+
+	def weather_classfier():
+		pass
+
 	def build_player_universe(self,contest_url): #Cole: this desperately needs documentation. Entire data structure needs documentation
 		team_map = Ugen.excel_mapping("Team Map",9,6)
 		FD_player_data = fdo.get_FD_player_dict(contest_url)#Cole:need to build some sort of test that FD_names and starting lineup names match
 		teams,starting_lineups = ds.mlb_starting_lineups() #Cole: need to write verification that all required teams have lineups
-		missing_lineups = [team for team in teams.keys() if len(teams[team][2])<8] #Cole: this whole method needs to be split out into more reasonable functions
-		contest_teams = fdo.get_contest_teams(contest_url) #Cole: This needs mapping
+		omitted_teams = ['COL','ARI','OAK','MIN','MIA']
+		missing_lineups = [team for team in teams.keys() if len(teams[team][2])<8 and team not in omitted_teams] #Cole: this whole method needs to be split out into more reasonable functions
+		contest_teams = fdo.get_contest_teams(contest_url).keys() #Cole: This needs mapping
 		FD_missing_lineups = [team for team in contest_teams if team_map[team] in missing_lineups]
 		print FD_missing_lineups
 		if FD_missing_lineups: #Check that no required lineups are missing
 			return {}
-		starting_players = [player for player in starting_lineups.keys() if 'PPD' not in starting_lineups[player][1]] #Cole: is the PPD working?
+		starting_players = [player for player in starting_lineups.keys() if starting_lineups[player][2] not in omitted_teams and 'PPD' not in starting_lineups[player][1]] #Cole: is the PPD working?
 		FD_starting_player_data = {FD_playerid:data for FD_playerid,data in FD_player_data.iteritems() if data[1] in starting_players} #data[1] if FD_player_name
 		player_universe = {}
 		for FD_playerid,data in FD_starting_player_data.iteritems():
@@ -386,3 +407,5 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 			else:
 				print player_key + ' not in db_player_data'
 		return player_universe
+# MLB=MLB()
+# MLB.get_daily_game_data("20150505","20150506",True)
