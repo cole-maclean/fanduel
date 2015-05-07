@@ -44,6 +44,10 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 		self.gameid = None
 		return XMLStats.main(self,'events',{'sport':self.sport,'date':event_date})['event']
 
+	def get_db_event_data(self):
+		sql = "SELECT * FROM event_data"
+		return dbo.read_from_db(sql,"event_id",True)
+
 	def gameids(self): #Cole: Returns namedtuple of [lastgameid,list of all gameids in db]
 		gameid_data = collections.namedtuple("gameid_data", ["lastgameid", "all_gameids"])
 		sql = "SELECT hist_player_data.GameID FROM hist_player_data WHERE Sport = '"+ self.sport +"'"
@@ -59,12 +63,14 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 
 	def get_daily_game_data(self,start_date,end_date,store = False):
 		event_dates = [d.strftime('%Y%m%d') for d in pandas.date_range(start_date,end_date)]
+		#db_eventids = self.get_db_event_data()
 		for event_date in event_dates:
 			day_events = self.events(event_date)
 			event_list = ([game['event_id'] for game in day_events if game['event_status'] == 'completed'
 							 and game['season_type'] == 'regular' or 'post'])
 			all_game_data = {}
 			for indx,game_id in enumerate(event_list):
+				#if game_id not in db_eventids.key():
 				self.gameid = game_id
 				if store == False:
 					game_data = XMLStats.main(self,'boxscore',None)
@@ -134,17 +140,19 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 					event_data_dict['PPD'] = True
 				else:
 					event_data_dict['PPD'] = False
+				event_data_dict['home_starting_lineup'] = team_dict[home_team][2]
+				event_data_dict['away_starting_lineup'] = team_dict[away_team][2]
 			except:
-				pass
+				print "dont think this is a real event"
 			cols = ", ".join(event_data_dict.keys())
 			data = ", ".join(['"' + unicode(v) + '"' for v in event_data_dict.values()])
 			dbo.insert_mysql('event_data',cols,data)
 		return event_data_dict
 
-	def get_db_gamedata(self,start_date,end_date):
+	def get_db_gamedata(self,start_date,end_date,player):
 		sql = ("SELECT hist_player_data.*, event_data.* FROM hist_player_data "
 				 "INNER JOIN event_data ON hist_player_data.GameID=event_data.event_id "
-				   "WHERE hist_player_data.Sport = '"+ self.sport +"' AND Date BETWEEN '" + start_date +"' AND "
+				   "WHERE hist_player_data.Sport = '"+ self.sport +"' AND Player = '"+ player +"' AND Date BETWEEN '" + start_date +"' AND "
 				    "'" + end_date + "' ORDER BY Date ASC")
 		db_data = dbo.read_from_db(sql,["Player","GameID","Player_Type"],True)
 		player_data_dict = {}
@@ -343,18 +351,19 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 
 	def build_player_universe(self,contest_url): #Cole: this desperately needs documentation. Entire data structure needs documentation
 		team_map = Ugen.excel_mapping("Team Map",9,6)
-		db_data = self.get_db_gamedata("20120401","20170422")
 		FD_player_data = fdo.get_FD_player_dict(contest_url)#Cole:need to build some sort of test that FD_names and starting lineup names match
 		teams,starting_lineups = ds.mlb_starting_lineups() #Cole: need to write verification that all required teams have lineups
 		missing_lineups = [team for team in teams.keys() if len(teams[team][2])<8] #Cole: this whole method needs to be split out into more reasonable functions
 		contest_teams = fdo.get_contest_teams(contest_url) #Cole: This needs mapping
 		FD_missing_lineups = [team for team in contest_teams if team_map[team] in missing_lineups]
+		print FD_missing_lineups
 		if FD_missing_lineups: #Check that no required lineups are missing
 			return {}
 		starting_players = [player for player in starting_lineups.keys() if 'PPD' not in starting_lineups[player][1]] #Cole: is the PPD working?
 		FD_starting_player_data = {FD_playerid:data for FD_playerid,data in FD_player_data.iteritems() if data[1] in starting_players} #data[1] if FD_player_name
 		player_universe = {}
 		for FD_playerid,data in FD_starting_player_data.iteritems():
+			db_data = self.get_db_gamedata("20120401","20170422",data[1])
 			if data[0] == 'P': #Cole: If this can be generalized (ie sport player type map, the entire function can be generalized as a Sport method)
 				player_type = 'pitcher'
 			else:
@@ -379,6 +388,7 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 			else:
 				print player_key + ' not in db_player_data'
 		return player_universe
+
 MLB=MLB()
 MLB.get_daily_game_data('2015-04-12','2015-05-03',True)
 #MLB.get_daily_game_data('2015-04-12','2015-05-02',True) #re-pull these later (fixed pitcher names with apostrophe)

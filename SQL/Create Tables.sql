@@ -1,5 +1,7 @@
 delimiter $$
-DROP TABLE IF EXISTS fd_table_contests;
+DROP TABLE IF EXISTS fanduel_contests;
+
+delimiter $$
 
 delimiter $$
 
@@ -27,12 +29,13 @@ CREATE TABLE `fanduel_contests` (
   `seatCode` varchar(45) DEFAULT NULL,
   `entriesData` varchar(45) DEFAULT NULL,
   `dateUpdated` varchar(45) DEFAULT NULL,
+  `stack` varchar(45) DEFAULT NULL,
   `entries_win_dict` blob,
   `model_confidence` varchar(45) DEFAULT NULL,
   `timestamp` varchar(45) DEFAULT NULL,
   `entry_id` varchar(45) NOT NULL,
   PRIMARY KEY (`entry_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8$$
+) ENGINE=InnoDB DEFAULT CHARSET=latin1$$
 
 delimiter $$
 DROP TABLE IF EXISTS hist_performance;

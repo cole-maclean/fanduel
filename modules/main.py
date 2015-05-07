@@ -18,7 +18,6 @@ def run_program(sport_list,update_model_interval,max_bet):
 	FD_session,session_id = fdo.get_fanduel_session()
 	current_bet = 0
 	#last contest_time = get_last_contest_time() - return last time for latest contest tonight
-	#while current_time < last_contest_time and current_bet < max_bet:
 	run_time = 1000
 	if run_time > update_model_interval:
 		contest_rosters = {}
@@ -27,37 +26,43 @@ def run_program(sport_list,update_model_interval,max_bet):
 			print daily_contests
 			MLB= Sport.MLB()
 			for contest,url in daily_contests.iteritems():
+				print contest
 				for contest_type,confidence in MLB.contest_types.iteritems():
 					model_roster = MLB.optimal_roster(url,confidence)
 					print model_roster
 					if model_roster['roster'] != []:
 						contest_rosters['MLB_' + str(contest) + '_' + str(contest_type)] = model_roster
-	FD_contests = fdo.get_FD_contests(FD_session)
-	for contest in FD_contests:
-		if int(contest['entryFee']) <=25 and (contest['sport'].upper() + '_' + str(contest['gameId']) + '_' + str(contest['flags'])) in contest_rosters.keys():
-			roster_data =contest_rosters[(contest['sport'].upper() + '_' + str(contest['gameId']) + '_' + str(contest['flags']))]
-			entry_decision,contest = enter_contest_decider(contest)
-			if entry_decision == True:
-				entry_id,entry_status =fdo.enter_contest(FD_session,session_id,'https://www.fanduel.com/e/Game/' + str(contest['gameId']) + '?tableId=' + str(contest['uniqueId']) + '&fromLobby=true',str(roster_data['roster']))
-				print str(contest['gameId']) + " entry attempt"
-				if entry_status == 'success':
-					current_bet = current_bet + int(contest['entryFee'])
-					contest['entry_id'] = entry_id
-					contest['timestamp'] = str(datetime.now())
-					contest['model_confidence'] = roster_data['confidence']
-					cols = ", ".join([key for key in contest.keys()])
-					data = ", ".join(['"' + str(v) + '"' for v in contest.values()])
-					dbo.insert_mysql('fanduel_contests',cols,data)
-					print str(contest['gameId']) + " entry success"
-					time.sleep(1)
-				else:
-					print str(contest['gameId']) + " entry failed - " + entry_status
+	while True:#current_time < last_contest_time
+		FD_contests = fdo.get_FD_contests(FD_session)
+		for contest in FD_contests:
+			if int(contest['entryFee']) <=25 and (contest['sport'].upper() + '_' + str(contest['gameId']) + '_' + str(contest['flags'])) in contest_rosters.keys():
+				roster_data =contest_rosters[(contest['sport'].upper() + '_' + str(contest['gameId']) + '_' + str(contest['flags']))]
+				entry_decision,contest = enter_contest_decider(contest)
+				if current_bet >=max_bet:
+					return current_bet
+				elif entry_decision == True:
+					entry_id,entry_status =fdo.enter_contest(FD_session,session_id,'https://www.fanduel.com/e/Game/' + str(contest['gameId']) + '?tableId=' + str(contest['uniqueId']) + '&fromLobby=true',str(roster_data['roster']))
+					print str(contest['gameId']) + " entry attempt"
+					if entry_status == 'success':
+						current_bet = current_bet + int(contest['entryFee'])
+						contest['entry_id'] = entry_id
+						contest['timestamp'] = str(datetime.now())
+						contest['model_confidence'] = roster_data['confidence']
+						cols = ", ".join([key for key in contest.keys()])
+						data = ", ".join(['"' + str(v) + '"' for v in contest.values()])
+						dbo.insert_mysql('fanduel_contests',cols,data)
+						print str(contest['gameId']) + " entry success"
+						time.sleep(1)
+					else:
+						print str(contest['gameId']) + " entry failed - " + entry_status
+		sleep(10)
 	return contest_rosters
 
 def enter_contest_decider(contest):
 	contest_user_wins = ds.get_contest_userwins(contest)
 	print contest_user_wins
 	print numpy.mean(contest_user_wins[contest['sport'].upper()])
+	print int(contest['entriesData'])/int(contest['size'])
 	if numpy.mean(contest_user_wins[contest['sport'].upper()]) <= 10000: #Cole: this is where the decision clasifier will be used to determine contest entry
 		contest['entries_win_dict'] = contest_user_wins
 		return True,contest
@@ -88,7 +93,7 @@ def build_hist_win_tuples():
 		else:
 			hist_perf_tuples.append((rw[0],0))
 	return hist_perf_tuples
-print run_program(["MLB"],10,30)
+print run_program(["MLB"],10,100)
 # MLB = Sport.MLB()
 # #MLB.get_daily_game_data(['20150420','20150419','20150418','20150417','20150416','20150415'],True)
 # MLB.get_db_gamedata()
@@ -99,3 +104,4 @@ print run_program(["MLB"],10,30)
 # #dbo.load_csv_into_db('C:/Users/Cole/Desktop/FanDuel/fanduel entry history.csv','hist_performance')
 # #print Ugen.output_dict(build_pWins_vs_topwins_dict(5))
 # os.system('pause')
+# run_program(["MLB"],10,100)
