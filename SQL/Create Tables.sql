@@ -101,7 +101,6 @@ CREATE TABLE `hist_fanduel_data` (
 delimiter $$
 
 CREATE TABLE `hist_lineup_optimizers` (
-  `DataID` int(10) unsigned AUTO_INCREMENT,
   `Date` date DEFAULT NULL,  
   `DFN_NBA` text DEFAULT NULL,
   `RW_NBA` text DEFAULT NULL, 
@@ -131,6 +130,8 @@ CREATE TABLE `event_data` (
   PRIMARY KEY (`event_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8$$
 
+
+DROP TABLE IF EXISTS stadium_data;
 delimiter $$
 
 CREATE TABLE `stadium_data` (
