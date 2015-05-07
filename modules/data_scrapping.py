@@ -164,7 +164,7 @@ def get_contest_utlity(avg_top_wins,time_remaining,wins_data,bin_size):
 		contest_utility = 0
 	return contest_utility,future_utility
 
-def mlb_starting_lineups(date=time.strftime("%Y-%m-%d")): #take date as string 'YYYY-MM-DD'. Needs refactoring.
+def mlb_starting_lineups(date=time.strftime("%Y-%m-%d")): #take date as string 'YYYY-MM-DD'. [desperately] Needs refactoring.
 	url='http://www.baseballpress.com/lineups/'+date
 	content= urllib2.urlopen(url).read()
 	soup = BeautifulSoup(content)
@@ -248,16 +248,23 @@ def mlb_starting_lineups(date=time.strftime("%Y-%m-%d")): #take date as string '
 			player_arm_dict[player]=arm
 		teamid_dict[team_list[i]]['lineup']=player_arm_dict
 		if i%2 !=0:
-			j=j+1	
+			j=j+1
+			teamid_dict[team_list[i]]['HOA']='Home'
+		else:
+			teamid_dict[team_list[i]]['HOA']='Away'	
 		i=i+1
 	i=j=0
 	while i<len(lineups_list):
+		z=1
 		for player,arm in zip(lineups_list[i],player_arm_list[i]):
 			playerid_dict[player]={}
 			playerid_dict[player]['start_time']=gametime_list[j]
 			playerid_dict[player]['weather_forecast']=weather_list[j]
 			playerid_dict[player]['teamid']=team_list[i]
 			playerid_dict[player]['arm']=arm
+			playerid_dict[player]['HOA']=teamid_dict[playerid_dict[player]['teamid']]['HOA']
+			playerid_dict[player]['batting_order']=str(z)
+			z=z+1
 		if i%2 !=0:
 			j=j+1	
 		i=i+1	
