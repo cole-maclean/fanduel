@@ -102,7 +102,7 @@ def get_contest_userwins(contest):
 				except KeyError:
 					pass	
 			time.sleep(1)
-	with open('C:/Users/Cole/Desktop/Fanduel/fanduel/userwinscache.txt',"w") as myfile:
+	with open(DB_parameters['userwinscache'],"w") as myfile: #Ian: removed hard coded reference to Cole's path
 		myfile.write(str(user_wins_cache))
 	return user_wins_array
 def get_FD_playerlist(): #Cole: move this to FD operations

@@ -329,7 +329,7 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 		player_type = player_id[1]
 		player_gtd = ds.mlb_starting_lineups()[1][player_name]
 		FD_contest_teams = fdo.get_contest_teams
-		team_abr = player_gtd[2]
+		team_abr = player_gtd['teamid'] #Ian: updated this as function now returns a nested dict
 		stadium_data = self.get_stadium_data('home_team')[team_abr]
 		parameters = []
 		for feature in features:
@@ -374,13 +374,13 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 		FD_player_data = fdo.get_FD_player_dict(contest_url)#Cole:need to build some sort of test that FD_names and starting lineup names match
 		teams,starting_lineups = ds.mlb_starting_lineups() #Cole: need to write verification that all required teams have lineups
 		omitted_teams = ['COL','ARI','OAK','MIN','MIA']
-		missing_lineups = [team for team in teams.keys() if len(teams[team][2])<8 and team not in omitted_teams] #Cole: this whole method needs to be split out into more reasonable functions
+		missing_lineups = [team for team in teams.keys() if len(teams[team]['lineup'])<8 and team not in omitted_teams] #Cole: this whole method needs to be split out into more reasonable functions
 		contest_teams = fdo.get_contest_teams(contest_url).keys() #Cole: This needs mapping
 		FD_missing_lineups = [team for team in contest_teams if team_map[team] in missing_lineups]
 		print FD_missing_lineups
 		if FD_missing_lineups: #Check that no required lineups are missing
 			return {}
-		starting_players = [player for player in starting_lineups.keys() if starting_lineups[player][2] not in omitted_teams and 'PPD' not in starting_lineups[player][1]] #Cole: is the PPD working?
+		starting_players = [player for player in starting_lineups.keys() if starting_lineups[player]['teamid'] not in omitted_teams and 'PPD' not in starting_lineups[player]['start_time']] #Cole: is the PPD working?
 		FD_starting_player_data = {FD_playerid:data for FD_playerid,data in FD_player_data.iteritems() if data[1] in starting_players} #data[1] if FD_player_name
 		player_universe = {}
 		for FD_playerid,data in FD_starting_player_data.iteritems():
