@@ -61,13 +61,17 @@ def rotowire_lineup_points():
 		not_starting_list.append(not_starting)
 	return hist_points,not_starting_list
 
-points,not_starting=rotowire_lineup_points()
+# points,not_starting=rotowire_lineup_points()
 
-i=1
-for e in not_starting:
-	Cell('Output',i,1).value=e
-	i=i+1
-os.system('pause')
+# i=1
+# for e in not_starting:
+# 	Cell('Output',i,1).value=e
+# 	i=i+1
+# os.system('pause')
+
+
+
+
 #PLAYER MAPPING
 
 # sql = "SELECT * FROM hist_lineup_optimizers"

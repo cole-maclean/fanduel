@@ -144,8 +144,6 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 					event_data_dict['PPD'] = True
 				else:
 					event_data_dict['PPD'] = False
-				event_data_dict['home_starting_lineup'] = team_dict[home_team][2]
-				event_data_dict['away_starting_lineup'] = team_dict[away_team][2]
 			except:
 				print "dont think this is a real event"
 			cols = ", ".join(event_data_dict.keys())
@@ -372,8 +370,9 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 	def build_player_universe(self,contest_url): #Cole: this desperately needs documentation. Entire data structure needs documentation
 		team_map = Ugen.excel_mapping("Team Map",9,6)
 		FD_player_data = fdo.get_FD_player_dict(contest_url)#Cole:need to build some sort of test that FD_names and starting lineup names match
+		Cell('Output',1,1).value=FD_player_data
 		teams,starting_lineups = ds.mlb_starting_lineups() #Cole: need to write verification that all required teams have lineups
-		omitted_teams = ['COL','ARI','OAK','MIN','MIA']
+		omitted_teams = []
 		missing_lineups = [team for team in teams.keys() if len(teams[team]['lineup'])<8 and team not in omitted_teams] #Cole: this whole method needs to be split out into more reasonable functions
 		contest_teams = fdo.get_contest_teams(contest_url).keys() #Cole: This needs mapping
 		FD_missing_lineups = [team for team in contest_teams if team_map[team] in missing_lineups]
@@ -409,3 +408,46 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 			else:
 				print player_key + ' not in db_player_data'
 		return player_universe
+
+def hist_build_player_universe(self,date): #Ian: Temporary. builds player universe for historical dates - needed for backtesting
+		#Ian: needs to be changed to read from db
+		FD_player_data = fdo.get_FD_player_dict(contest_url)
+		#Ian: add date into func call
+		teams,starting_lineups = ds.mlb_starting_lineups()
+		
+		omitted_teams = []
+		starting_players = [player for player in starting_lineups.keys() if starting_lineups[player]['teamid'] not in omitted_teams and 'PPD' not in starting_lineups[player]['start_time']] #Cole: is the PPD working?
+		#Ian replace this
+		FD_starting_player_data = {FD_playerid:data for FD_playerid,data in FD_player_data.iteritems() if data[1] in starting_players} #data[1] if FD_player_name
+		
+		player_universe = {}
+		for FD_playerid,data in FD_starting_player_data.iteritems():
+			#Ian: change end date, data[1] reference
+			db_data = self.get_db_gamedata("20120401","20170422",data[1])
+			if data[0] == 'P': #Cole: If this can be generalized (ie sport player type map, the entire function can be generalized as a Sport method)
+				player_type = 'pitcher'
+			else:
+				player_type = 'batter'
+ 			player_key = data[1]+ '_' + player_type	
+			if player_key in db_data.keys():
+				player_universe[player_key] = {}
+				player_universe[player_key]['FD_playerid'] = FD_playerid
+				projected_FD_points = self.FD_points_model(player_key,db_data[player_key],False)
+				player_universe[player_key]['projected_FD_points'] = projected_FD_points.projected_points
+				player_universe[player_key]['confidence'] = projected_FD_points.confidence
+				player_universe[player_key]['Player_Type'] = player_type
+				player_universe[player_key]['name'] = player_key
+				for indx,FD_data in enumerate(data):
+					try:
+						player_universe[player_key][self.FD_data_columns[indx]] = float(FD_data)
+					except ValueError:
+						player_universe[player_key][self.FD_data_columns[indx]] = FD_data
+				position_map = {key:1 if key == player_universe[player_key]['FD_Position'] else 0 for key in self.positions.keys()}
+				tmp_dict = position_map.copy()
+				player_universe[player_key].update(tmp_dict)
+			else:
+				print player_key + ' not in db_player_data'
+		return player_universe
+
+MLB=MLB()
+MLB.optimal_roster("https://www.fanduel.com/e/Game/12294?tableId=12582487&fromLobby=true",-10)
