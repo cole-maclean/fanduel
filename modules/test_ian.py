@@ -9,65 +9,36 @@ import general_utils as Ugen
 from selenium import webdriver
 import string
 import pandas
+import Sport
+import numpy as np
+import backtest
 
-def fanduel_lineup_points(playerlist,Date): #Need to incorporate cole's sport class, already has a similar func. Needs refactoring.
-	player_list=playerlist.split(', ')
-	not_starting_dict={}
-	player_dict={}
-	player_map=Ugen.excel_mapping('Player Map',8,5)
-	for player in player_list:#build dict of stats for lineup on given date
-		if player in player_map:
-			player=player_map[player]
-		sql="SELECT * FROM hist_player_data WHERE Sport = 'MLB' AND Player = "+ "'" +player+"'" + " AND Date = "+ "'" +Date+"'"
-		player_data=dbo.read_from_db(sql,["Player","GameID","Player_Type"],True)
-		if len(player_data)==0:
-			print 'no db_data found for %s'%player
-			not_starting_dict[player+' '+Date]=0
-		for player_key,stat_dict in player_data.iteritems():
-			player_dict[player]=stat_dict	
-	FD_points=0
-	player_map=Ugen.excel_mapping('Player Map',5,7)
-	for player,stats in player_dict.iteritems():
-		team_dict,lineup_dict=ds.mlb_starting_lineups(Date)
-		if stats['Player_Type']== 'batter':
-				player_points= (int(stats['Stat1'])*1 + int(stats['Stat2'])*2 + int(stats['Stat3'])*3 + int(stats['Stat4'])*4 + int(stats['Stat6'])*1 + int(stats['Stat10'])*1
-											 + int(stats['Stat11'])*1 + int(stats['Stat8'])*1 + int(stats['Stat13']) * 1 - ((int(stats['Stat5'])-int(stats['Stat7']))*.25))
-		elif stats['Player_Type']== 'pitcher':
-			player_points = (int(stats['Stat1'])*4 - int(stats['Stat7'])*1 + int(stats['Stat9'])*1 + float(stats['Stat4'])*1)
-		else:
-			print 'unknown positions for %s' %player
-		FD_points=FD_points+player_points
+#backtest.hist_model_points()
+#backtest.run_hist_lineups()
 
-		#All this below is to test if player wasn't in starting lineups that day, can be removed in future
-		if player in player_map:
-			mapped_name=player_map[player]
-		else:
-			mapped_name=player
-		if mapped_name not in lineup_dict:
-			print "%s was not found in starting lineups dict"%mapped_name
-			not_starting_dict[mapped_name+' '+Date]=player_points
-	return FD_points,not_starting_dict
+# MLB=Sport.MLB()
+# MLB.get_daily_game_data('20150509','20150510',True)
 
-def rotowire_lineup_points():
-	sql = "SELECT * FROM hist_lineup_optimizers"
-	db_data= dbo.read_from_db(sql,["Date"],True)
-	hist_points={}
-	not_starting_list=[]
-	for date,lineup in db_data.iteritems():
-		mlb_lineup=lineup['RW_MLB']
-		print "now calculating points for %s"%date
-		lineup_points,not_starting=fanduel_lineup_points(mlb_lineup,date)
-		hist_points[date]=lineup_points
-		not_starting_list.append(not_starting)
-	return hist_points,not_starting_list
 
-points,not_starting=rotowire_lineup_points()
+# points,not_starting=rotowire_lineup_points()
+#print fanduel_lineup_points('Madison Bumgarner, Marcell Ozuna, Marcus Semien, Giancarlo Stanton, Coco Crisp, Robinson Cano, Albert Pujols, Josh Phegley, Kyle Seager','20150509')[0]
 
-i=1
-for e in not_starting:
-	Cell('Output',i,1).value=e
-	i=i+1
-os.system('pause')
+# i=1
+# for e in not_starting:
+# 	Cell('Output',i,1).value=e
+# 	i=i+1
+# os.system('pause')
+
+# sql = "SELECT * FROM hist_fanduel_data Where Date='2015-05-09' And Sport='MLB'"
+# db_data= dbo.read_from_db(sql,['Player','Position','contestID'],True)
+
+# for player_key,data in db_data.iteritems():
+# 	print player_key,data['FD_Salary']
+
+# time.sleep(20)
+
+
+
 #PLAYER MAPPING
 
 # sql = "SELECT * FROM hist_lineup_optimizers"

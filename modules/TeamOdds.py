@@ -92,3 +92,4 @@ def get_team_odds(sport):
             i=i+1
     # Cell("Output",1,1).value=odds_list
     return [odds_list,date]
+

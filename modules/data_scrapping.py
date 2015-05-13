@@ -169,6 +169,7 @@ def mlb_starting_lineups(date=time.strftime("%Y-%m-%d")): #take date as string '
 	content= urllib2.urlopen(url).read()
 	soup = BeautifulSoup(content)
 	team_map = Ugen.excel_mapping("Team Map",8,6)
+	player_map=Ugen.excel_mapping("Player Map",7,5)
 	team_list,pitcher_list,lineups_list,gametime_list,weather_list,pitcher_arm_list,player_arm_list=([] for i in range(7))
 	teamid_dict={}
 	playerid_dict={}
@@ -201,6 +202,8 @@ def mlb_starting_lineups(date=time.strftime("%Y-%m-%d")): #take date as string '
 			team_list.append(team_map[team_name])
 		else:
 			team_list.append(team_name)
+		if pitcher_name in player_map:
+			pitcher_name=player_map[pitcher_name]
 		pitcher_list.append(pitcher_name)
 		pitcher_arm_list.append(pitcher_arm)
 	for table in soup.findAll("div",{"class":"cssDialog clearfix"}):
@@ -216,6 +219,8 @@ def mlb_starting_lineups(date=time.strftime("%Y-%m-%d")): #take date as string '
 					except:
 						player=player.split("'")[0]+player.split("'")[1].split()[0]+' '+player.split("'")[1].split()[1]
 				home_lineup_arms.append(name_list_raw[1].split(')')[0])
+				if player in player_map:
+					player=player_map[player]
 				home_lineup.append(player)
 				name_list_raw=table_string[table_string.find((str(j)+". "),table_string.find(str(j)+". ")+3)+3:].split(" (")
 				player=name_list_raw[0]
@@ -225,6 +230,8 @@ def mlb_starting_lineups(date=time.strftime("%Y-%m-%d")): #take date as string '
 					except:
 						player=player.split("'")[0]+player.split("'")[1].split()[0]+' '+player.split("'")[1].split()[1]
 				away_lineup_arms.append(name_list_raw[1].split(')')[0])
+				if player in player_map:
+					player=player_map[player]
 				away_lineup.append(player)
 			lineups_list.append(home_lineup)
 			lineups_list.append(away_lineup)
@@ -249,9 +256,9 @@ def mlb_starting_lineups(date=time.strftime("%Y-%m-%d")): #take date as string '
 		teamid_dict[team_list[i]]['lineup']=player_arm_dict
 		if i%2 !=0:
 			j=j+1
-			teamid_dict[team_list[i]]['HOA']='Home'
+			teamid_dict[team_list[i]]['home_teamid']=team_list[i]
 		else:
-			teamid_dict[team_list[i]]['HOA']='Away'	
+			teamid_dict[team_list[i]]['home_teamid']=team_list[i+1]	
 		i=i+1
 	i=j=0
 	while i<len(lineups_list):
@@ -262,7 +269,7 @@ def mlb_starting_lineups(date=time.strftime("%Y-%m-%d")): #take date as string '
 			playerid_dict[player]['weather_forecast']=weather_list[j]
 			playerid_dict[player]['teamid']=team_list[i]
 			playerid_dict[player]['arm']=arm
-			playerid_dict[player]['HOA']=teamid_dict[playerid_dict[player]['teamid']]['HOA']
+			playerid_dict[player]['home_teamid']=teamid_dict[playerid_dict[player]['teamid']]['home_teamid']
 			playerid_dict[player]['batting_order']=str(z)
 			z=z+1
 		if i%2 !=0:
@@ -328,3 +335,25 @@ def dfn_nba():
 		lineup_string=lineup_string+e+', '
 	driver.close()
 	return lineup_string.rsplit(', ',1)[0]
+
+def roster_nerds(sport):
+	url='http://'+sport.lower()+'.rosternerds.com/'
+	driver = webdriver.Chrome()
+	driver.get(url)
+	time.sleep(5)
+	html=driver.page_source
+	driver.close() 
+	# html= urllib2.urlopen(url).read()
+	soup = BeautifulSoup(html)
+	Cell('Output',1,1).value=soup
+	table=soup.find("table",{"class":"players"})
+	lineup=[]
+	for row in table.findAll("tr",{"class":"odd"}):
+		lineup.append(row.find("td",{"class":"player-cell"}).get_text())
+	for row in table.findAll("tr",{"class":"even"}):
+		lineup.append(row.find("td",{"class":"player-cell"}).get_text())
+	lineup_string=''
+	for e in lineup:
+		lineup_string=lineup_string+e+', '
+	return lineup_string.rsplit(', ',1)[0]
+
