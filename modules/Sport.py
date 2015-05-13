@@ -416,5 +416,5 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 			else:
 				print player_key + ' not in db_player_data'
 		return player_universe
-# MLB=MLB()
-# MLB.get_daily_game_data("20150401","20150511",True)
+MLB=MLB()
+MLB.get_daily_game_data("20150511","20150512",True)
