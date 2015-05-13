@@ -22,13 +22,16 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 		self.sport = sport
 		self.gameid = None
 
-	def FD_points_model(self,player,hist_data,visualize = False):
+	def FD_points_model(self,player,hist_data,visualize = False,date=False): #Ian: added optional date for backtesting
 		FD_projection= collections.namedtuple("FD_projection", ["projected_points", "confidence"])
 		self.player_model_data = self.build_model_dataset(hist_data)
 		player_model = Model.Model(self.player_model_data,player)
 		player_model.FD_points_model(visualize)
 		if player_model.modelled:	#Cole: need to develop parameters for each player
-			parameters = self.get_parameters(player_model.feature_labels,player)
+			if date:
+				parameters=self.get_parameters(player_model.feature_labels,player,date)
+			else:
+				parameters = self.get_parameters(player_model.feature_labels,player)
 			if len(player_model.test_feature_matrix) > 1: #Test dataset needs to contain at least 2 datapoints to compute score
 				projected_FD_points = (FD_projection(player_model.model.predict(parameters)[-1],
 												player_model.model.score(player_model.test_feature_matrix,player_model.test_target_matrix)))
@@ -154,8 +157,8 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 	def get_db_gamedata(self,start_date,end_date,player):
 		sql = ("SELECT hist_player_data.*, event_data.* FROM hist_player_data "
 				 "INNER JOIN event_data ON hist_player_data.GameID=event_data.event_id "
-				   "WHERE hist_player_data.Sport = '"+ self.sport +"' AND Player = '"+ player +"' AND Date BETWEEN '" + start_date +"' AND "
-				    "'" + end_date + "' ORDER BY Date ASC")
+				   "WHERE hist_player_data.Sport = '"+ self.sport +"' AND Player = '"+ player.replace("'","''") +"' AND Date BETWEEN '" + start_date +"' AND "
+				    "'" + end_date + "' ORDER BY Date ASC") #Ian: modified SQL statement so it can read names like "Travis D'Arnaud" from DB
 		db_data = dbo.read_from_db(sql,["Player","GameID","Player_Type"],True)
 		player_data_dict = {}
 		for key,player_game in db_data.iteritems():
@@ -221,9 +224,12 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 		else:
 			return 0.0
 
-	def optimal_roster(self,contest_url,confidence = 0):
+	def optimal_roster(self,contest_url,confidence = 0,date=False,contestID=False): #Ian: added optional date for backtesting
 		DB_parameters=Ugen.ConfigSectionMap('local text')
-		player_universe = self.build_player_universe(contest_url)
+		if date:
+			player_universe=self.hist_build_player_universe(date,contestID)
+		else:
+			player_universe = self.build_player_universe(contest_url)
 		items = ([{key:value for key,value in stats_data.iteritems() if key in self.optimizer_items}
 					 for player_key,stats_data in player_universe.iteritems()
 					 if 'Salary' in stats_data.keys()])
@@ -234,20 +240,30 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 			roster_data = []
 			rw = 2
 			sum_confidence = 0
-			for player in r.xf:
-				roster_data.append([player_universe[player]['FD_Position'],str(int(player_universe[player]['FD_playerid'])),str(int(player_universe[player]['MatchupID'])),str(int(player_universe[player]['TeamID']))])
-				Cell("Roster",rw,1).value = player
-				Cell("Roster",rw,2).value = player_universe[player]['TeamID']
-				Cell("Roster",rw,3).value = player_universe[player]['FD_Position']
-				Cell("Roster",rw,4).value = player_universe[player]['projected_FD_points']
-				Cell("Roster",rw,5).value = player_universe[player]['confidence']
-				Cell("Roster",rw,6).value = player_universe[player]['Salary']
-				sum_confidence = sum_confidence + player_universe[player]['confidence']
-				rw = rw + 1
-			sorted_roster = sorted(roster_data, key=self.sort_positions)
-			with open(DB_parameters['rostertext'],"w") as myfile: #Ian: replaced hard-coded folder path with reference to config file
-				myfile.write(str(sorted_roster).replace(' ',''))
-			return {'confidence':sum_confidence,'roster':sorted_roster}
+			if date:
+				roster_dict={}
+				for player in r.xf:
+					roster_dict[player]={}
+					roster_dict[player]['FD_Position']=player_universe[player]['FD_Position']
+					roster_dict[player]['projected_FD_points']=player_universe[player]['projected_FD_points']
+					roster_dict[player]['confidence']=player_universe[player]['confidence']
+					roster_dict[player]['Salary']=player_universe[player]['Salary']
+				return roster_dict,len(player_universe)
+			else:
+				for player in r.xf:
+					roster_data.append([player_universe[player]['FD_Position'],str(int(player_universe[player]['FD_playerid'])),str(int(player_universe[player]['MatchupID'])),str(int(player_universe[player]['TeamID']))])
+					Cell("Roster",rw,1).value = player
+					Cell("Roster",rw,2).value = player_universe[player]['TeamID']
+					Cell("Roster",rw,3).value = player_universe[player]['FD_Position']
+					Cell("Roster",rw,4).value = player_universe[player]['projected_FD_points']
+					Cell("Roster",rw,5).value = player_universe[player]['confidence']
+					Cell("Roster",rw,6).value = player_universe[player]['Salary']
+					sum_confidence = sum_confidence + player_universe[player]['confidence']
+					rw = rw + 1
+				sorted_roster = sorted(roster_data, key=self.sort_positions)
+				with open(DB_parameters['rostertext'],"w") as myfile: #Ian: replaced hard-coded folder path with reference to config file
+					myfile.write(str(sorted_roster).replace(' ',''))
+				return {'confidence':sum_confidence,'roster':sorted_roster}
 		else:
 			return {'confidence':0,'roster':[]}
 
@@ -321,11 +337,14 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 				break
 		return feature_dict
 
-	def get_parameters(self,features,player):
+	def get_parameters(self,features,player,date=False): #Ian: added optional date for backtesting
 		player_id =player.split("_")
 		player_name = player_id[0]
 		player_type = player_id[1]
-		player_gtd = ds.mlb_starting_lineups()[1][player_name]
+		if date:
+			player_gtd=ds.mlb_starting_lineups(date)[1][player_name]
+		else:
+			player_gtd = ds.mlb_starting_lineups()[1][player_name]
 		FD_contest_teams = fdo.get_contest_teams
 		team_abr = player_gtd['teamid'] #Ian: updated this as function now returns a nested dict
 		stadium_data = self.get_stadium_data('home_team')[team_abr]
@@ -369,7 +388,7 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 
 	def build_player_universe(self,contest_url): #Cole: this desperately needs documentation. Entire data structure needs documentation
 		team_map = Ugen.excel_mapping("Team Map",9,6)
-		FD_player_data = fdo.get_FD_player_dict(contest_url)#Cole:need to build some sort of test that FD_names and starting lineup names match
+		FD_player_data = fdo.get_FD_player_dict(contest_url)#Cole:need to build some sort of test that FD_names and starting lineup names match - Ian: players now get mapped in the mlb_starting_lineups function itself.
 		Cell('Output',1,1).value=FD_player_data
 		teams,starting_lineups = ds.mlb_starting_lineups() #Cole: need to write verification that all required teams have lineups
 		omitted_teams = []
@@ -409,45 +428,42 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 				print player_key + ' not in db_player_data'
 		return player_universe
 
-def hist_build_player_universe(self,date): #Ian: Temporary. builds player universe for historical dates - needed for backtesting
-		#Ian: needs to be changed to read from db
-		FD_player_data = fdo.get_FD_player_dict(contest_url)
-		#Ian: add date into func call
-		teams,starting_lineups = ds.mlb_starting_lineups()
-		
-		omitted_teams = []
-		starting_players = [player for player in starting_lineups.keys() if starting_lineups[player]['teamid'] not in omitted_teams and 'PPD' not in starting_lineups[player]['start_time']] #Cole: is the PPD working?
-		#Ian replace this
-		FD_starting_player_data = {FD_playerid:data for FD_playerid,data in FD_player_data.iteritems() if data[1] in starting_players} #data[1] if FD_player_name
-		
-		player_universe = {}
-		for FD_playerid,data in FD_starting_player_data.iteritems():
-			#Ian: change end date, data[1] reference
-			db_data = self.get_db_gamedata("20120401","20170422",data[1])
-			if data[0] == 'P': #Cole: If this can be generalized (ie sport player type map, the entire function can be generalized as a Sport method)
-				player_type = 'pitcher'
-			else:
-				player_type = 'batter'
- 			player_key = data[1]+ '_' + player_type	
-			if player_key in db_data.keys():
-				player_universe[player_key] = {}
-				player_universe[player_key]['FD_playerid'] = FD_playerid
-				projected_FD_points = self.FD_points_model(player_key,db_data[player_key],False)
-				player_universe[player_key]['projected_FD_points'] = projected_FD_points.projected_points
-				player_universe[player_key]['confidence'] = projected_FD_points.confidence
-				player_universe[player_key]['Player_Type'] = player_type
-				player_universe[player_key]['name'] = player_key
-				for indx,FD_data in enumerate(data):
-					try:
-						player_universe[player_key][self.FD_data_columns[indx]] = float(FD_data)
-					except ValueError:
-						player_universe[player_key][self.FD_data_columns[indx]] = FD_data
-				position_map = {key:1 if key == player_universe[player_key]['FD_Position'] else 0 for key in self.positions.keys()}
-				tmp_dict = position_map.copy()
-				player_universe[player_key].update(tmp_dict)
-			else:
-				print player_key + ' not in db_player_data'
-		return player_universe
+	#date is in format 'yyyy-mm-dd'
+	def hist_build_player_universe(self,date,contestID): #Ian: Temporary. builds player universe for historical dates - needed for backtesting
+			sql = "SELECT * FROM hist_fanduel_data Where Sport='MLB' And Date="+"'" +date+"' And contestID=" + "'" +contestID+"'"
+			FD_db_data= dbo.read_from_db(sql,['Player','Position','contestID'],True)
+			teams,starting_lineups = ds.mlb_starting_lineups(date)
+			omitted_teams = []
+			starting_players = [player for player in starting_lineups.keys() if starting_lineups[player]['teamid'] not in omitted_teams and 'PPD' not in starting_lineups[player]['start_time']] #Cole: is the PPD working?
+			FD_starting_player_data = {FD_playerid:data for FD_playerid,data in FD_db_data.iteritems() if data['Player'] in starting_players}
+			player_universe = {}
+			for FD_playerid,data in FD_starting_player_data.iteritems():
+				db_data = self.get_db_gamedata("20120401",date.replace("-",""),data['Player'])
+				if data['Position'] == 'P': #Cole: If this can be generalized (ie sport player type map, the entire function can be generalized as a Sport method)
+					player_type = 'pitcher'
+				else:
+					player_type = 'batter'
+	 			player_key = data['Player']+ '_' + player_type	
+				if player_key in db_data.keys():
+					player_universe[player_key] = {}
+					player_universe[player_key]['FD_playerid'] = FD_playerid #Ian: check if this is used for anything...shouldnt be
+					projected_FD_points = self.FD_points_model(player_key,db_data[player_key],False,date)#Ian: add in date parameters
+					player_universe[player_key]['projected_FD_points'] = projected_FD_points.projected_points
+					player_universe[player_key]['confidence'] = projected_FD_points.confidence
+					player_universe[player_key]['Player_Type'] = player_type
+					player_universe[player_key]['name'] = player_key
+					player_universe[player_key]['Salary']=float(data['FD_Salary'])
+					player_universe[player_key]['GamesPlayed']=float(data['FD_GP'])
+					player_universe[player_key]['PPG']=float(data['FD_FPPG'])
+					player_universe[player_key]['FD_Position']=data['Position']
+					player_universe[player_key]['FD_name']=data['Player']
 
-MLB=MLB()
-MLB.optimal_roster("https://www.fanduel.com/e/Game/12294?tableId=12582487&fromLobby=true",-10)
+					position_map = {key:1 if key == player_universe[player_key]['FD_Position'] else 0 for key in self.positions.keys()}
+					tmp_dict = position_map.copy()
+					player_universe[player_key].update(tmp_dict)
+				else:
+					print player_key + ' not in db_player_data'
+			return player_universe
+
+#MLB=MLB()
+#MLB.get_daily_game_data('20150508','20150509',True)
