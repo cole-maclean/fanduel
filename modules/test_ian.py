@@ -13,9 +13,11 @@ import Sport
 import numpy as np
 import backtest
 
-backtest.hist_model_points()
+#backtest.hist_model_points()
 #backtest.run_hist_lineups()
 
+# MLB=Sport.MLB()
+# MLB.get_daily_game_data('20150509','20150510',True)
 
 
 # points,not_starting=rotowire_lineup_points()

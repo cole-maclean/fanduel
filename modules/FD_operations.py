@@ -80,10 +80,8 @@ def get_contest_teams(contest_url):
 	FD_team_dict= ast.literal_eval(Uds.parse_html(contest_url,"FD.playerpicker.teamIdToFixtureCompactString = ",";"))
 	team_dict = {}
 	for team,matchup in FD_team_dict.iteritems():
-		print matchup
 		if '@<b>' in matchup:
 			matchup_split = matchup.split('@<b>')
-			print matchup_split
 			team_dict[matchup_split[0]] = matchup_split[1][0:3]
 	inv_map = {v: k for k, v in team_dict.iteritems()}
 	team_dict.update(inv_map)

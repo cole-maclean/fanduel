@@ -22,16 +22,14 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 		self.sport = sport
 		self.gameid = None
 
-	def FD_points_model(self,player,hist_data,visualize = False,date=False): #Ian: added optional date for backtesting
+
+	def FD_points_model(self,player,hist_data,starting_lineups,visualize = False):
 		FD_projection= collections.namedtuple("FD_projection", ["projected_points", "confidence"])
 		self.player_model_data = self.build_model_dataset(hist_data)
 		player_model = Model.Model(self.player_model_data,player)
 		player_model.FD_points_model(visualize)
 		if player_model.modelled:	#Cole: need to develop parameters for each player
-			if date:
-				parameters=self.get_parameters(player_model.feature_labels,player,date)
-			else:
-				parameters = self.get_parameters(player_model.feature_labels,player)
+			parameters = self.get_parameters(player_model.feature_labels,player,starting_lineups)
 			if len(player_model.test_feature_matrix) > 1: #Test dataset needs to contain at least 2 datapoints to compute score
 				projected_FD_points = (FD_projection(player_model.model.predict(parameters)[-1],
 												player_model.model.score(player_model.test_feature_matrix,player_model.test_target_matrix)))
@@ -317,7 +315,7 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 		feature_dict = {}
 		feature_dict['FD_points'] = []
 		feature_dict['FD_median'] = []
-		#feature_dict['HR_ballpark_factor'] = [] #Cole:tempory parameter until batter handedness is figured out
+		feature_dict['HR_ballpark_factor'] = [] #Cole:tempory parameter until batter handedness is figured out
 		#feature_dict['rest_time'] = []
 		#feature_dict['LHB_ballpark_factor'] = [] #Cole: do we split feature into RH\LH based on batter?
 		#feature_dict['RHB_ballpark_factor'] = []
@@ -328,7 +326,7 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 				median_chunk_list = [FD_points[chunk_indx] for chunk_indx in range(reverse_index-self.median_stat_chunk_size[player_type],reverse_index-1)]
 				feature_dict['FD_points'].append(FD_points[reverse_index]) #Cole:Need to do some testing on most informative hist FD points data feature(ie avg, trend, combination)
 				feature_dict['FD_median'].append(self.median_stat(median_chunk_list,False))
-				#feature_dict['HR_ballpark_factor'].append(float(self.get_stadium_data()[hist_data['stadium'][reverse_index]]['HR']))
+				feature_dict['HR_ballpark_factor'].append(float(self.get_stadium_data()[hist_data['stadium'][reverse_index]]['HR']))
 				#feature_dict['rest_time'].append(self.time_between(hist_data['start_date_time'][reverse_index-1],hist_data['start_date_time'][reverse_index])) #this will include rest_days between season, need to remove
 				#feature_dict['LHB_ballpark_factor'].append(float(self.get_stadium_data()[hist_data['stadium'][reverse_index]]['LHB']))
 				#feature_dict['RHB_ballpark_factor'].append(float(self.get_stadium_data()[hist_data['stadium'][reverse_index]]['RHB']))
@@ -337,17 +335,14 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 				break
 		return feature_dict
 
-	def get_parameters(self,features,player,date=False): #Ian: added optional date for backtesting
+	def get_parameters(self,features,player,starting_lineups): 
 		player_id =player.split("_")
 		player_name = player_id[0]
 		player_type = player_id[1]
-		if date:
-			player_gtd=ds.mlb_starting_lineups(date)[1][player_name]
-		else:
-			player_gtd = ds.mlb_starting_lineups()[1][player_name]
-		FD_contest_teams = fdo.get_contest_teams
+		player_gtd = starting_lineups[player_name]
+		stadium_data = self.get_stadium_data('home_team')
 		team_abr = player_gtd['teamid'] #Ian: updated this as function now returns a nested dict
-		stadium_data = self.get_stadium_data('home_team')[team_abr]
+		HR_factor = stadium_data[team_abr]['HR']
 		parameters = []
 		for feature in features:
 			if feature == 'rest_time':
@@ -355,7 +350,7 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 			elif feature == 'FD_median':
 				 parameters.append(self.median_stat(self.player_model_data['FD_points'][-self.median_stat_chunk_size[player_type]:]))
 			elif feature == 'HR_ballpark_factor':
-				parameters.append(float(stadium_data['HR']))
+				parameters.append(float(HR_factor))
 			elif feature == 'temp':
 				parameters.append(stadium_data['forecast'].split('oF')[0]) 
 		return parameters
@@ -389,15 +384,11 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 	def build_player_universe(self,contest_url): #Cole: this desperately needs documentation. Entire data structure needs documentation
 		team_map = Ugen.excel_mapping("Team Map",9,6)
 		FD_player_data = fdo.get_FD_player_dict(contest_url)#Cole:need to build some sort of test that FD_names and starting lineup names match - Ian: players now get mapped in the mlb_starting_lineups function itself.
-		Cell('Output',1,1).value=FD_player_data
 		teams,starting_lineups = ds.mlb_starting_lineups() #Cole: need to write verification that all required teams have lineups
 		omitted_teams = []
 		missing_lineups = [team for team in teams.keys() if len(teams[team]['lineup'])<8 and team not in omitted_teams] #Cole: this whole method needs to be split out into more reasonable functions
-		contest_teams = fdo.get_contest_teams(contest_url).keys() #Cole: This needs mapping
-		FD_missing_lineups = [team for team in contest_teams if team_map[team] in missing_lineups]
-		print FD_missing_lineups
-		if FD_missing_lineups: #Check that no required lineups are missing
-			return {}
+		print missing_lineups
+		#Ian - dont think this line is needed anymore?? Delete if YES #FD_missing_lineups = [team for team in contest_teams.keys() if team_map[team] in missing_lineups]
 		starting_players = [player for player in starting_lineups.keys() if starting_lineups[player]['teamid'] not in omitted_teams and 'PPD' not in starting_lineups[player]['start_time']] #Cole: is the PPD working?
 		FD_starting_player_data = {FD_playerid:data for FD_playerid,data in FD_player_data.iteritems() if data[1] in starting_players} #data[1] if FD_player_name
 		player_universe = {}
@@ -411,7 +402,7 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 			if player_key in db_data.keys():
 				player_universe[player_key] = {}
 				player_universe[player_key]['FD_playerid'] = FD_playerid
-				projected_FD_points = self.FD_points_model(player_key,db_data[player_key],False)
+				projected_FD_points = self.FD_points_model(player_key,db_data[player_key],starting_lineups,False)
 				player_universe[player_key]['projected_FD_points'] = projected_FD_points.projected_points
 				player_universe[player_key]['confidence'] = projected_FD_points.confidence
 				player_universe[player_key]['Player_Type'] = player_type
@@ -428,8 +419,7 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 				print player_key + ' not in db_player_data'
 		return player_universe
 
-	#date is in format 'yyyy-mm-dd'
-	def hist_build_player_universe(self,date,contestID): #Ian: Temporary. builds player universe for historical dates - needed for backtesting
+	def hist_build_player_universe(self,date,contestID): #Ian: Decided to build separate from original, thought it would get too big..consider refactoring both.. 'yyyy-mm-dd'
 			sql = "SELECT * FROM hist_fanduel_data Where Sport='MLB' And Date="+"'" +date+"' And contestID=" + "'" +contestID+"'"
 			FD_db_data= dbo.read_from_db(sql,['Player','Position','contestID'],True)
 			teams,starting_lineups = ds.mlb_starting_lineups(date)
@@ -446,8 +436,8 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 	 			player_key = data['Player']+ '_' + player_type	
 				if player_key in db_data.keys():
 					player_universe[player_key] = {}
-					player_universe[player_key]['FD_playerid'] = FD_playerid #Ian: check if this is used for anything...shouldnt be
-					projected_FD_points = self.FD_points_model(player_key,db_data[player_key],False,date)#Ian: add in date parameters
+					player_universe[player_key]['FD_playerid'] = FD_playerid 
+					projected_FD_points = self.FD_points_model(player_key,db_data[player_key],starting_lineups,False)
 					player_universe[player_key]['projected_FD_points'] = projected_FD_points.projected_points
 					player_universe[player_key]['confidence'] = projected_FD_points.confidence
 					player_universe[player_key]['Player_Type'] = player_type
@@ -457,7 +447,6 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 					player_universe[player_key]['PPG']=float(data['FD_FPPG'])
 					player_universe[player_key]['FD_Position']=data['Position']
 					player_universe[player_key]['FD_name']=data['Player']
-
 					position_map = {key:1 if key == player_universe[player_key]['FD_Position'] else 0 for key in self.positions.keys()}
 					tmp_dict = position_map.copy()
 					player_universe[player_key].update(tmp_dict)
@@ -465,5 +454,3 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 					print player_key + ' not in db_player_data'
 			return player_universe
 
-#MLB=MLB()
-#MLB.get_daily_game_data('20150508','20150509',True)

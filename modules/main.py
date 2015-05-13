@@ -55,7 +55,8 @@ def run_program(sport_list,update_model_interval,max_bet):
 						time.sleep(1)
 					else:
 						print str(contest['gameId']) + " entry failed - " + entry_status
-		sleep(10)
+		time.sleep(120)
+		print 'loop'
 	return contest_rosters
 
 def enter_contest_decider(contest):
@@ -95,7 +96,7 @@ def build_hist_win_tuples():
 		else:
 			hist_perf_tuples.append((rw[0],0))
 	return hist_perf_tuples
-print run_program(["MLB"],10,10)
+print run_program(["MLB"],100,50)
 # MLB = Sport.MLB()
 # #MLB.get_daily_game_data(['20150420','20150419','20150418','20150417','20150416','20150415'],True)
 # MLB.get_db_gamedata()

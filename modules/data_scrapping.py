@@ -256,9 +256,9 @@ def mlb_starting_lineups(date=time.strftime("%Y-%m-%d")): #take date as string '
 		teamid_dict[team_list[i]]['lineup']=player_arm_dict
 		if i%2 !=0:
 			j=j+1
-			teamid_dict[team_list[i]]['HOA']='Home'
+			teamid_dict[team_list[i]]['home_teamid']=team_list[i]
 		else:
-			teamid_dict[team_list[i]]['HOA']='Away'	
+			teamid_dict[team_list[i]]['home_teamid']=team_list[i+1]	
 		i=i+1
 	i=j=0
 	while i<len(lineups_list):
@@ -269,7 +269,7 @@ def mlb_starting_lineups(date=time.strftime("%Y-%m-%d")): #take date as string '
 			playerid_dict[player]['weather_forecast']=weather_list[j]
 			playerid_dict[player]['teamid']=team_list[i]
 			playerid_dict[player]['arm']=arm
-			playerid_dict[player]['HOA']=teamid_dict[playerid_dict[player]['teamid']]['HOA']
+			playerid_dict[player]['home_teamid']=teamid_dict[playerid_dict[player]['teamid']]['home_teamid']
 			playerid_dict[player]['batting_order']=str(z)
 			z=z+1
 		if i%2 !=0:
@@ -356,3 +356,4 @@ def roster_nerds(sport):
 	for e in lineup:
 		lineup_string=lineup_string+e+', '
 	return lineup_string.rsplit(', ',1)[0]
+
