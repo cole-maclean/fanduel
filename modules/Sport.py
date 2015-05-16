@@ -341,7 +341,7 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 		player_type = player_id[1]
 		player_gtd = starting_lineups[player_name]
 		stadium_data = self.get_stadium_data('home_team')
-		team_abr = player_gtd['teamid'] #Ian: updated this as function now returns a nested dict
+		team_abr = player_gtd['home_teamid'] #Ian: updated this as function now returns a nested dict
 		HR_factor = stadium_data[team_abr]['HR']
 		parameters = []
 		for feature in features:
@@ -385,10 +385,7 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 		team_map = Ugen.excel_mapping("Team Map",9,6)
 		FD_player_data = fdo.get_FD_player_dict(contest_url)#Cole:need to build some sort of test that FD_names and starting lineup names match - Ian: players now get mapped in the mlb_starting_lineups function itself.
 		teams,starting_lineups = ds.mlb_starting_lineups() #Cole: need to write verification that all required teams have lineups
-		omitted_teams = []
-		missing_lineups = [team for team in teams.keys() if len(teams[team]['lineup'])<8 and team not in omitted_teams] #Cole: this whole method needs to be split out into more reasonable functions
-		print missing_lineups
-		#Ian - dont think this line is needed anymore?? Delete if YES #FD_missing_lineups = [team for team in contest_teams.keys() if team_map[team] in missing_lineups]
+		omitted_teams = ['TEX','KC']
 		starting_players = [player for player in starting_lineups.keys() if starting_lineups[player]['teamid'] not in omitted_teams and 'PPD' not in starting_lineups[player]['start_time']] #Cole: is the PPD working?
 		FD_starting_player_data = {FD_playerid:data for FD_playerid,data in FD_player_data.iteritems() if data[1] in starting_players} #data[1] if FD_player_name
 		player_universe = {}
