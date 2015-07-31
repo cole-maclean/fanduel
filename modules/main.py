@@ -90,7 +90,7 @@ def enter_contest_decider(contest):
 	print float(contest['entriesData'])
 	print float(contest['size'])
 	print float(contest['entriesData'])/float(contest['size'])
-	if numpy.mean(contest_user_wins[contest['sport'].upper()]) <= 100 and float(contest['entriesData'])/float(contest['size']) >=0.5: #Cole: this is where the decision clasifier will be used to determine contest entry
+	if numpy.mean(contest_user_wins[contest['sport'].upper()]) <= 10000 and float(contest['entriesData'])/float(contest['size']) >=0.5: #Cole: this is where the decision clasifier will be used to determine contest entry
 		contest['entries_win_dict'] = contest_user_wins
 		return True,contest
 	else:
@@ -120,8 +120,8 @@ def build_hist_win_tuples():
 		else:
 			hist_perf_tuples.append((rw[0],0))
 	return hist_perf_tuples
-
 #print run_program(["MLB"],100,50)
+print run_program(["MLB"],100,100)
 # MLB = Sport.MLB()
 # #MLB.get_daily_game_data(['20150420','20150419','20150418','20150417','20150416','20150415'],True)
 # MLB.get_db_gamedata()

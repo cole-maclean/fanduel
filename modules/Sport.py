@@ -691,7 +691,6 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 		omitted_teams = []
 		missing_lineups = [team for team in teams.keys() if len(teams[team]['lineup'])<8 and team not in omitted_teams] #Cole: this whole method needs to be split out into more reasonable functions
 		print missing_lineups
-		#Ian - dont think this line is needed anymore?? Delete if YES #FD_missing_lineups = [team for team in contest_teams.keys() if team_map[team] in missing_lineups]
 		starting_players = [player for player in starting_lineups.keys() if starting_lineups[player]['teamid'] not in omitted_teams and 'PPD' not in starting_lineups[player]['start_time']] #Cole: is the PPD working?
 		FD_starting_player_data = {FD_playerid:data for FD_playerid,data in FD_player_data.iteritems() if data[1] in starting_players} #data[1] is FD_player_name
 		player_universe = {}
@@ -793,3 +792,4 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 # 		os.system('pause')
 # print i
 # os.system('pause')
+
