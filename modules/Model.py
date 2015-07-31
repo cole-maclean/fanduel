@@ -9,9 +9,16 @@ from sklearn.cross_validation import train_test_split
 import math
 class Model():
 	def __init__(self,model_data,player): #Cole: Class accepts model_data in form {'feature1':[data],feature2:[data]}
+		# print model_data
+		# for feature in model_data:
+		# 	print len(model_data[feature])
+		# os.system('pause')
 		self.player = player
 		self.model_data = model_data
-		self.target = 'FD_points'
+		if player.split("_")[1]=='batter' or player.split("_")[1]=='pitcher': #Ian: remove this when your done testing different variables
+			self.target = 'FD_points'
+		# else:
+		# 	self.target='strikeouts'
 		self.dataset_length = len(model_data[self.target])
 		self.target_matrix = numpy.array(model_data[self.target]).astype(float)
 		self.feature_matrix = numpy.array([[model_data[key][index] for key in model_data.keys() if key != self.target] for index in range(0,len(model_data[self.target]))]).astype(float)
@@ -32,7 +39,7 @@ class Model():
 		self.training_feature_matrix,self.test_feature_matrix, self.training_target_matrix,self.test_target_matrix= train_test_split(self.feature_matrix,self.target_matrix,test_size=0.1,random_state=42)
 		return self
 
-	def min_max_scaling(self,feature_data):
+	def min_max_scaling(self,feature_data): #SVM's and K-means clustering are affected by feature scaling
 		scaler = MinMaxScaler
 		rescaled_feature = scaler.fit_transform(feature_data)
 		return rescaled_feature

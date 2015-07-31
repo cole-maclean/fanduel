@@ -7,6 +7,7 @@ from Tkinter import Tk
 def get_connection_cursor(dict_cursor=False): #Cole: Updated to allow for db reads to return a Dict cursor
     DB_parameters = Ugen.ConfigSectionMap('db')
     conn = MySQLdb.Connection(db=DB_parameters['db'],host="localhost",user=DB_parameters['user'],passwd=DB_parameters['password']);
+    conn.autocommit(True)
     if dict_cursor == True:
         cur = conn.cursor(MySQLdb.cursors.DictCursor)
     else:
@@ -100,3 +101,23 @@ def get_table_last_row(table_name,table_key):
     resultset = cur.fetchall()
     cur.close
     return resultset
+
+def delete_from_db(table,date1): #Ian: allows you to delete a specified set of records based on date. Only works for two tables right now 
+    if table=='event_data':
+        column='event_id'
+    elif table=='hist_player_data':
+        column='Date'
+    sql="DELETE FROM autotrader." + table + "WHERE "+ column +" LIKE '%" + date1 + "%'"
+    cur = get_connection_cursor(False)
+    cur.execute(sql)
+    cur.close()
+    print 'records from %s were successfully deleted for %s - %s' % (table,date1,date2)
+    return 
+
+def modify_db_table(table_name,column,data,table_key,table_key_val):
+    sql="UPDATE " + table_name + " SET " + column + "=" + data + " WHERE " + table_key + "=" + "'"+table_key_val+"'"
+    cur = get_connection_cursor(False)
+    cur.execute(sql)
+    cur.close()
+    print 'column %s from table %s was successfully updated' % (column,table_name)
+    return

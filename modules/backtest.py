@@ -17,60 +17,44 @@ import pandas
 import Sport
 import numpy as np
 
-
-def get_NHLgameID_date():
-	todays_date=time.strftime("%Y-%m-%d")	
-	date_id_dict={}
-	NHL_gamedate_Url='http://live.nhle.com/GameData/GCScoreboard/'+todays_date+'.jsonp'
-	nhle_dict=Uds.get_JSON_data(NHL_gamedate_Url, ['loadScoreboard(',')'])
-	for e in nhle_dict['games']:
-		date_id_dict[e['id']]=todays_date
-	return date_id_dict
-
 def hist_web_lineups():
     table='hist_lineup_optimizers'
     recordset=dbo.get_table_last_row(table,'Date')
-    last_date=Cell('Backtest_Parameters','clLastDate').value
-    if str(recordset[0][0])==str(last_date)[0:10]:
+    todays_date=time.strftime("%Y-%m-%d")
+    if str(recordset[0][0])==todays_date:
         print "hist_web_lineups: a recordset already exists in table: %s for entered date" % table
         time.sleep(5)   
         return
-    todays_date=time.strftime("%Y-%m-%d")
-    if not todays_date==str(last_date)[0:10]:
-        print "hist_web_lineups: enter lineups for todays date OR ensure you've entered today's date"
-        time.sleep(5)
-        return  
-
-    #Refactor 
-    if TeamOdds.get_team_odds('MLB')[1].split()[1]!=todays_date.split('-')[2]:
-        print "MLB team odds are not for today. check f'n or don't historize odds"
+    if TeamOdds.get_team_odds('MLB')[1].split()[1]!=todays_date.split('-')[2]: #Refactor 
+        print "MLB team odds are not for today"
         time.sleep(5)
         mlb_odds=''
     else:
         mlb_odds=json.dumps(TeamOdds.get_team_odds('MLB')[0])
-    if TeamOdds.get_team_odds('NHL')[1].split()[1]!=todays_date.split('-')[2]:
-        print "NHL team odds are not for today. check f'n or don't historize odds"
-        time.sleep(5)
-        nhl_odds=''
-    else:
-        nhl_odds=json.dumps(TeamOdds.get_team_odds('NHL')[0])
+    # if TeamOdds.get_team_odds('NHL')[1].split()[1]!=todays_date.split('-')[2]:
+    #     print "NHL team odds are not for today"
+    #     time.sleep(5)
+    #     nhl_odds=''
+    # else:
+    #     nhl_odds=json.dumps(TeamOdds.get_team_odds('NHL')[0])
+    nhl_odds=''
     nba_odds=''    
     # if TeamOdds.get_team_odds('NBA')[1].split()[1]!=todays_date.split('-')[2]:
-    #     print "NBA team odds are not for today. check f'n or don't historize odds"
+    #     print "NBA team odds are not for today"
     #     time.sleep(5)
     #     nba_odds=''
     # else:
     #     nba_odds=json.dumps(TeamOdds.get_team_odds('NBA')[0])
-
     dfn_nba=Cell('Backtest_Parameters','clDFNNBA').value
+    dfn_mlb=Cell('Backtest_Parameters','clDFNMLB').value
     rw_nba=Cell('Backtest_Parameters','clRWNBA').value
     rw_mlb=Cell('Backtest_Parameters','clRWMLB').value
     rw_nhl=Cell('Backtest_Parameters','clRWNHL').value
     rn_nba=Cell('Backtest_Parameters','clRNNBA').value
     rn_nhl=Cell('Backtest_Parameters','clRNNHL').value
     rn_mlb=Cell('Backtest_Parameters','clRNMLB').value  
-    db_data=[todays_date,dfn_nba,rw_nba,rw_mlb,rw_nhl,mlb_odds,rn_nba,rn_nhl,rn_mlb,nba_odds,nhl_odds]
-    columns='Date,DFN_NBA,RW_NBA,RW_MLB,RW_NHL,MLB_ODDS,RN_NBA,RN_NHL,RN_MLB,NBA_ODDS,NHL_ODDS'
+    db_data=[todays_date,dfn_nba,dfn_mlb,rw_nba,rw_mlb,rw_nhl,mlb_odds,rn_nba,rn_nhl,rn_mlb,nba_odds,nhl_odds]
+    columns='Date,DFN_NBA,DFN_MLB,RW_NBA,RW_MLB,RW_NHL,MLB_ODDS,RN_NBA,RN_NHL,RN_MLB,NBA_ODDS,NHL_ODDS'
     placeholders = ', '.join(['%s'] * len(db_data))
     print 'now historizing'
     dbo.insert_mysql(table,columns,db_data,placeholders)
@@ -109,6 +93,7 @@ def hist_FD_contest_salaries():
     sports_list=['mlb','nba','nhl','nfl'] #pick this option if you wanna historize all sports
     #sports_list=['mlb','nba']
     for sport in sports_list:
+        print sport
         sport_contest_dict=(x for x in contest_dict if x['sport']==sport)
         test_dict_case=(x for x in contest_dict if x['sport']==sport) #assign duplicate var to avoid list mutation
         if len(list(test_dict_case))>0: #test if there are contests for the sport
@@ -134,25 +119,25 @@ def hist_FD_contest_salaries():
     fdo.end_fanduel_session(s)
     return
 
-def fanduel_lineup_points(playerlist,Date,backtest=False): #Specify backtest if not doing rotowire lineups
-    if backtest:
-        player_list=playerlist
-    else:
-        player_list=playerlist.split(', ')
+def fanduel_lineup_points(playerlist,Date):
+    player_list=playerlist.split(', ')
     not_starting_dict={}
     player_dict={}
-    player_map=Ugen.excel_mapping('Player Map',8,5)
+    #player_map=Ugen.excel_mapping('Player Map',8,5)
+    rw=1
+    missing_players=[]
     for player in player_list: #build dict of stats for lineup on given date
-        if player in player_map and not backtest:
-            player=player_map[player]
+        #Cell("Output",rw,1).value=player
         sql="SELECT * FROM hist_player_data WHERE Sport = 'MLB' AND Player = "+ "'" +player+"'" + " AND Date = "+ "'" +Date+"'"
         player_data=dbo.read_from_db(sql,["Player","GameID","Player_Type"],True)
-        
+        #Cell('Output',rw,2).value=player_data     
         if len(player_data)==0:
             print 'no db_data found for %s'%player
+            missing_players.append(player)
         for player_key,stat_dict in player_data.iteritems():
             if player_key.split("_")[1].split('-')[1]!='2': #Ian: right now for double headers only count points for first game
                 player_dict[player_key]=stat_dict   
+        rw=rw+1
     FD_points=0
     for player,stats in player_dict.iteritems():
         if stats['Player_Type']== 'batter':
@@ -162,24 +147,29 @@ def fanduel_lineup_points(playerlist,Date,backtest=False): #Specify backtest if 
             player_points = (int(stats['Stat1'])*4 - int(stats['Stat7'])*1 + int(stats['Stat9'])*1 + float(stats['Stat4'])*1)
         else:
             print 'unknown positions for %s' %player
+        print player,player_points
         FD_points=FD_points+player_points
-    return FD_points
+    return FD_points,missing_players
 
-def rotowire_lineup_points():
-    sql = "SELECT * FROM hist_lineup_optimizers"
+def hist_lineup_optimizer_points(lineup_optimizer,start_date,end_date):
+    sql = "SELECT * FROM hist_lineup_optimizers WHERE Date BETWEEN " + "'" + start_date +"' AND " "'" + end_date + "'"
     db_data= dbo.read_from_db(sql,["Date"],True)
     hist_points={}
     not_starting_list=[]
     for date,lineup in db_data.iteritems():
-        mlb_lineup=lineup['RW_MLB']
-        print "now calculating points for %s"%date
-        lineup_points=fanduel_lineup_points(mlb_lineup,date)
-        hist_points[date]=lineup_points
+        mlb_lineup=lineup[lineup_optimizer]
+        if mlb_lineup:
+            print "now calculating points for %s"%date
+            lineup_points,missing_players_list=fanduel_lineup_points(mlb_lineup,date)
+            print 'total poitns was %d'%lineup_points
+            hist_points[date]={}
+            hist_points[date]['lineup']=lineup_points
+            hist_points[date]['missing_players']=missing_players_list
     return hist_points
 
 def hist_model_lineups(date_list):
     MLB=Sport.MLB()
-    rw=2
+    rw=2455
     while Cell("Backtest_Output",rw,1).value: #Ian: Don't overwrite existing values
         rw=rw+1
     hist_roster_dict={}
@@ -187,6 +177,7 @@ def hist_model_lineups(date_list):
         contest_list=hist_get_contest_ids(date)
         hist_roster_dict={}
         for contestID in contest_list:
+            print 'now modelling contestID: %s on %s' % (contestID,date)
             roster,player_universe_size=MLB.optimal_roster("https://www.fanduel.com/e/Game/12298?tableId=12594597&fromLobby=true",-10,date,contestID)
             hist_roster_dict[date+"_"+contestID]={}
             hist_roster_dict[date+"_"+contestID]['roster']=roster
@@ -194,30 +185,40 @@ def hist_model_lineups(date_list):
             Cell('Backtest_Output',rw,1).value=hist_roster_dict[date+"_"+contestID]['roster']
             Cell('Backtest_Output',rw,2).value=date
             Cell('Backtest_Output',rw,3).value=player_universe_size
+            hist_model_points(rw)
             rw=rw+1
     return hist_roster_dict
 
-def hist_model_points():
-    rw=2
+def hist_model_points(rw):
+    MLB=Sport.MLB()
     while Cell("Backtest_Output",rw,4).value: #Ian: Don't overwrite existing values
         rw=rw+1
     points_list=[]
     while Cell('Backtest_Output',rw,1).value:
         roster_dict=ast.literal_eval(Cell('Backtest_Output',rw,1).value)
+        player_keys=[player for player in roster_dict.keys()]
         roster=[player.split("_")[0] for player in roster_dict.keys()]
-        points=fanduel_lineup_points(roster,str(Cell('Backtest_Output',rw,2).value)[:10],True)
+        date=str(Cell('Backtest_Output',rw,2).value)[:10]
+        #points=fanduel_lineup_points(roster,date,True)
+        points=0
+        for player,player_key in zip(roster,player_keys): 
+                
+            player_data=MLB.get_db_gamedata(date,date,player)
+            for key,data in player_data.iteritems():
+                points+=MLB.FD_points(data)[0]
+                #print key,MLB.FD_points(data)[0]
+            if player_key.split("_")[1]=='pitcher':
+                Cell('Backtest_Output',rw,7).value=MLB.FD_points(data)[0]
         Cell("Backtest_Output",rw,4).value=points
-        points_list.append(points)
         proj_points=0
         sum_conf=0
         for player_key in roster_dict:
-            proj_points=proj_points+roster_dict[player_key]['projected_FD_points']
-            sum_conf=sum_conf+roster_dict[player_key]['confidence']
+            proj_points+=roster_dict[player_key]['projected_FD_points']
+            sum_conf+=roster_dict[player_key]['confidence']
         Cell('Backtest_Output',rw,5).value=proj_points
         Cell('Backtest_Output',rw,6).value=sum_conf
         rw=rw+1
-    print points_list,np.mean(points_list)
-    return np.mean(points_list)
+    return
 
 def hist_get_contest_ids(date):
     contest_list=[]
@@ -228,36 +229,41 @@ def hist_get_contest_ids(date):
             contest_list.append(e.split("_")[2])
     return contest_list
 
-
 def run_hist_lineups():
     Cell('Backtest_Parameters','clRWNBA').value=''
     Cell('Backtest_Parameters','clRWMLB').value=''
     Cell('Backtest_Parameters','clRWNHL').value=''
     Cell('Backtest_Parameters','clDFNNBA').value=''
+    Cell('Backtest_Parameters','clDFNMLB').value=''
     Cell('Backtest_Parameters','clRNNBA').value=''
     Cell('Backtest_Parameters','clRNNHL').value=''
     Cell('Backtest_Parameters','clRNMLB').value= ''
-
-    Cell('Backtest_Parameters','clRWNBA').value=ds.get_rw_optimal_lineups('NBA')
+    #Cell('Backtest_Parameters','clRWNBA').value=ds.get_rw_optimal_lineups('NBA')
+    #Cell('Backtest_Parameters','clRWNHL').value=ds.get_rw_optimal_lineups('NHL')
+    #Cell('Backtest_Parameters','clDFNNBA').value=ds.dfn('NBA')
+    #Cell('Backtest_Parameters','clRNNBA').value=ds.roster_nerds('NBA')
+    #Cell('Backtest_Parameters','clRNNHL').value=ds.roster_nerds('NHL')
+    
     Cell('Backtest_Parameters','clRWMLB').value=ds.get_rw_optimal_lineups('MLB')
-    Cell('Backtest_Parameters','clRWNHL').value=ds.get_rw_optimal_lineups('NHL')
-    Cell('Backtest_Parameters','clDFNNBA').value=ds.dfn_nba()
-    Cell('Backtest_Parameters','clRNNBA').value=ds.roster_nerds('NBA')
-    Cell('Backtest_Parameters','clRNNHL').value=ds.roster_nerds('NHL')
+    Cell('Backtest_Parameters','clDFNMLB').value=ds.dfn('MLB')
     Cell('Backtest_Parameters','clRNMLB').value=ds.roster_nerds('MLB')   
-    print 'about to historize lineups'
-    os.system('pause')
+    # print 'about to historize lineups'
+    # os.system('pause')
     hist_web_lineups()
     hist_FD_contest_salaries()
     return
 
-#date_list=['2015-05-11','2015-05-10','2015-05-09','2015-05-08','2015-05-07','2015-05-06','2015-05-05','2015-05-04','2015-05-03','2015-05-02','2015-05-01' \
-#            '2015-04-30','2015-04-29','2015-04-28','2015-04-27','2015-04-26','2015-04-25','2015-04-24','2015-04-23','2015-04-22','2015-04-21','2015-04-20']
 
-
-# date_list=['2015-04-19','2015-04-18','2015-04-17']
 # hist_model_lineups(date_list)
+#run_hist_lineups()
+# hist_FD_contest_salaries()
+# time.sleep(10)
 
 
-# print 'done'
-#os.system('pause')
+# dfn_dict=hist_lineup_optimizer_points('DFN_MLB','2015-05-01','2015-07-10')
+# rw=2
+# for date,data in dfn_dict.iteritems():
+#     Cell('Output',rw,1).value=date
+#     Cell('Output',rw,2).value=data['lineup']
+#     Cell('Output',rw,3).value=data['missing_players']
+#     rw=rw+1

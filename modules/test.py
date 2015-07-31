@@ -1,6 +1,10 @@
 from sklearn import linear_model
 import numpy
 import os
+import Sport
+import data_scrapping as ds
+import backtest
+import time
 
 def test():
 	feature_matrix = numpy.array(Cell("Output",1,1).value)
@@ -12,6 +16,10 @@ def test():
 	regr.fit(feature_matrix,target_matrix)
 	return feature_matrix
 
-print test()
-os.system("pause")
+# ds.historical_vegas_odds()
 
+# MLB=Sport.MLB()
+# MLB.get_daily_game_data('20150703','20150710',True) #LAST HISTORIZE
+#backtest.hist_model_points()
+
+backtest.run_hist_lineups()

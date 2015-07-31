@@ -41,6 +41,8 @@ def get_team_odds(sport):
     content= urllib2.urlopen(url).read()
     soup = BeautifulSoup(content)
     i=1 #counter for cells in excel
+    mlb_map=Ugen.excel_mapping("Team Map",7,6)
+    nhl_map=Ugen.excel_mapping("Team Map",3,1)
     odds_list={}
     date_raw=soup.find("div",{"class":"time type"}).get_text().split()
     date=date_raw[0]+' '+date_raw[1][0]+date_raw[1][1] #Ian: first date in the table. if any of the row's dates do not equal this then it wont get the odds for that game because its on a diff day
@@ -78,9 +80,9 @@ def get_team_odds(sport):
             if row_date==date: #Ian: check if current games date is equal to the date in the first row
                 moneyline1=row.findAll("div",{"class":"book moneyline book-"+"1"})[0].get_text().split() #for now just do opening odds
                 if sport=='MLB':
-                    team_map = Ugen.excel_mapping("Team Map",7,6)
+                    team_map = mlb_map
                 elif sport=='NHL':
-                    team_map=Ugen.excel_mapping("Team Map",3,1)
+                    team_map=nhl_map
                 else:
                     print 'team map does not exist for entered sport: %s' % sport
                     #return
@@ -93,3 +95,7 @@ def get_team_odds(sport):
     # Cell("Output",1,1).value=odds_list
     return [odds_list,date]
 
+# get_team_odds('MLB')
+
+# def get_team_odds(sport):
+#     return ['','the 2015-05-20']

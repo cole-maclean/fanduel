@@ -16,7 +16,9 @@ import FD_operations as fdo
 import general_utils as Ugen
 import subprocess
 import string
+import weather
 from selenium import webdriver
+from selenium.webdriver.support.ui import Select
 
 def get_NHL_gamedata(sGameSeason,sGameID):
 	game_stats_Url = 'http://live.nhle.com/GameData/' + sGameSeason + '/' + sGameID + '/gc/gcbx.jsonp'
@@ -166,10 +168,11 @@ def get_contest_utlity(avg_top_wins,time_remaining,wins_data,bin_size):
 
 def mlb_starting_lineups(date=time.strftime("%Y-%m-%d")): #take date as string 'YYYY-MM-DD'. [desperately] Needs refactoring.
 	url='http://www.baseballpress.com/lineups/'+date
-	content= urllib2.urlopen(url).read()
-	soup = BeautifulSoup(content)
-	team_map = Ugen.excel_mapping("Team Map",8,6)
-	player_map=Ugen.excel_mapping("Player Map",7,5)
+	content=urllib2.urlopen(url).read()
+	soup=BeautifulSoup(content)
+	team_map=Ugen.mlb_map(6,4)
+	player_map=Ugen.mlb_map(2,0)
+	print 'player/team maps complete'
 	team_list,pitcher_list,lineups_list,gametime_list,weather_list,pitcher_arm_list,player_arm_list=([] for i in range(7))
 	teamid_dict={}
 	playerid_dict={}
@@ -187,11 +190,6 @@ def mlb_starting_lineups(date=time.strftime("%Y-%m-%d")): #take date as string '
 			team_name=''
 		try:
 			pitcher_name=team.find("a",{"class":"player-link"}).get_text()
-			if "'" in pitcher_name:
-				try:
-					pitcher_name=pitcher_name.split("'")[0].split()[0]+' '+pitcher_name.split("'")[0].split()[1]+pitcher_name.split("'")[1] #Ian: this assumes apostrophe in last name
-				except:
-					pitcher_name=pitcher_name.split("'")[0]+pitcher_name.split("'")[1].split()[0]+' '+pitcher_name.split("'")[1].split()[1]
 		except:
 			pitcher_name=''
 		try:
@@ -204,7 +202,7 @@ def mlb_starting_lineups(date=time.strftime("%Y-%m-%d")): #take date as string '
 			team_list.append(team_name)
 		if pitcher_name in player_map:
 			pitcher_name=player_map[pitcher_name]
-		pitcher_list.append(pitcher_name)
+		pitcher_list.append(pitcher_name.replace("'","")+'_'+'pitcher')
 		pitcher_arm_list.append(pitcher_arm)
 	for table in soup.findAll("div",{"class":"cssDialog clearfix"}):
 		table_string=table.get_text()
@@ -213,26 +211,16 @@ def mlb_starting_lineups(date=time.strftime("%Y-%m-%d")): #take date as string '
 			for j in range(1,10):
 				name_list_raw=table_string[table_string.find(str(j)+". ")+3:].split(" (")
 				player=name_list_raw[0]
-				if "'" in player:
-					try:
-						player=player.split("'")[0].split()[0]+' '+player.split("'")[0].split()[1]+player.split("'")[1] #Ian: this assumes apostrophe in last name
-					except:
-						player=player.split("'")[0]+player.split("'")[1].split()[0]+' '+player.split("'")[1].split()[1]
 				home_lineup_arms.append(name_list_raw[1].split(')')[0])
 				if player in player_map:
 					player=player_map[player]
-				home_lineup.append(player)
+				home_lineup.append(player.replace("'","")+'_'+'batter')
 				name_list_raw=table_string[table_string.find((str(j)+". "),table_string.find(str(j)+". ")+3)+3:].split(" (")
 				player=name_list_raw[0]
-				if "'" in player:
-					try:
-						player=player.split("'")[0].split()[0]+' '+player.split("'")[0].split()[1]+player.split("'")[1] #Ian: this assumes apostrophe in last name
-					except:
-						player=player.split("'")[0]+player.split("'")[1].split()[0]+' '+player.split("'")[1].split()[1]
 				away_lineup_arms.append(name_list_raw[1].split(')')[0])
 				if player in player_map:
 					player=player_map[player]
-				away_lineup.append(player)
+				away_lineup.append(player.replace("'","")+'_'+'batter')
 			lineups_list.append(home_lineup)
 			lineups_list.append(away_lineup)
 			player_arm_list.append(home_lineup_arms)
@@ -244,21 +232,29 @@ def mlb_starting_lineups(date=time.strftime("%Y-%m-%d")): #take date as string '
 			player_arm_list.append(['no hitting style listed'])
 	i=j=0
 	while i<len(lineups_list):
-		if pitcher_list[i] not in lineups_list[i]:
-			lineups_list[i].append(pitcher_list[i])
-			player_arm_list[i].append(pitcher_arm_list[i])
+		#if pitcher_list[i] not in lineups_list[i]
+		lineups_list[i].append(pitcher_list[i])
+		player_arm_list[i].append(pitcher_arm_list[i])
 		teamid_dict[team_list[i]]={}
 		teamid_dict[team_list[i]]['start_time']=gametime_list[j]
 		teamid_dict[team_list[i]]['weather_forecast']=weather_list[j]
+		teamid_dict[team_list[i]]['date']=date
+		
 		player_arm_dict={}
+		z=1
 		for player,arm in zip(lineups_list[i],player_arm_list[i]):
-			player_arm_dict[player]=arm
+			player_arm_dict[player]={}
+			player_arm_dict[player]['arm']=arm			
+			player_arm_dict[player]['batting_order']=str(z)
+			z=z+1
 		teamid_dict[team_list[i]]['lineup']=player_arm_dict
 		if i%2 !=0:
 			j=j+1
 			teamid_dict[team_list[i]]['home_teamid']=team_list[i]
+			teamid_dict[team_list[i]]['opponent']=team_list[i-1]
 		else:
 			teamid_dict[team_list[i]]['home_teamid']=team_list[i+1]	
+			teamid_dict[team_list[i]]['opponent']=team_list[i+1]
 		i=i+1
 	i=j=0
 	while i<len(lineups_list):
@@ -270,6 +266,7 @@ def mlb_starting_lineups(date=time.strftime("%Y-%m-%d")): #take date as string '
 			playerid_dict[player]['teamid']=team_list[i]
 			playerid_dict[player]['arm']=arm
 			playerid_dict[player]['home_teamid']=teamid_dict[playerid_dict[player]['teamid']]['home_teamid']
+			playerid_dict[player]['opposing_lineup']=teamid_dict[teamid_dict[playerid_dict[player]['teamid']]['opponent']]['lineup']
 			playerid_dict[player]['batting_order']=str(z)
 			z=z+1
 		if i%2 !=0:
@@ -281,17 +278,17 @@ def get_rw_optimal_lineups(sport): #Ian: Need to remove time.sleep's and change 
 	driver = webdriver.Chrome() #Ian: use this for debugging
 	#driver = webdriver.PhantomJS()
 	driver.get("http://www.rotowire.com/daily/"+sport+"/optimizer.htm")
-	time.sleep(10)
+	time.sleep(5)
 	html=driver.page_source 
 	soup = BeautifulSoup(html)
-	results=soup.find("tbody",{"id":"players"})
 	#Dont need this stuff below anymore since you cant exclude players.
+	#results=soup.find("tbody",{"id":"players"})
 	# for row in results.findAll("tr",{"class":"playerSet"}):
 		# player_name=row.find("td",{"class":"firstleft lineupopt-name"}).get_text()
 		# if len(player_name.split(', ')[1].split())>1:
 		# 	data_value=row.find("td",{"class":"lineupopt-exclude"})['data-value']
 		# 	driver.find_element_by_css_selector(".lineupopt-exclude[data-value="+"'"+str(data_value)+"']").click()
-	button=driver.find_element_by_css_selector('.offset2.btn.btn-primary.btn-large.optimize-'+sport.lower()+'lineup')
+	button=driver.find_element_by_css_selector('.btn.btn-primary.btn-large.optimize-'+sport.lower()+'lineup')
 	button.click()
 	time.sleep(20)
 	html=driver.page_source 
@@ -312,18 +309,19 @@ def get_rw_optimal_lineups(sport): #Ian: Need to remove time.sleep's and change 
 		lineup_string=lineup_string+first_name+' '+last_name+', '
 	return lineup_string.rsplit(', ',1)[0]
 
-def dfn_nba():
+def dfn(sport):
 	driver = webdriver.Chrome() #Ian: use this for debugging
+	login = Ugen.ConfigSectionMap('dailyfantasynerd')
 	#driver = webdriver.PhantomJS()
-	driver.get("https://dailyfantasynerd.com/optimizer/fanduel/nba")
+	driver.get("https://dailyfantasynerd.com/optimizer/fanduel/"+sport.lower())
 	time.sleep(5)
-	driver.find_element_by_id('input-username').send_keys('iwhitest')
-	driver.find_element_by_id('input-password').send_keys('clover2010')
+	driver.find_element_by_id('input-username').send_keys(login['username'])
+	driver.find_element_by_id('input-password').send_keys(login['password'])
 	#driver.find_element_by_css_selector(".text[id='input-username']")
 	driver.find_element_by_css_selector('.btn.btn-success').click()
-	time.sleep(10)
+	time.sleep(15)
 	driver.find_element_by_css_selector('.btn.btn-info.generate').click()
-	time.sleep(5)
+	time.sleep(10)
 	html=driver.page_source 
 	soup = BeautifulSoup(html)
 	lineup=[]
@@ -345,7 +343,6 @@ def roster_nerds(sport):
 	driver.close() 
 	# html= urllib2.urlopen(url).read()
 	soup = BeautifulSoup(html)
-	Cell('Output',1,1).value=soup
 	table=soup.find("table",{"class":"players"})
 	lineup=[]
 	for row in table.findAll("tr",{"class":"odd"}):
@@ -357,3 +354,139 @@ def roster_nerds(sport):
 		lineup_string=lineup_string+e+', '
 	return lineup_string.rsplit(', ',1)[0]
 
+def historical_vegas_odds_oddshark():
+	url='http://www.oddsshark.com/mlb/database'
+	driver = webdriver.Chrome()
+	driver.get(url)
+	time.sleep(5)
+	button=driver.find_element_by_id('ui-id-3')
+	button.click()
+	time.sleep(3)
+	driver.find_element_by_id('team-search-conf').send_keys('Cleve')
+	time.sleep(1)
+	button=driver.find_element_by_id("ui-id-5")
+	button.click()
+	time.sleep(3)
+	button=driver.find_element_by_id('games-30-conf')
+	button.click()
+	select=Select(driver.find_element_by_id('chalk-select-conf-conf'))
+	select.select_by_visible_text('NL East')
+	button=driver.find_element_by_id('location-any-conf')
+	button.click()
+	time.sleep(3)
+	button=driver.find_element_by_id('submit-conf')
+	button.click()
+	time.sleep(3)
+	html=driver.page_source
+	soup = BeautifulSoup(html)
+	overflow=soup.find("div",{"class":"overflow"})
+	table=overflow.findAll("table",{"class":"base-table"})
+	i=0
+	for table in table:
+		if i==1:
+			for row in table.findAll("tr"):
+				for column in row.findAll('td'):
+					print column.get_text()
+		i=i+1
+	driver.close() 
+	return
+
+def historical_vegas_odds_sportsbook(date): #takes in date YYYY_MM_DD or YYYYMMDD
+	print 'getting odds for %s' % date
+	url='http://www.sportsbookreview.com/betting-odds/mlb-baseball/merged/?date='+date.replace("-","")
+	content=urllib2.urlopen(url).read()
+	soup=BeautifulSoup(content)
+	team_map=Ugen.mlb_map(10,4)
+	table=soup.find("div",{"class":"eventGroup class-mlb-baseball"})
+	odds_dict={}
+	for row in soup.findAll("div",{"class":"event-holder holder-complete"}):
+		row_data=row.find("div",{"class":"eventLine odd status-complete "})
+		if not row_data:
+			row_data=row.find("div",{"class":"eventLine  status-complete "})
+		hyperlink=row_data.find("meta",{"itemprop":"url"})
+		matchup_dict=get_gameday_odds(hyperlink.get('content'),team_map)
+		for team,odds in matchup_dict.iteritems(): 
+			if team not in odds_dict.keys(): #Ian: this is here so we don't take the second game of a double header (FD usually does first)
+				odds_dict[team]=odds
+	return odds_dict
+def get_gameday_odds(url,team_map):
+	content=urllib2.urlopen(url).read()
+	soup=BeautifulSoup(content)
+	teams_raw=soup.find("h1",{"class":"teams"}).get_text()
+	dayofweek=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday']
+	day=[day for day in dayofweek if day in teams_raw.split(" vs ")[1]]
+	try:
+		team1_key=teams_raw.split(" vs ")[0]
+		team2_key=teams_raw.split(" vs ")[1].split(day[0])[0].replace(u'\xa0\n',"").rstrip()
+	except:
+		print 'error in team names'
+		return {}
+	team1=team_map[team1_key]
+	team2=team_map[team2_key]
+	table=soup.find("div",{"class":"event-holder holder-complete"})
+	odds_dict={}
+	odds_dict[team1]={}
+	odds_dict[team1]['home_team']=team2
+	odds_dict[team1]['opponent']=team2
+	odds_dict[team1]['point_spread']={}
+	odds_dict[team1]['totals']={}
+	odds_dict[team2]={}
+	odds_dict[team2]['home_team']=team2
+	odds_dict[team2]['opponent']=team1
+	odds_dict[team2]['point_spread']={}
+	odds_dict[team2]['totals']={}
+	i=1
+	for row in table.findAll("div",{"class":"eventLine status-complete"}):
+		spread1=row.find("div",{"class":"el-div eventLine-opener"}).findAll("div",{"class":"eventLine-book-value"})[0].get_text()
+		spread2=row.find("div",{"class":"el-div eventLine-opener"}).findAll("div",{"class":"eventLine-book-value"})[1].get_text()
+		z=0
+		if len(spread1)==0 or len(spread2)==0: #This is in case there aren't any opening odds
+			for row in row.findAll("div",{"class":"el-div eventLine-book"}):
+				spread1=row.findAll("div",{"class":"eventLine-book-value"})[0].get_text()
+				spread2=row.findAll("div",{"class":"eventLine-book-value"})[1].get_text()
+				if len(spread1)!=0 and len(spread2)!=0:
+					break
+		if i==1:
+			try:
+				odds_dict[team1]['point_spread']['runline']=float(spread1.split()[0][0]+'1.5')
+				odds_dict[team2]['point_spread']['runline']=float(spread2.split()[0][0]+'1.5')
+				odds_dict[team1]['point_spread']['moneyline']=Ugen.odds_to_prob(spread1.split()[1],'American Moneyline')
+				odds_dict[team2]['point_spread']['moneyline']=Ugen.odds_to_prob(spread2.split()[1],'American Moneyline')
+			except:
+				print 'no point spreads for given date'
+		elif i==2:
+			try:
+				odds_dict[team1]['moneyline']=Ugen.odds_to_prob(spread1,'American Moneyline')
+				odds_dict[team2]['moneyline']=Ugen.odds_to_prob(spread2,'American Moneyline')
+			except:
+				print 'no moneylines for given date'
+		elif i==3:
+			try:
+				odds_dict[team1]['totals']['total']=Ugen.convert_proj_total(spread1.split()[0])
+				odds_dict[team2]['totals']['total']=Ugen.convert_proj_total(spread2.split()[0])
+				odds_dict[team1]['totals']['moneyline']=Ugen.odds_to_prob(spread1.split()[1],'American Moneyline')
+				odds_dict[team2]['totals']['moneyline']=Ugen.odds_to_prob(spread2.split()[1],'American Moneyline')
+				odds_dict[team1]['proj_run_total']=Ugen.proj_run_total(odds_dict[team1])
+				odds_dict[team2]['proj_run_total']=Ugen.proj_run_total(odds_dict[team2])
+			except:
+				print 'no totals for given date'
+		else:
+		 	break
+		i=i+1
+	return odds_dict
+
+# date='2014-06-18'
+# rw=1
+# while date!='2014-05-01':
+# 	game_dict=historical_vegas_odds_sportsbook(date)
+#  	Cell('Output',rw,1).value=game_dict
+#  	os.system('pause')
+
+
+	#rw=rw+1
+# 	date=Ugen.previous_day(date)
+# os.system('pause')
+
+# a,b=mlb_starting_lineups()
+# print a
+# os.system('pause')

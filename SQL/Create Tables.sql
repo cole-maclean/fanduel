@@ -110,6 +110,12 @@ CREATE TABLE `hist_lineup_optimizers` (
   `RW_MLB` text DEFAULT NULL,
   `RW_NHL` text DEFAULT NULL,
   `MLB_ODDS` text DEFAULT NULL, 
+  `DFN_MLB` text DEFAULT NULL,
+  `NHL_ODDS` text DEFAULT NULL, 
+  `NBA_ODDS` text DEFAULT NULL, 
+  `RN_NBA` text DEFAULT NULL,
+  `RN_NHL` text DEFAULT NULL,
+  `RN_MLB` text DEFAULT NULL,, 
   PRIMARY KEY (`Date`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8$$
 
@@ -130,6 +136,8 @@ CREATE TABLE `event_data` (
   `PPD` varchar(45) DEFAULT NULL,
   `away_starting_lineup` blob,
   `home_starting_lineup` blob,
+  `wunderground_forecast` blob,
+  `vegas_odds` blob,
   PRIMARY KEY (`event_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8$$
 

@@ -28,7 +28,7 @@ def run_program(sport_list,update_model_interval,max_bet):
 			for contest,url in daily_contests.iteritems():
 				print contest
 				for contest_type,confidence in MLB.contest_types.iteritems():
-					model_roster = MLB.optimal_roster(url,confidence)
+					model_roster = MLB.optimal_roster(url,confidence,False,False)
 					print model_roster
 					if model_roster['roster'] != []:
 						contest_rosters['MLB_' + str(contest) + '_' + str(contest_type)] = model_roster
@@ -58,6 +58,30 @@ def run_program(sport_list,update_model_interval,max_bet):
 		time.sleep(120)
 		print 'loop'
 	return contest_rosters
+
+def ian_contest_loop():
+	FD_session,session_id = fdo.get_fanduel_session()
+	FD_contests = fdo.get_FD_contests(FD_session)
+	rw=2
+	for contest in FD_contests:
+		entries=contest['entriesData']
+		if type(entries)==list:
+			continue
+		if int(contest['entryFee'])<=25 and int(contest['entriesData'])>0 and contest['contestType']=='FIFTY_FIFTY':
+			contest_user_wins = ds.get_contest_userwins(contest)
+			Cell("Sheet1",rw,1).value=contest_user_wins
+			Cell("Sheet1",rw,2).value=contest['entriesData']
+			Cell("Sheet1",rw,7).value=contest['size']
+			Cell("Sheet1",rw,6).value=contest['contestType']
+			Cell("Sheet1",rw,9).value=contest['entryURL']
+			# print contest
+			# os.system('pause')
+			if len(contest_user_wins['MLB'])>0:
+					Cell("Sheet1",rw,3).value=numpy.amax(contest_user_wins['MLB'])
+					Cell("Sheet1",rw,4).value=numpy.mean(contest_user_wins['MLB'])
+					Cell("Sheet1",rw,5).value=numpy.median(contest_user_wins['MLB'])
+			rw=rw+1
+	return
 
 def enter_contest_decider(contest):
 	contest_user_wins = ds.get_contest_userwins(contest)
@@ -96,7 +120,8 @@ def build_hist_win_tuples():
 		else:
 			hist_perf_tuples.append((rw[0],0))
 	return hist_perf_tuples
-print run_program(["MLB"],100,50)
+
+#print run_program(["MLB"],100,50)
 # MLB = Sport.MLB()
 # #MLB.get_daily_game_data(['20150420','20150419','20150418','20150417','20150416','20150415'],True)
 # MLB.get_db_gamedata()
@@ -108,3 +133,5 @@ print run_program(["MLB"],100,50)
 # #print Ugen.output_dict(build_pWins_vs_topwins_dict(5))
 # os.system('pause')
 # run_program(["MLB"],10,100)
+
+ian_contest_loop()
