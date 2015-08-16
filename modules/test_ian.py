@@ -16,20 +16,18 @@ import backtest
 #backtest.hist_model_points()
 #backtest.run_hist_lineups()
 
-date_list=['2015-05-14','2015-05-15','2015-05-16','2015-05-17','2015-05-18','2015-05-13','2015-05-12','2015-05-11','2015-05-10','2015-05-09','2015-05-08','2015-05-07','2015-05-06','2015-05-05','2015-05-04','2015-05-03','2015-05-02','2015-05-01', \
-               '2015-04-30','2015-04-29','2015-04-28','2015-04-27','2015-04-26','2015-04-25','2015-04-24','2015-04-23','2015-04-22','2015-04-21','2015-04-20', \
-               '2015-04-19','2015-04-18','2015-04-17']
 
-backtest.hist_model_lineups(date_list)
+backtest_dates = [d.strftime('%Y-%m-%d') for d in pandas.date_range('2015-06-12','2015-06-12')]
+backtest.hist_model_lineups(backtest_dates)
+backtest_dates = [d.strftime('%Y-%m-%d') for d in pandas.date_range('2015-04-17','2015-04-21')]
+backtest.hist_model_lineups(backtest_dates)
+backtest_dates = [d.strftime('%Y-%m-%d') for d in pandas.date_range('2015-05-20','2015-05-24')]
+backtest.hist_model_lineups(backtest_dates)
+backtest_dates = [d.strftime('%Y-%m-%d') for d in pandas.date_range('2015-04-22','2015-05-19')]
+backtest.hist_model_lineups(backtest_dates)
 
-date_list=['2015-05-19','2015-05-20','2015-05-21','2015-05-22','2015-05-23','2015-05-24','2015-05-25','2015-05-26','2015-05-27','2015-05-28','2015-05-29','2015-05-30','2015-05-31', \
-               '2015-06-01','2015-06-02','2015-06-03','2015-06-04','2015-06-05','2015-06-06','2015-06-07','2015-06-08','2015-06-09','2015-06-10', \
-               '2015-06-11','2015-06-12']
 
-
-# date_list=['2015-07-11']
-backtest.hist_model_lineups(date_list)
-
+# backtest.hist_FD_contest_salaries()
 
 # MLB=Sport.MLB()
 # MLB.get_daily_game_data('20150420','20150524',True)
@@ -142,7 +140,9 @@ backtest.hist_model_lineups(date_list)
 # IGNORE 1 ROWS;
 
 
-# Delete FROM autotrader.hist_player_data WHERE Date='2014-04-14';
+# Delete FROM autotrader.hist_player_data WHERE Date='2015-07-11';
+# Delete FROM autotrader.event_data WHERE event_id LIKE '%20150711%';
+
 # Delete FROM autotrader.event_data WHERE event_id='20140414-washington-nationals-at-miami-marlins';
 # Delete FROM autotrader.event_data WHERE event_id='20140414-tampa-bay-rays-at-baltimore-orioles';
 # Delete FROM autotrader.event_data WHERE event_id='20140414-atlanta-braves-at-philadelphia-phillies';

@@ -169,7 +169,7 @@ def hist_lineup_optimizer_points(lineup_optimizer,start_date,end_date):
 
 def hist_model_lineups(date_list):
     MLB=Sport.MLB()
-    rw=2455
+    rw=2587
     while Cell("Backtest_Output",rw,1).value: #Ian: Don't overwrite existing values
         rw=rw+1
     hist_roster_dict={}
