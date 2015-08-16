@@ -13,12 +13,7 @@ import time
 import os
 
 # Replace with your access token
-<<<<<<< HEAD
-access_token = "ed3a8532-963d-4fc8-990d-b1d543d88d24"
-=======
-access_token = "ba8efcf1-9e30-465f-98bd-63387ef51f79"
->>>>>>> d797f466569d29aa3654dcea5b4a56ae8aef792e
-
+access_token = "ac034819-5080-47e7-ad92-7885340c11e8"
 # Replace with your bot name and email/website to contact if there is a problem
 # e.g., "mybot/0.1 (https://erikberg.com/)"
 user_agent = "ianjameswhitestone@gmail.com"

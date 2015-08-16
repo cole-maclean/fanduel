@@ -43,7 +43,8 @@ def odds_to_prob(odd,type): #takes in a "string odd" and returns probability as 
 
 def mlb_map(key_index,map_index):
 	map_dict={}
-	with open('C:\Users\Ian Whitestone\Documents\Python Projects\Fanduel-master/fanduel/mlb_maps.csv', 'rb') as f:
+	config_parameter=ConfigSectionMap('local text')
+	with open(config_parameter['mlbmaps'], 'rb') as f:
 	    reader = csv.reader(f)
 	    for row in reader:
 	        if len(row[key_index])!=0 and len(row[map_index])!=0:

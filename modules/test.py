@@ -16,10 +16,10 @@ def test():
 	regr.fit(feature_matrix,target_matrix)
 	return feature_matrix
 
-# ds.historical_vegas_odds()
+#ds.historical_vegas_odds()
 
-# MLB=Sport.MLB()
-# MLB.get_daily_game_data('20150703','20150710',True) #LAST HISTORIZE
+MLB=Sport.MLB()
+MLB.get_daily_game_data('20150402','20150802',True) #LAST HISTORIZE
 #backtest.hist_model_points()
 
-backtest.run_hist_lineups()
+#backtest.run_hist_lineups()
