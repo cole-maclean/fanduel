@@ -25,7 +25,7 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 		self.sport = sport
 		self.gameid = None
 
-	def FD_points_model(self,player,hist_data,starting_lineups,weather_forecast=False,visualize = False,odds_dict=False,date=False):
+	def FD_points_model(self,player,hist_data,starting_lineups,weather_forecast=False,visualize = True,odds_dict=False,date=False):
 		FD_projection= collections.namedtuple("FD_projection", ["projected_points", "confidence"])
 		self.player_model_data = self.build_model_dataset(hist_data,starting_lineups,player)
 		player_model = Model.Model(self.player_model_data,player)
@@ -400,14 +400,14 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 
 	def build_model_dataset(self,hist_data,starting_lineups,player):#Cole: How do we generalize this method. Some out-of-box method likely exists. Defs need to refactor
 		print 'now building dataset for %s' % player
-		player_arm=starting_lineups[player]['arm']
+		#player_arm=starting_lineups[player]['arm']
 		team_map=Ugen.mlb_map(11,4)
 		player_type = hist_data['Player_Type'][-1]
 		FD_points = self.FD_points(hist_data)
 		feature_dict = {}
 		#if player.split("_")[1]=='batter':
 		feature_dict['FD_points'] = []
-		feature_dict['FD_median'] = []
+		#feature_dict['FD_median'] = []
 		if player.split("_")[1]=='batter':
 			feature_dict['op_pitcher_arm'] = []
 			feature_dict['op_pitcher_strikeouts'] = []
@@ -467,7 +467,7 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 				median_chunk_list = [FD_points[chunk_indx] for chunk_indx in range(reverse_index-self.median_stat_chunk_size[player_type],reverse_index-1)]
 				#if player.split("_")[1]=='batter':
 				feature_dict['FD_points'].append(FD_points[reverse_index]) #Cole:Need to do some testing on most informative hist FD points data feature(ie avg, trend, combination)
-				feature_dict['FD_median'].append(self.median_stat(median_chunk_list,False))
+				#feature_dict['FD_median'].append(self.median_stat(median_chunk_list,False))
 				#feature_dict['rest_time'].append(self.time_between(hist_data['start_date_time'][reverse_index-1],hist_data['start_date_time'][reverse_index])) #this will include rest_days between season, need to remove
 				feature_dict['HR_ballpark_factor'].append(float(self.get_stadium_data()[hist_data['stadium'][reverse_index]]['HR']))
 				if player.split("_")[1]=='batter':
