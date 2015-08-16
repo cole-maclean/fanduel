@@ -121,7 +121,7 @@ def build_hist_win_tuples():
 			hist_perf_tuples.append((rw[0],0))
 	return hist_perf_tuples
 #print run_program(["MLB"],100,50)
-print run_program(["MLB"],100,5)
+print run_program(["MLB"],100,20)
 # MLB = Sport.MLB()
 # #MLB.get_daily_game_data(['20150420','20150419','20150418','20150417','20150416','20150415'],True)
 # MLB.get_db_gamedata()
