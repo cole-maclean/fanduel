@@ -641,7 +641,11 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 				home_team=team_map[hist_data['home_team'][reverse_index]]
 				away_team=team_map[hist_data['away_team'][reverse_index]]	
 				median_chunk_list = [FD_points[chunk_indx] for chunk_indx in range(reverse_index-self.median_stat_chunk_size[player_type],reverse_index-1)]
-				#feature_dict['HR_ballpark_factor'].append(float(self.get_stadium_data()[hist_data['stadium'][reverse_index]]['HR']))
+				#if player.split("_")[1]=='batter':
+				# feature_dict['FD_points'].append(FD_points[reverse_index]) #Cole:Need to do some testing on most informative hist FD points data feature(ie avg, trend, combination)
+				# feature_dict['FD_median'].append(self.median_stat(median_chunk_list,False))
+				#feature_dict['rest_time'].append(self.time_between(hist_data['start_date_time'][reverse_index-1],hist_data['start_date_time'][reverse_index])) #this will include rest_days between season, need to remove
+				# feature_dict['HR_ballpark_factor'].append(float(self.get_stadium_data()[hist_data['stadium'][reverse_index]]['HR']))
 				if player.split("_")[1]=='batter':
 					feature_dict['FD_points'].append(FD_points[reverse_index]) #Cole:Need to do some testing on most informative hist FD points data feature(ie avg, trend, combination)
 					feature_dict['FD_median'].append(self.median_stat(median_chunk_list,False))

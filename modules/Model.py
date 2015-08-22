@@ -17,17 +17,13 @@ import math
 
 class Model():
 	def __init__(self,model_data,player): #Cole: Class accepts model_data in form {'feature1':[data],feature2:[data]}
-		# print model_data
-		# for feature in model_data:
-		# 	print len(model_data[feature])
-		# os.system('pause')
 		self.player = player
 		self.model_data = model_data
 		if player.split("_")[1]=='batter':# or player.split("_")[1]=='pitcher': 
 			self.target = 'FD_points'
 		else: 
-			#self.target='FD_points'
-			self.target='strikeouts'
+			self.target='FD_points'
+			# self.target='strikeouts'
 		self.dataset_length = len(model_data[self.target])
 		self.target_matrix = numpy.array(model_data[self.target]).astype(float)
 		self.feature_matrix = numpy.array([[model_data[key][index] for key in model_data.keys() if key != self.target] for index in range(0,len(model_data[self.target]))]).astype(float)
@@ -42,15 +38,19 @@ class Model():
 			regr = linear_model.LassoCV()
 			pipeline = Pipeline([("features", combined_features), ("regression", regr)])
 
-			param_grid = dict(features__pca__n_components=[1, 2, 3],
-			                  features__univ_select__k=[1, 2])
+			if 'batter' in self.player:
+				param_grid = dict(features__pca__n_components=[1, 2, 3],
+				                  features__univ_select__k=[1, 2])
+			else:
+				param_grid = dict(features__pca__n_components=[1, 2],
+				                  features__univ_select__k=[1])
 
 			grid_search = GridSearchCV(pipeline, param_grid=param_grid, verbose=100)
 			grid_search.fit(X, y)
 			self.modelled = True
 			regr = grid_search
 			return regr
-		except ValueError:
+		except ValueError,e:
 			print e
 			self.modelled = False
 			return None
@@ -108,12 +108,12 @@ class Model():
 						p = numpy.poly1d(z)
 						ax.plot(x, y,'bo',x,p(x),'r--')
 						r2=r2_score(y,p(x))
-						rw=3
-						while Cell("Pred_Strikeouts History",rw,1).value != None:
-							rw=rw+1
-						Cell("Pred_Strikeouts History",rw-1,2).value=z
-						Cell("Pred_Strikeouts History",rw-1,3).value=r2
-						# plt.show()	
+						# rw=3
+						# while Cell("Pred_Strikeouts History",rw,1).value != None:
+						# 	rw=rw+1
+						# Cell("Pred_Strikeouts History",rw-1,2).value=z
+						# Cell("Pred_Strikeouts History",rw-1,3).value=r2
+						plt.show()	
 		else:
 			print self.player + " not modelled"
 		return self
