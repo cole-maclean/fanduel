@@ -172,7 +172,7 @@ def mlb_starting_lineups(date=time.strftime("%Y-%m-%d")): #take date as string '
 	soup=BeautifulSoup(content)
 	team_map=Ugen.mlb_map(6,4)
 	player_map=Ugen.mlb_map(2,0)
-	print 'player/team maps complete'
+	# print 'player/team maps complete'
 	team_list,pitcher_list,lineups_list,gametime_list,weather_list,pitcher_arm_list,player_arm_list=([] for i in range(7))
 	teamid_dict={}
 	playerid_dict={}

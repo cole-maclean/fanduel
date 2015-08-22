@@ -16,15 +16,8 @@ import backtest
 #backtest.hist_model_points()
 #backtest.run_hist_lineups()
 
-
-backtest_dates = [d.strftime('%Y-%m-%d') for d in pandas.date_range('2015-06-12','2015-06-12')]
-backtest.hist_model_lineups(backtest_dates)
-backtest_dates = [d.strftime('%Y-%m-%d') for d in pandas.date_range('2015-04-17','2015-04-21')]
-backtest.hist_model_lineups(backtest_dates)
-backtest_dates = [d.strftime('%Y-%m-%d') for d in pandas.date_range('2015-05-20','2015-05-24')]
-backtest.hist_model_lineups(backtest_dates)
-backtest_dates = [d.strftime('%Y-%m-%d') for d in pandas.date_range('2015-04-22','2015-05-19')]
-backtest.hist_model_lineups(backtest_dates)
+# backtest_dates = [d.strftime('%Y-%m-%d') for d in pandas.date_range('2015-08-06','2015-08-07')]
+# backtest.hist_model_lineups(backtest_dates)
 
 
 # backtest.hist_FD_contest_salaries()
@@ -56,6 +49,11 @@ backtest.hist_model_lineups(backtest_dates)
 
 #PLAYER MAPPING
 
+
+
+# player_map1 = Ugen.excel_mapping("Player Map",6,5) #XML to FD
+# player_map2 = Ugen.excel_mapping("Player Map",7,5) #MLB Lineups to FD
+
 # sql = "SELECT * FROM hist_lineup_optimizers"
 # db_data= dbo.read_from_db(sql,["Date"],True)
 
@@ -66,13 +64,19 @@ backtest.hist_model_lineups(backtest_dates)
 # 		if e not in rw_player_list:
 # 			rw_player_list.append(e)
 
-# sql = "SELECT * FROM hist_player_data WHERE Sport = 'MLB'"
+#XML STATs Player names
+# sql = "SELECT * FROM hist_player_data WHERE Sport = 'MLB' LIMIT 0,18446744073709551615"
 # db_data= dbo.read_from_db(sql,["Player","GameID","Player_Type"],True)
 # xml_team_list=[]
 # for player,stat_dict in db_data.iteritems():
 #     Player=stat_dict['Player']
 #     if Player not in xml_team_list:
 #         xml_team_list.append(Player)
+
+# xml_team_list=[]
+
+# MLB=Sport.MLB()
+# xml_team_list=MLB.get_daily_game_data('20150502','20150820',True) 
 
 # i=2
 # for e in rw_player_list:
@@ -86,7 +90,7 @@ backtest.hist_model_lineups(backtest_dates)
 # 		Cell('Output',i,3).value=e
 # 		i=i+1
 
-# sql = "SELECT * FROM hist_fanduel_data WHERE Sport = 'MLB'"
+# sql = "SELECT * FROM hist_fanduel_data WHERE Sport = 'MLB' LIMIT 0,18446744073709551615"
 # db_data = dbo.read_from_db(sql,["Date","Player","Position","contestID"],True)
 
 # fanduel_team_list=[]
@@ -96,30 +100,49 @@ backtest.hist_model_lineups(backtest_dates)
 #         fanduel_team_list.append(Player)
 
 
-# start_date='2015-04-01'
-# end_date='2015-05-02'
+# start_date='2015-05-02'
+# end_date='2015-08-20'
 # event_dates = [d.strftime('%Y-%m-%d') for d in pandas.date_range(start_date,end_date)]
 # lineups_name_list=[]
 # for event_date in event_dates:
 # 	print 'now loading %s' % event_date
 # 	team_dict,player_dict=ds.mlb_starting_lineups(event_date)
 # 	for player in player_dict:
-# 		if player not in lineups_name_list:
-# 			lineups_name_list.append(player)
+# 		player_name=player.split("_")[0]
+# 		if player_name not in lineups_name_list:
+# 			lineups_name_list.append(player_name)
 
 # # player_map=Ugen.excel_mapping("Player Map",6,5)
 
+# print lineups_name_list
 
 # i=2
 # for e in lineups_name_list:
-# 	if e not in fanduel_team_list:
+# 	if e not in fanduel_team_list and e not in player_map2:
 # 		Cell('Output',i,1).value=e
 # 		i=i+1
-
 # i=2
 # for e in fanduel_team_list:
-# 	if e not in lineups_name_list:
+# 	if e not in lineups_name_list and e not in player_map2.itervalues():
+# 		Cell('Output',i,2).value=e
+# 		i=i+1
+
+
+# i=2
+# for e in xml_team_list:
+# 	if e not in fanduel_team_list and e not in player_map1:
+# 		# if "Colom" in e:
+# 		# 	print e
+# 		# 	print str(e)
+# 		# 	#print e.decode("latin-1")
+# 		# 	os.system('pause')
+# 		# print i
 # 		Cell('Output',i,3).value=e
+# 		i=i+1
+# i=2
+# for e in fanduel_team_list:
+# 	if e not in xml_team_list and e not in player_map1.itervalues():
+# 		Cell('Output',i,4).value=e
 # 		i=i+1
 
 

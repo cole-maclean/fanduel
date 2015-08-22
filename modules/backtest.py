@@ -203,7 +203,7 @@ def hist_model_points(rw):
         points=0
         for player,player_key in zip(roster,player_keys): 
                 
-            player_data=MLB.get_db_gamedata(date,date,player)
+            player_data=MLB.get_db_gamedata(player,date,date)
             for key,data in player_data.iteritems():
                 points+=MLB.FD_points(data)[0]
                 #print key,MLB.FD_points(data)[0]

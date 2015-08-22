@@ -125,7 +125,7 @@ def build_hist_win_tuples():
 
 
 #print run_program(["MLB"],100,50)
-#print run_program(["MLB"],100,100)
+print run_program(["MLB"],100,5)
 # MLB = Sport.MLB()
 # #MLB.get_daily_game_data(['20150420','20150419','20150418','20150417','20150416','20150415'],True)
 # MLB.get_db_gamedata()
@@ -138,4 +138,4 @@ def build_hist_win_tuples():
 # os.system('pause')
 # run_program(["MLB"],10,100)
 
-ian_contest_loop()
+#ian_contest_loop()
