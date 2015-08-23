@@ -55,17 +55,6 @@ class Model():
 			self.modelled = False
 			return None
 		
-	def linear_regression(self,X,y):
-		try:
-			regr = linear_model.Lasso(alpha = 0.1) #Cole: Need to investigate more to find best model to use
-			regr.fit(X,y)
-			self.modelled = True
-			return regr
-		except ValueError,e:
-			print e
-			self.modelled = False
-			return None
-
 	def split_training_test_data(self,percent_training):
 		self.training_feature_matrix,self.test_feature_matrix, self.training_target_matrix,self.test_target_matrix= train_test_split(self.feature_matrix,self.target_matrix,test_size=0.1,random_state=42)
 		return self
@@ -93,18 +82,6 @@ class Model():
 		else:
 			print self.player + " not modelled"
 		return self
-
-	def prune_features(self,spurious_feature):
-		if self.feature_matrix.any():
-			spurious_index = self.feature_labels.index(spurious_feature)
-			k = len(self.feature_labels) - 1
-			self.selector = SelectKBest(f_regression,k=k).fit(self.feature_matrix,self.target_matrix)
-			self.feature_labels = [feature for indx,feature in enumerate(self.feature_labels) if self.selector.pvalues_[indx] > self.selector.pvalues_[spurious_index]]
-			self.feature_matrix =  numpy.array([[self.model_data[key][index] for key in self.feature_labels if key != self.target] for index in range(0,len(self.model_data[self.target]))])
-		else:
-			self.features = []
-		return self
-
 
 
 
