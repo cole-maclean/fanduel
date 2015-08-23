@@ -102,22 +102,36 @@ def get_table_last_row(table_name,table_key):
     cur.close
     return resultset
 
-def delete_from_db(table,date1): #Ian: allows you to delete a specified set of records based on date. Only works for two tables right now 
+def delete_from_db(table,date1): #Ian: allows you to delete a specified set of records based on date. Only works for two tables right now. Date format YYYY-MM-DD 
     if table=='event_data':
+        date1=date1.replace("-","")
         column='event_id'
     elif table=='hist_player_data':
         column='Date'
-    sql="DELETE FROM autotrader." + table + "WHERE "+ column +" LIKE '%" + date1 + "%'"
+    sql="DELETE FROM autotrader." + table + " WHERE "+ column +" LIKE '%" + date1 + "%'"
+    # print sql
+    # os.system('pause')
     cur = get_connection_cursor(False)
     cur.execute(sql)
     cur.close()
-    print 'records from %s were successfully deleted for %s - %s' % (table,date1,date2)
+    print 'records from %s were successfully deleted for %s' % (table,date1)
     return 
 
-def modify_db_table(table_name,column,data,table_key,table_key_val):
-    sql="UPDATE " + table_name + " SET " + column + "=" + data + " WHERE " + table_key + "=" + "'"+table_key_val+"'"
+def modify_db_table(table_name,columns,values,table_key,table_key_val):
+    # print columns,values
     cur = get_connection_cursor(False)
-    cur.execute(sql)
+    for column,value in zip(columns,values):
+        # print column,value
+        if len(table_key)==1:
+            sql="UPDATE " + table_name + " SET " + column + "=" + value + " WHERE " + table_key[0] + "=" + "'"+table_key_val[0]+"'"
+        elif len(table_key)==3:
+            sql="UPDATE " + table_name + " SET " + column + "=" + value + " WHERE " + table_key[0] + "=" + "'"+table_key_val[0]+"'" \
+                +" AND " + table_key[1] + "=" + "'"+table_key_val[1]+"'"+" AND "+ table_key[2] + "=" + "'"+table_key_val[2]+"'"
+        else:
+            print "modify_db_table function not configured for given table keys"
+            break
+        # print sql
+        # os.system('pause')
+        cur.execute(sql)
     cur.close()
-    print 'column %s from table %s was successfully updated' % (column,table_name)
     return

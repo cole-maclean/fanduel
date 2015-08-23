@@ -33,7 +33,7 @@ def run_program(sport_list,update_model_interval,max_bet):
 					if model_roster['roster'] != []:
 						contest_rosters['MLB_' + str(contest) + '_' + str(contest_type)] = model_roster
 	while True:#current_time < last_contest_time
-		FD_contests = fdo.get_FD_contests(FD_session)
+		FD_contests = fdo.get_FD_contests(FD_session) #Ian: when we loop through the contests they get out of date really quick, i suggest we continue to re-pull contest data after each loop
 		for contest in FD_contests:
 			if int(contest['entryFee']) <=25 and (contest['sport'].upper() + '_' + str(contest['gameId']) + '_' + str(contest['flags'])) in contest_rosters.keys():
 				roster_data =contest_rosters[(contest['sport'].upper() + '_' + str(contest['gameId']) + '_' + str(contest['flags']))]
@@ -63,24 +63,26 @@ def ian_contest_loop():
 	FD_session,session_id = fdo.get_fanduel_session()
 	FD_contests = fdo.get_FD_contests(FD_session)
 	rw=2
+	contests=[]
 	for contest in FD_contests:
 		entries=contest['entriesData']
 		if type(entries)==list:
 			continue
-		if int(contest['entryFee'])<=25 and int(contest['entriesData'])>0 and contest['contestType']=='FIFTY_FIFTY':
+		if int(contest['entryFee'])<=3 and int(contest['entriesData'])>0 and contest['contestType']=='FIFTY_FIFTY' and contest['startString']=='4:05&nbsp;pm':
 			contest_user_wins = ds.get_contest_userwins(contest)
 			Cell("Sheet1",rw,1).value=contest_user_wins
 			Cell("Sheet1",rw,2).value=contest['entriesData']
 			Cell("Sheet1",rw,7).value=contest['size']
 			Cell("Sheet1",rw,6).value=contest['contestType']
-			Cell("Sheet1",rw,9).value=contest['entryURL']
-			# print contest
-			# os.system('pause')
+			Cell("Sheet1",rw,9).value="https://www.fanduel.com/games/"+str(contest['gameId'])+"/contests/"+str(contest['gameId'])+"-"+str(contest['uniqueId'])+"/enter"
+			Cell("Sheet1",rw,10).value=contest['title']
+			Cell("Sheet1",rw,11).value=contest['startString']
 			if len(contest_user_wins['MLB'])>0:
 					Cell("Sheet1",rw,3).value=numpy.amax(contest_user_wins['MLB'])
 					Cell("Sheet1",rw,4).value=numpy.mean(contest_user_wins['MLB'])
 					Cell("Sheet1",rw,5).value=numpy.median(contest_user_wins['MLB'])
 			rw=rw+1
+			contests.append(contest['uniqueId'])
 	return
 
 def enter_contest_decider(contest):
@@ -120,6 +122,8 @@ def build_hist_win_tuples():
 		else:
 			hist_perf_tuples.append((rw[0],0))
 	return hist_perf_tuples
+
+
 #print run_program(["MLB"],100,50)
 print run_program(["MLB"],100,20)
 # MLB = Sport.MLB()

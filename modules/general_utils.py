@@ -49,7 +49,6 @@ def mlb_map(key_index,map_index):
 	    for row in reader:
 	        if len(row[key_index])!=0 and len(row[map_index])!=0:
 	        	map_dict[row[key_index]]=row[map_index]
-
 	#0:MLB FD Name	
 	#1:MLB XML Stats Name	
 	#2:MLB Lineups Name	

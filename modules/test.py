@@ -3,6 +3,7 @@ import numpy
 import os
 import Sport
 import data_scrapping as ds
+import database_operations as dbo
 import backtest
 import time
 
@@ -18,8 +19,22 @@ def test():
 
 #ds.historical_vegas_odds()
 
+#dbo.delete_from_db('event_data','2013-04-08')
+#dbo.delete_from_db('hist_player_data','2013-04-08')
 MLB=Sport.MLB()
-MLB.get_daily_game_data('20150402','20150802',True) #LAST HISTORIZE
-#backtest.hist_model_points()
+#MLB.get_daily_game_data('20130408','20131030',True) #2013 Season
+MLB.get_daily_game_data('20140322','20141029',True) #2014 Season
 
-#backtest.run_hist_lineups()
+MLB.get_daily_game_data('20150405','20150821',True) #2015 Season: LAST HISTORIZE
+
+
+# dbo.delete_from_db('event_data','2014-05-07')
+# dbo.delete_from_db('hist_player_data','2014-05-07')
+# MLB.get_daily_game_data('20140507','20140507',True) 
+
+
+# backtest.hist_FD_contest_salaries()
+# MLB.modify_db_data('20131028','20150801',{'hist_player_data':['stuff']})
+
+
+#backtest.hist_model_points()

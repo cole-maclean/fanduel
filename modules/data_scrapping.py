@@ -172,7 +172,7 @@ def mlb_starting_lineups(date=time.strftime("%Y-%m-%d")): #take date as string '
 	soup=BeautifulSoup(content)
 	team_map=Ugen.mlb_map(6,4)
 	player_map=Ugen.mlb_map(2,0)
-	print 'player/team maps complete'
+	# print 'player/team maps complete'
 	team_list,pitcher_list,lineups_list,gametime_list,weather_list,pitcher_arm_list,player_arm_list=([] for i in range(7))
 	teamid_dict={}
 	playerid_dict={}
@@ -288,7 +288,7 @@ def get_rw_optimal_lineups(sport): #Ian: Need to remove time.sleep's and change 
 		# if len(player_name.split(', ')[1].split())>1:
 		# 	data_value=row.find("td",{"class":"lineupopt-exclude"})['data-value']
 		# 	driver.find_element_by_css_selector(".lineupopt-exclude[data-value="+"'"+str(data_value)+"']").click()
-	button=driver.find_element_by_css_selector('.btn.btn-primary.btn-large.optimize-'+sport.lower()+'lineup')
+	button=driver.find_element_by_css_selector('.btn.btn-primaryflat.btn-large.optimize-'+sport.lower()+'lineup')
 	button.click()
 	time.sleep(20)
 	html=driver.page_source 
@@ -409,6 +409,7 @@ def historical_vegas_odds_sportsbook(date): #takes in date YYYY_MM_DD or YYYYMMD
 			if team not in odds_dict.keys(): #Ian: this is here so we don't take the second game of a double header (FD usually does first)
 				odds_dict[team]=odds
 	return odds_dict
+
 def get_gameday_odds(url,team_map):
 	content=urllib2.urlopen(url).read()
 	soup=BeautifulSoup(content)

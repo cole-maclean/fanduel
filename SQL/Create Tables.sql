@@ -84,6 +84,11 @@ CREATE TABLE `hist_player_data` (
   `Stat11` varchar(45) DEFAULT NULL,
   `Stat12` varchar(45) DEFAULT NULL,
   `Stat13` varchar(45) DEFAULT NULL,
+  `Stat14` varchar(45) DEFAULT NULL,
+  `Stat15` varchar(45) DEFAULT NULL,
+  `Stat16` varchar(45) DEFAULT NULL,
+  `Stat17` varchar(45) DEFAULT NULL,
+  `Stat18` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`Player`,`GameID`,`Player_Type`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8$$
 
