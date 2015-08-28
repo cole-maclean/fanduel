@@ -19,6 +19,8 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.feature_extraction import DictVectorizer
 import time
 import weather
+import datetime as dt
+import TeamOdds
 
 class Sport(): #Cole: Class has functions that should be stripped out and place into more appropriate module/class
 	def __init__(self,sport):
@@ -88,7 +90,7 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 		#player_map = Ugen.mlb_map(1,0) #Ian: this player map isnt working for some names...
 		player_map = Ugen.excel_mapping("Player Map",6,5) 
 		for event_date in event_dates:
-			# odds_dict=ds.historical_vegas_odds_sportsbook(event_date)
+			# odds_dict=TeamOdds.vegas_odds_sportsbook(event_date)
 			team_dict,player_dict = ds.mlb_starting_lineups(event_date)
 			day_events = self.events(event_date)
 			event_list = ([game['event_id'] for game in day_events if game['event_status'] == 'completed'
@@ -108,7 +110,7 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 					print "event %s not in database. event not modified" % (game_id)
 		return 
 
-	def modify_event_data(self,day_events,indx,event_date,team_dict,modify_cols,team_map):
+	def modify_event_data(self,day_events,indx,event_date,team_dict,modify_cols,team_map): #Ian: pass in odds dict?
 		event_data_dict={}
 		away_team=team_map[day_events[indx]['away_team']['team_id']]
 		home_team=team_map[day_events[indx]['home_team']['team_id']]
@@ -548,8 +550,6 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 								  hist_data['innings_pitched'],hist_data['Date']) if str(date).split("-")[0]=='2013' and IP>3 and team==team_map[home_team]])
 			s2013_pitcher_IP_away=numpy.mean([IP for team,home_team,away_team,IP,date in zip(hist_data['Team'],hist_data['home_team'],hist_data['away_team'],\
 								  hist_data['innings_pitched'],hist_data['Date']) if str(date).split("-")[0]=='2013' and IP>3 and team==team_map[away_team]])
-
-		#Ian: innings pitched are not split for home vs. away....may need to change??
 		season_averages={
 			"league_K%_avg": {
 						'2015':0.234,
@@ -791,6 +791,8 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 		player_type = player_id[1]
 		player_gtd = starting_lineups[player]
 		player_arm=player_gtd['arm']
+		player_team=player_gtd['teamid']
+		home_team = player_gtd['home_teamid'] #Ian: updated this as function now returns a nested dict
 		if odds_dict:
 			try:
 				odds_dict=odds_dict[starting_lineups[player]['teamid']]
@@ -801,12 +803,11 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 		if weather_forecast:
 			weather_data=weather_forecast[starting_lineups[player]['home_teamid']]
 		stadium_data = self.get_stadium_data('home_team')
-		team_abr = player_gtd['home_teamid'] #Ian: updated this as function now returns a nested dict
-		HR_factor = stadium_data[team_abr]['HR']
+		HR_factor = stadium_data[home_team]['HR']
 		if player_arm=='L':
-			BH_factor= stadium_data[team_abr]['LHB']
+			BH_factor= stadium_data[home_team]['LHB']
 		else:
-			BH_factor= stadium_data[team_abr]['RHB']
+			BH_factor= stadium_data[home_team]['RHB']
 		parameters = []
 		print features
 		for feature in features: 
@@ -844,28 +845,20 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 				parameters.append(weather_data['wind']['wind_speed'])
 			elif feature=='pred_strikeouts':
 				if len(starting_lineups[player]['opposing_lineup'])!=0:
-					matchup='home' #Ian: will need to set this up for batter lineup H/A splits
+					year=str(hist_data['Date'][-1]).split("-")[0]
+					if player_team==home_team:
+						year_team=year+"_home"
+					else:
+						year_team=year+"_away"
 					opposing_lineup_stats=self.batter_lineup_stats(date,[starting_lineups[player]['opposing_lineup'],matchup],player_arm)
-					try:
-						s2015_pitcher_IP=numpy.mean([IP for AT,HT,IP,date in zip(hist_data['away_starting_lineup'],hist_data['home_starting_lineup'],hist_data['innings_pitched'],hist_data['Date']) if str(date).split("-")[0]=='2015'and (player in AT or player in HT)])
-					except:
-						s2015_pitcher_IP=numpy.mean([IP for IP,date in zip(hist_data['innings_pitched'],hist_data['Date']) if str(date).split("-")[0]=='2015'and IP>3])
-					season_averages={
-						"league_K%_avg": 0.234,
-						'pitcher_K9_avg': numpy.mean([float(SO/IP*9) for SO,date,IP in zip(hist_data['strike_outs'],hist_data['Date'],hist_data['innings_pitched']) if str(date).split("-")[0]=='2015' and IP>3]),
-						'pitcher_IP_avg': s2015_pitcher_IP,
-					}
+					season_averages=self.season_averages(hist_data,player)
 					if numpy.isnan(opposing_lineup_stats['strikeout_rate']):
-						opposing_lineup_stats['strikeout_rate']=season_averages['league_K%_avg']
-					off_k_avg=float((opposing_lineup_stats['strikeout_rate']-season_averages['league_K%_avg'])/season_averages['league_K%_avg'])
-					pred_strikeouts=float((season_averages['pitcher_K9_avg']*off_k_avg+season_averages['pitcher_K9_avg'])/9*season_averages['pitcher_IP_avg'])
+						opposing_lineup_stats['strikeout_rate']=season_averages['league_K%_avg'][year]
+					off_k_avg=float((opposing_lineup_stats['strikeout_rate']-season_averages['league_K%_avg'][year])/season_averages['league_K%_avg'][year])
+					pred_strikeouts=float((season_averages['pitcher_K9_avg_ha'][year_team]*off_k_avg+season_averages['pitcher_K9_avg_ha'][year_team])/9*season_averages['pitcher_IP_avg_ha'][year_team])
 				else:
-					pred_strikeouts=float(season_averages['pitcher_K9_avg']/9*season_averages['pitcher_IP_avg'])
-				# print opposing_lineup_stats['strikeout_rate']
-				# print pred_strikeouts
-				# print season_averages
-				# print off_k_avg
-				# os.system('pause')
+					pred_strikeouts=float(season_averages['pitcher_K9_avg_ha'][year_team]/9*season_averages['pitcher_IP_avg_ha'][year_team])
+
 				if pred_strikeouts<0 or numpy.isnan(pred_strikeouts):
 					parameters.append(3)
 				else:
@@ -945,6 +938,7 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 		starting_players = [player.split("_")[0] for player in starting_lineups.keys() if starting_lineups[player]['teamid'] not in omitted_teams and 'PPD' not in starting_lineups[player]['start_time']] #Cole: is the PPD working?
 		FD_starting_player_data = {FD_playerid:data for FD_playerid,data in FD_player_data.iteritems() if data[1] in starting_players} #data[1] is FD_player_name
 		player_universe = {}
+		odds_dict=TeamOdds.vegas_odds_sportsbook(dt.datetime.today().strftime("%Y%m%d"))
 		for FD_playerid,data in FD_starting_player_data.iteritems():
 			db_data = self.get_db_gamedata(data[1],"20140301","20141212")
 			if data[0] == 'P': #Cole: If this can be generalized (ie sport player type map, the entire function can be generalized as a Sport method)
@@ -978,7 +972,7 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 			teams,starting_lineups = ds.mlb_starting_lineups(date)
 			weather_forecast={}
 			team_dict={team:data['start_time'] for team,data in teams.iteritems() if team==data['home_teamid']}
-			#odds_dict=ds.historical_vegas_odds_sportsbook(date)
+			#odds_dict=TeamOdds.vegas_odds_sportsbook(date)
 			odds_dict={}
 
 			#Ian: if you add this back in add weather var back into FD_points_model function call
