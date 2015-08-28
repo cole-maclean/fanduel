@@ -32,16 +32,6 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 		self.player_model_data = self.build_model_dataset(hist_data,starting_lineups,player)
 		player_model = Model.Model(self.player_model_data,player)
 		print '%s modelled' % player
-
-		rw=3
-		if player.split("_")[1]=='pitcher':
-			visualize=True
-			while Cell("Pred_Strikeouts History",rw,1).value != None:
-				rw=rw+1
-			Cell("Pred_Strikeouts History",rw,1).value=player
-		else:
-			visualize=False
-
 		player_model.FD_points_model(visualize)
 		if player_model.modelled:	#Cole: need to develop parameters for each player
 			parameters = self.get_parameters(player_model.feature_labels,player,starting_lineups,hist_data,weather_forecast,odds_dict,date)
@@ -505,7 +495,7 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 		return lineup_stats_dict
 
 	def season_averages(self,hist_data,player): #put this in mlb class? Specific to pitcher strikeouts right now, can change to generalize based on demand.
-		team_map=Ugen.mlb_map(11,4)
+		team_map=Ugen.mlb_map(11,4) #Ian: make a function that does some of these things below
 		try:
 			s2015_pitcher_IP=numpy.mean([IP for AT,HT,IP,date in zip(hist_data['away_starting_lineup'],hist_data['home_starting_lineup'], \
 							 hist_data['innings_pitched'],hist_data['Date']) if str(date).split("-")[0]=='2015'and (player in AT or player in HT)])
@@ -613,10 +603,10 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 			# feature_dict['op_pitcher_era'] = []
 		if player.split("_")[1]=='pitcher':
 			#feature_dict['moneyline'] = []
-			#feature_dict['FD_points'] = []
-			#feature_dict['FD_median'] = []
+			feature_dict['FD_points'] = []
+			feature_dict['FD_median'] = []
 			#feature_dict['proj_run_total']=[]
-			feature_dict['strikeouts']=[]
+			# feature_dict['strikeouts']=[]
 			feature_dict['pred_strikeouts']=[]
 			season_averages=self.season_averages(hist_data,player)
 			print season_averages['pitcher_IP_avg_ha']
@@ -626,7 +616,7 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 		#feature_dict['humidity']=[]
 		#feature_dict['rest_time'] = []
 		#feature_dict['BH_ballpark_factor']=[]
-		#feature_dict['HR_ballpark_factor'] = [] #Cole:tempory parameter until batter handedness is figured out
+		feature_dict['HR_ballpark_factor'] = [] #Cole:tempory parameter until batter handedness is figured out
 		#feature_dict['day_of_month'] = []
 		for indx,FD_point in enumerate(FD_points):
 			reverse_index = len(FD_points)-indx -1
@@ -646,7 +636,7 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 				# feature_dict['FD_points'].append(FD_points[reverse_index]) #Cole:Need to do some testing on most informative hist FD points data feature(ie avg, trend, combination)
 				# feature_dict['FD_median'].append(self.median_stat(median_chunk_list,False))
 				#feature_dict['rest_time'].append(self.time_between(hist_data['start_date_time'][reverse_index-1],hist_data['start_date_time'][reverse_index])) #this will include rest_days between season, need to remove
-				# feature_dict['HR_ballpark_factor'].append(float(self.get_stadium_data()[hist_data['stadium'][reverse_index]]['HR']))
+				feature_dict['HR_ballpark_factor'].append(float(self.get_stadium_data()[hist_data['stadium'][reverse_index]]['HR']))
 				if player.split("_")[1]=='batter':
 					feature_dict['FD_points'].append(FD_points[reverse_index]) #Cole:Need to do some testing on most informative hist FD points data feature(ie avg, trend, combination)
 					feature_dict['FD_median'].append(self.median_stat(median_chunk_list,False))
@@ -719,7 +709,7 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 					# 	feature_dict['proj_run_total'].append(3)
 					
 														#PITCHER STRIKEOUT PREDICTOR FEATURE
-					feature_dict['strikeouts'].append(hist_data['strike_outs'][reverse_index])
+					# feature_dict['strikeouts'].append(hist_data['strike_outs'][reverse_index])
 					try:
 						year=str(hist_data['Date'][reverse_index]).split("-")[0]
 						if team==home_team:

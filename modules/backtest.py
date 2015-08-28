@@ -167,7 +167,7 @@ def hist_lineup_optimizer_points(lineup_optimizer,start_date,end_date):
             hist_points[date]['missing_players']=missing_players_list
     return hist_points
 
-def hist_model_lineups(start_data,end_date): #date format in 'YYYY-MM-DD'
+def hist_model_lineups(start_date,end_date): #date format in 'YYYY-MM-DD'
     date_list = [d.strftime('%Y-%m-%d') for d in pandas.date_range(start_date,end_date)]
     MLB=Sport.MLB()
     rw=2587
@@ -176,6 +176,7 @@ def hist_model_lineups(start_data,end_date): #date format in 'YYYY-MM-DD'
     hist_roster_dict={}
     for date in date_list:
         contest_list=hist_get_contest_ids(date)
+        print contest_list
         hist_roster_dict={}
         for contestID in contest_list:
             print 'now modelling contestID: %s on %s' % (contestID,date)
