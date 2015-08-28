@@ -182,7 +182,7 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 		#db_eventids = self.get_db_event_data()
 		# xml_name_list=[] #Ian: part of player mapping
 		for event_date in event_dates:
-			odds_dict=ds.historical_vegas_odds_sportsbook(event_date) #Ian: only call it once for speed purposes
+			odds_dict= {}#ds.historical_vegas_odds_sportsbook(event_date) #Ian: only call it once for speed purposes
 			day_events = self.events(event_date)
 			event_list = ([game['event_id'] for game in day_events if game['event_status'] == 'completed'
 							 and game['season_type'] == 'regular' or 'post'])

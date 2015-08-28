@@ -23,9 +23,9 @@ def test():
 #dbo.delete_from_db('hist_player_data','2013-04-08')
 MLB=Sport.MLB()
 #MLB.get_daily_game_data('20130408','20131030',True) #2013 Season
-MLB.get_daily_game_data('20140322','20141029',True) #2014 Season
+#MLB.get_daily_game_data('20140906','20141029',True) #2014 Season
 
-MLB.get_daily_game_data('20150405','20150821',True) #2015 Season: LAST HISTORIZE
+MLB.get_daily_game_data('20150705','20150823',True) #2015 Season: LAST HISTORIZE
 
 
 # dbo.delete_from_db('event_data','2014-05-07')

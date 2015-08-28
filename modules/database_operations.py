@@ -88,7 +88,7 @@ def insert_mysql(table, columns, data,placeholders=False):
     time.sleep(.1)
 
 def load_csv_into_db(csv_file,table):
-    sql = "LOAD DATA INFILE '" + csv_file + "' IGNORE INTO TABLE " + table + " FIELDS TERMINATED BY ',' IGNORE 1 LINES"
+    sql = "LOAD DATA INFILE '" + csv_file + "' IGNORE INTO TABLE " + table + " FIELDS TERMINATED BY ';' IGNORE 1 LINES"
     cur = get_connection_cursor()
     cur.execute(sql)
     cur.execute('COMMIT')
