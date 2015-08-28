@@ -97,11 +97,11 @@ delimiter $$
 CREATE TABLE `hist_fanduel_data` (
   `Sport` varchar(45) DEFAULT NULL,
   `Date` date DEFAULT NULL,
-  `Player` varchar(45) DEFAULT NULL,
-  `Position` varchar(45) DEFAULT NULL, 
   `FD_Salary` varchar(45) DEFAULT NULL, 
   `FD_FPPG` varchar(45) DEFAULT NULL, 
   `FD_GP` varchar(45) DEFAULT NULL,
+  `Position` varchar(45) DEFAULT NULL, 
+  `Player` varchar(45) DEFAULT NULL,
   `contestID` varchar(45) DEFAULT NULL,   
   PRIMARY KEY (`Date`, `Player`,`Position`,`contestID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8$$
