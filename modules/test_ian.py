@@ -19,8 +19,8 @@ import datetime as dt
 #backtest.run_hist_lineups()
 
 
-backtest_dates = [d.strftime('%Y-%m-%d') for d in pandas.date_range('2015-05-06','2015-06-07')]
-backtest.hist_model_lineups(backtest_dates)
+# backtest_dates = [d.strftime('%Y-%m-%d') for d in pandas.date_range('2015-05-06','2015-06-07')]
+backtest.hist_model_lineups('2015-05-06','2015-06-07')
 
 # backtest.hist_FD_contest_salaries()
 
