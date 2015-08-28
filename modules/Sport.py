@@ -597,9 +597,9 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 		if player.split("_")[1]=='batter':
 			feature_dict['FD_points'] = []
 			feature_dict['FD_median'] = []
-			# feature_dict['op_pitcher_arm'] = []
-			# feature_dict['op_pitcher_strikeouts'] = []
-			# feature_dict['op_pitcher_era'] = []
+			feature_dict['op_pitcher_arm'] = []
+			feature_dict['op_pitcher_strikeouts'] = []
+			feature_dict['op_pitcher_era'] = []
 		if player.split("_")[1]=='pitcher':
 			#feature_dict['moneyline'] = []
 			feature_dict['FD_points'] = []
@@ -636,31 +636,31 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 				# feature_dict['FD_median'].append(self.median_stat(median_chunk_list,False))
 				#feature_dict['rest_time'].append(self.time_between(hist_data['start_date_time'][reverse_index-1],hist_data['start_date_time'][reverse_index])) #this will include rest_days between season, need to remove
 				feature_dict['HR_ballpark_factor'].append(float(self.get_stadium_data()[hist_data['stadium'][reverse_index]]['HR']))
+				feature_dict['FD_points'].append(FD_points[reverse_index]) #Cole:Need to do some testing on most informative hist FD points data feature(ie avg, trend, combination)
+				feature_dict['FD_median'].append(self.median_stat(median_chunk_list,False))
 				if player.split("_")[1]=='batter':
-					feature_dict['FD_points'].append(FD_points[reverse_index]) #Cole:Need to do some testing on most informative hist FD points data feature(ie avg, trend, combination)
-					feature_dict['FD_median'].append(self.median_stat(median_chunk_list,False))
-					# try:
-					# 	if player in ast.literal_eval(hist_data['away_starting_lineup'][reverse_index]).keys():
-					# 		op_pitcher_data = {player:data for player,data in ast.literal_eval(hist_data['home_starting_lineup'][reverse_index]).iteritems() if 'pitcher' in player}
-					# 	else:
-					# 		op_pitcher_data = {player:data for player,data in ast.literal_eval(hist_data['away_starting_lineup'][reverse_index]).iteritems() if 'pitcher' in player}
-					# 	op_pitcher = op_pitcher_data.keys()[0].split("_")[0]
-					# 	if op_pitcher_data[op_pitcher + '_pitcher']['arm'] == 'R':
-					# 		feature_dict['op_pitcher_arm'].append(1)
-					# 	else:
-					# 		feature_dict['op_pitcher_arm'].append(0)
-					# 	pitcher_data = self.get_db_gamedata(op_pitcher,GameID=hist_data['GameID'][reverse_index])
-					# 	if op_pitcher + '_pitcher' in pitcher_data.keys():
-					# 		feature_dict['op_pitcher_era'].append(pitcher_data[op_pitcher + '_pitcher']['era'][0])
-					# 		feature_dict['op_pitcher_strikeouts'].append(pitcher_data[op_pitcher + '_pitcher']['strike_outs'][0])
-					# 	else:
-					# 		print op_pitcher +  " not in db"
-					# 		feature_dict['op_pitcher_era'].append(3) #What #'s to use if pitcher doesnt exist?'
-					# 		feature_dict['op_pitcher_strikeouts'].append(3)
-					# except:
-					# 	feature_dict['op_pitcher_arm'].append(1)
-					# 	feature_dict['op_pitcher_era'].append(3) #What #'s to use if pitcher doesnt exist?'
-					# 	feature_dict['op_pitcher_strikeouts'].append(3)
+					try:
+						if player in ast.literal_eval(hist_data['away_starting_lineup'][reverse_index]).keys():
+							op_pitcher_data = {player:data for player,data in ast.literal_eval(hist_data['home_starting_lineup'][reverse_index]).iteritems() if 'pitcher' in player}
+						else:
+							op_pitcher_data = {player:data for player,data in ast.literal_eval(hist_data['away_starting_lineup'][reverse_index]).iteritems() if 'pitcher' in player}
+						op_pitcher = op_pitcher_data.keys()[0].split("_")[0]
+						if op_pitcher_data[op_pitcher + '_pitcher']['arm'] == 'R':
+							feature_dict['op_pitcher_arm'].append(1)
+						else:
+							feature_dict['op_pitcher_arm'].append(0)
+						pitcher_data = self.get_db_gamedata(op_pitcher,GameID=hist_data['GameID'][reverse_index])
+						if op_pitcher + '_pitcher' in pitcher_data.keys():
+							feature_dict['op_pitcher_era'].append(pitcher_data[op_pitcher + '_pitcher']['era'][0])
+							feature_dict['op_pitcher_strikeouts'].append(pitcher_data[op_pitcher + '_pitcher']['strike_outs'][0])
+						else:
+							print op_pitcher +  " not in db"
+							feature_dict['op_pitcher_era'].append(3) #What #'s to use if pitcher doesnt exist?'
+							feature_dict['op_pitcher_strikeouts'].append(3)
+					except:
+						feature_dict['op_pitcher_arm'].append(1)
+						feature_dict['op_pitcher_era'].append(3) #What #'s to use if pitcher doesnt exist?'
+						feature_dict['op_pitcher_strikeouts'].append(3)
 
 				# if player.split("_")[1]=='batter':
 				#  	if player_arm=='L':
@@ -840,7 +840,7 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 						year_team=year+"_home"
 					else:
 						year_team=year+"_away"
-					opposing_lineup_stats=self.batter_lineup_stats(date,[starting_lineups[player]['opposing_lineup'],matchup],player_arm)
+					opposing_lineup_stats=self.batter_lineup_stats(date,[starting_lineups[player]['opposing_lineup'],year_team],player_arm)
 					season_averages=self.season_averages(hist_data,player)
 					if numpy.isnan(opposing_lineup_stats['strikeout_rate']):
 						opposing_lineup_stats['strikeout_rate']=season_averages['league_K%_avg'][year]
@@ -867,7 +867,6 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 					op_pitcher = op_pitcher_data.keys()[0].split("_")[0]
 					pitcher_data = self.get_db_gamedata(op_pitcher,"20130101","20170101")
 					if op_pitcher + '_pitcher' in pitcher_data.keys():
-						print "works for " + op_pitcher
 						parameters.append(self.median_stat(pitcher_data[op_pitcher + '_pitcher']['era'][-13:]))
 					else:
 						print op_pitcher + " not in db"
