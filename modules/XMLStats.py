@@ -11,13 +11,15 @@ import socket
 import ssl
 import time
 import os
+import general_utils as Ugen
 
 # Replace with your access token
-access_token = "ac034819-5080-47e7-ad92-7885340c11e8"
+XMLLogin = Ugen.ConfigSectionMap('XMLStats')
+access_token = XMLLogin['token']
 
 # Replace with your bot name and email/website to contact if there is a problem
 # e.g., "mybot/0.1 (https://erikberg.com/)"
-user_agent = "ianjameswhitestone@gmail.com"
+user_agent = XMLLogin['email']
 
 # Some problems have been reported that Python 2.x fails to negotiate the
 # correct SSL protocol when connecting over HTTPS. This code forces
