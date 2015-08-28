@@ -22,6 +22,8 @@ def test():
 
 MLB=Sport.MLB()
 #MLB.get_daily_game_data('20130408','20131030',True) #2013 Season
+#MLB.get_daily_game_data('20140906','20141029',True) #2014 Season
+
 # MLB.get_daily_game_data('20140322','20141029',True) #2014 Season
 
 MLB.get_daily_game_data('20150822','20150825',True) #2015 Season: LAST HISTORIZE
