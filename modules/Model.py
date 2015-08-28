@@ -91,8 +91,7 @@ class Model():
 
 	def FD_points_model(self,visualize = False): #Cole: need to indentify minimum dataset required to model, flag if player unmodelled
 		self.split_training_test_data(0.9)
-		#self.model = self.best_estimator(self.training_feature_matrix,self.training_target_matrix)
-		self.model=self.linear_regression(self.training_feature_matrix,self.training_target_matrix)
+		self.model = self.best_estimator(self.training_feature_matrix,self.training_target_matrix)
 		if self.modelled:
 			if visualize:
 					for indx,feature in enumerate(self.feature_labels):

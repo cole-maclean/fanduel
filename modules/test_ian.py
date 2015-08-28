@@ -12,13 +12,13 @@ import pandas
 import Sport
 import numpy as np
 import backtest
+import TeamOdds
+import datetime as dt
 
 #backtest.hist_model_points()
 #backtest.run_hist_lineups()
 
-# backtest_dates = [d.strftime('%Y-%m-%d') for d in pandas.date_range('2015-08-06','2015-08-07')]
-# backtest.hist_model_lineups(backtest_dates)
-
+backtest.hist_model_lineups(backtest_dates)
 
 # backtest.hist_FD_contest_salaries()
 
