@@ -22,16 +22,13 @@ def run_program(sport_list,update_model_interval,max_bet):
 	if run_time > update_model_interval:
 		contest_rosters = {}
 		if 'MLB' in sport_list:
-			daily_contests = fdo.get_daily_contests('mlb')
-			print daily_contests
+			daily_contests = fdo.get_daily_contests(FD_session,'MLB')
 			MLB= Sport.MLB()
 			for contest,url in daily_contests.iteritems():
-				print contest
-				for contest_type,confidence in MLB.contest_types.iteritems():
-					model_roster = MLB.optimal_roster(url,confidence,False,False)
-					print model_roster
-					if model_roster['roster'] != []:
-						contest_rosters['MLB_' + str(contest) + '_' + str(contest_type)] = model_roster
+				model_roster = MLB.optimal_roster(FD_session,url,0,False,False)
+				print model_roster
+				if model_roster['roster'] != []:
+					contest_rosters['MLB_' + str(contest) + '_' + str(contest_type)] = model_roster
 	while True:#current_time < last_contest_time
 		FD_contests = fdo.get_FD_contests(FD_session) #Ian: when we loop through the contests they get out of date really quick, i suggest we continue to re-pull contest data after each loop
 		for contest in FD_contests:
@@ -125,7 +122,9 @@ def build_hist_win_tuples():
 
 
 #print run_program(["MLB"],100,50)
-print run_program(["MLB"],100,20)
+print run_program(["MLB"],100,50)
+#MLB= Sport.MLB()
+#print MLB.optimal_roster("https://www.fanduel.com/games/12872/contests/12872-14373582/enter",0,False,False)
 # MLB = Sport.MLB()
 # #MLB.get_daily_game_data(['20150420','20150419','20150418','20150417','20150416','20150415'],True)
 # MLB.get_db_gamedata()

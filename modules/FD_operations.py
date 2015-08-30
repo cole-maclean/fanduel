@@ -25,26 +25,9 @@ def end_fanduel_session(s):
 	r = s.get('https://www.fanduel.com/c/CCAuth?cc_action=cca_logout&cc_success_url=https//www.fanduel.com/&cc_failure_url=https//www.fanduel.com/')
 	return r.headers
 
-def get_FD_contests(s):
-	data = s.get('https://www.fanduel.com/p/Home').text
-	data= data.replace('false',"False")
-	data= data.replace('true',"True")
-	data= data.replace('null',"")
-	intStart = data.find('LobbyConnection.initialData = ')
-	intEnd = data.find('};',intStart)
-	parsed_html = data[intStart:intEnd + 1].replace('LobbyConnection.initialData = ',"")
-	parsed_html = parsed_html.replace(':,',':0,')
-	contest_dict = ast.literal_eval(parsed_html)
-	return contest_dict['additions']
-
-def get_daily_contests(sport):
-	daily_contests = {}
-	FD_ses,ses_id = get_fanduel_session()
-	FD_contests = get_FD_contests(FD_ses)
-	for contest in FD_contests:
-		if datetime.date.fromtimestamp(contest['startTime']).day == datetime.date.today().day and contest['gameId'] not in daily_contests and contest['sport']==sport.lower():
-			daily_contests[contest['gameId']] = 'https://www.fanduel.com/e/Game/' + str(contest['gameId']) + '?tableId=' + str(contest['uniqueId']) + '&fromLobby=true'
-	return daily_contests
+def get_daily_contests(s,sport):
+	contests = {contest['id']:contest['players']['_url'] for contest in fanduel_data(s,'https://api.fanduel.com/fixture-lists')['fixture_lists'] if contest['sport'] == sport}
+	return contests
 
 def enter_contest(s,session_id,contest_url,player_data):
 	player_data = player_data.replace(' ','')
@@ -73,8 +56,8 @@ def enter_contest(s,session_id,contest_url,player_data):
 		entry_status = 'failed'
 	return entry_id, entry_status
 
-def get_FD_player_dict(contest_url):
-	return ast.literal_eval(Uds.parse_html(contest_url,"FD.playerpicker.allPlayersFullData = ",";"))
+def get_FD_player_dict(s,contest_url):
+	return fanduel_data(s, contest_url)['players']
 
 def get_contest_teams(contest_url):
 	FD_team_dict= ast.literal_eval(Uds.parse_html(contest_url,"FD.playerpicker.teamIdToFixtureCompactString = ",";"))
@@ -87,3 +70,13 @@ def get_contest_teams(contest_url):
 	team_dict.update(inv_map)
 	return team_dict
 
+def fanduel_data(s,sURL):
+	r = s.get('https://www.fanduel.com/games')
+	XAuth = r.cookies['X-Auth-Token']
+	r_text = r.text
+	intStart = r_text.find("apiClientId: '")
+	intEnd = r_text.find("',",intStart)
+	APIclientID = 'Basic ' + r_text[intStart:intEnd].replace("apiClientId: '","")
+	headers = {'Authorization':APIclientID,'X-Auth-Token':XAuth,'Accept':'*/*','Access-Control-Request-Headers':'accept, authorization, x-auth-token','Access-Control-Request-Method':'GET','Host':'api.fanduel.com','referer':'https://www.fanduel.com/games','Origin':'https://www.fanduel.com','User-Agent' : 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/535.7 (KHTML, like Gecko) Chrome/16.0.912.77 Safari/535.7'}
+	r =s.get(sURL,headers=headers)
+	return json.loads(r.text)

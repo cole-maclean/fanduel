@@ -19,11 +19,7 @@ class Model():
 	def __init__(self,model_data,player): #Cole: Class accepts model_data in form {'feature1':[data],feature2:[data]}
 		self.player = player
 		self.model_data = model_data
-		if player.split("_")[1]=='batter':# or player.split("_")[1]=='pitcher': 
-			self.target = 'FD_points'
-		else: 
-			self.target='FD_points'
-			# self.target='strikeouts'
+		self.target = 'FD_points'
 		self.dataset_length = len(model_data[self.target])
 		self.target_matrix = numpy.array(model_data[self.target]).astype(float)
 		self.feature_matrix = numpy.array([[model_data[key][index] for key in model_data.keys() if key != self.target] for index in range(0,len(model_data[self.target]))]).astype(float)

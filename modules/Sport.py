@@ -349,12 +349,12 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 		else:
 			return 0.0
 
-	def optimal_roster(self,contest_url,confidence = 0,date=False,contestID=False): #Ian: added optional date for backtesting
+	def optimal_roster(self,s,contest_url,confidence = 0,date=False,contestID=False): #Ian: added optional date for backtesting
 		DB_parameters=Ugen.ConfigSectionMap('local text')
 		if date:
 			player_universe=self.hist_build_player_universe(date,contestID)
 		else:
-			player_universe = self.build_player_universe(contest_url)
+			player_universe = self.build_player_universe(s,contest_url)
 		items = ([{key:value for key,value in stats_data.iteritems() if key in self.optimizer_items}
 					 for player_key,stats_data in player_universe.iteritems()
 					 if 'Salary' in stats_data.keys()])
@@ -636,7 +636,6 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 				# feature_dict['FD_median'].append(self.median_stat(median_chunk_list,False))
 				#feature_dict['rest_time'].append(self.time_between(hist_data['start_date_time'][reverse_index-1],hist_data['start_date_time'][reverse_index])) #this will include rest_days between season, need to remove
 				feature_dict['HR_ballpark_factor'].append(float(self.get_stadium_data()[hist_data['stadium'][reverse_index]]['HR']))
-				feature_dict['FD_points'].append(FD_points[reverse_index]) #Cole:Need to do some testing on most informative hist FD points data feature(ie avg, trend, combination)
 				feature_dict['FD_median'].append(self.median_stat(median_chunk_list,False))
 				if player.split("_")[1]=='batter':
 					try:
@@ -771,6 +770,7 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 				# else: #Ian: these need to be changed to values that the regression will ignore...
 				# 	#feature_dict['wind_dir'].append(0)
 				# 	feature_dict['wind_speed'].append(0)
+				feature_dict['FD_points'].append(FD_points[reverse_index]) #Cole:Need to do some testing on most informative hist FD points data feature(ie avg, trend, combination)
 			except IndexError: #Ian: May need to change this? Depending on which feature has an index error first, other features may have already appended values for that indx...
 				break
 		return feature_dict
@@ -838,9 +838,11 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 					year=str(hist_data['Date'][-1]).split("-")[0]
 					if player_team==home_team:
 						year_team=year+"_home"
+						batter_matchup = 'away'
 					else:
 						year_team=year+"_away"
-					opposing_lineup_stats=self.batter_lineup_stats(date,[starting_lineups[player]['opposing_lineup'],year_team],player_arm)
+						batter_matchup = 'home'
+					opposing_lineup_stats=self.batter_lineup_stats(date,[starting_lineups[player]['opposing_lineup'],batter_matchup],player_arm)
 					season_averages=self.season_averages(hist_data,player)
 					if numpy.isnan(opposing_lineup_stats['strikeout_rate']):
 						opposing_lineup_stats['strikeout_rate']=season_averages['league_K%_avg'][year]
@@ -909,50 +911,51 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 	def weather_classfier():
 		pass
 
-	def build_player_universe(self,contest_url): #Cole: this desperately needs documentation. Entire data structure needs documentation
+	def build_player_universe(self,s,contest_url): #Cole: this desperately needs documentation. Entire data structure needs documentation
 		team_map = Ugen.excel_mapping("Team Map",9,6)
-		FD_player_data = fdo.get_FD_player_dict(contest_url)#Cole:need to build some sort of test that FD_names and starting lineup names match - Ian: players now get mapped in the mlb_starting_lineups function itself.
+		FD_player_data = fdo.get_FD_player_dict(s,contest_url)#Cole:need to build some sort of test that FD_names and starting lineup names match - Ian: players now get mapped in the mlb_starting_lineups function itself.
 		teams,starting_lineups = ds.mlb_starting_lineups() #Cole: need to write verification that all required teams have lineups
 		team_dict={team:data['start_time'] for team,data in teams.iteritems() if team==data['home_teamid']}
 		#weather_forecast={team:weather.weather_hourly(team,start_time) for team,start_time in team_dict.iteritems()}
 		weather_forecast={}
-		print 'getting weather'
-		for team,start_time in team_dict.iteritems():
-			weather_forecast[team]=weather.weather_hist(team,date,start_time)
-			time.sleep(6.1) #so we don't exceed the alotted 10 calls per minute
-		print 'weather retrieved'
+		FD_starting_player_data = {}
+		# print 'getting weather'
+		# for team,start_time in team_dict.iteritems():
+		# 	weather_forecast[team]=weather.weather_hist(team,time.strftime("%d/%m/%Y"),start_time)
+		# 	time.sleep(6.1) #so we don't exceed the alotted 10 calls per minute
+		# print 'weather retrieved'
+		weather_forecast={'wind': {'wind_speed': 1.53, 'wind_dir': 206.67}, 'temp': 72.67, 'humidity': 19.33}
 		omitted_teams = []
 		missing_lineups = [team for team in teams.keys() if len(teams[team]['lineup'])<8 and team not in omitted_teams] #Cole: this whole method needs to be split out into more reasonable functions
 		print missing_lineups
 		starting_players = [player.split("_")[0] for player in starting_lineups.keys() if starting_lineups[player]['teamid'] not in omitted_teams and 'PPD' not in starting_lineups[player]['start_time']] #Cole: is the PPD working?
-		FD_starting_player_data = {FD_playerid:data for FD_playerid,data in FD_player_data.iteritems() if data[1] in starting_players} #data[1] is FD_player_name
+		FD_starting_player_data = {player['first_name'] + " " + player['last_name']:player for player in FD_player_data if player['first_name'] + " " + player['last_name'] in starting_players} #data[1] is FD_player_name
 		player_universe = {}
 		odds_dict=TeamOdds.vegas_odds_sportsbook(dt.datetime.today().strftime("%Y%m%d"))
 		for FD_playerid,data in FD_starting_player_data.iteritems():
-			db_data = self.get_db_gamedata(data[1],"20140301","20141212")
-			if data[0] == 'P': #Cole: If this can be generalized (ie sport player type map, the entire function can be generalized as a Sport method)
+			db_data = self.get_db_gamedata(FD_playerid,"20140301","20151212")
+			if data['position'] == 'P': #Cole: If this can be generalized (ie sport player type map, the entire function can be generalized as a Sport method)
 				player_type = 'pitcher'
 			else:
 				player_type = 'batter'
- 			player_key = data[1]+ '_' + player_type	
+ 			player_key = FD_playerid + '_' + player_type	
 			if player_key in db_data.keys():
 				player_universe[player_key] = {}
 				player_universe[player_key]['FD_playerid'] = FD_playerid
-				projected_FD_points = self.FD_points_model(player_key,db_data[player_key],starting_lineups,weather_forecast,False,False)
+				projected_FD_points = self.FD_points_model(player_key,db_data[player_key],starting_lineups,False,False,dt.datetime.today().strftime("%Y%m%d"))
 				player_universe[player_key]['projected_FD_points'] = projected_FD_points.projected_points
 				player_universe[player_key]['confidence'] = projected_FD_points.confidence
 				player_universe[player_key]['Player_Type'] = player_type
 				player_universe[player_key]['name'] = player_key
-				for indx,FD_data in enumerate(data):
-					try:
-						player_universe[player_key][self.FD_data_columns[indx]] = float(FD_data)
-					except ValueError:
-						player_universe[player_key][self.FD_data_columns[indx]] = FD_data
-				position_map = {key:1 if key == player_universe[player_key]['FD_Position'] else 0 for key in self.positions.keys()}
+				for key,player_data in data.iteritems():
+					player_universe[player_key][key] = player_data
+				position_map = {key:1 if key == player_universe[player_key]['position'] else 0 for key in self.positions.keys()}
 				tmp_dict = position_map.copy()
 				player_universe[player_key].update(tmp_dict)
 			else:
 				print player_key + ' not in db_player_data'
+		print player_universe
+		os.system('pause')
 		return player_universe
 
 	def hist_build_player_universe(self,date,contestID): #Ian: Decided to build separate from original, thought it would get too big..consider refactoring both.. 'yyyy-mm-dd'
