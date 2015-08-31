@@ -19,7 +19,7 @@ import datetime as dt
 #backtest.run_hist_lineups()
 
 
-backtest.hist_model_lineups('2015-05-06','2015-08-25')
+backtest.hist_model_lineups('2015-05-06','2015-05-17')
 
 
 # backtest.hist_FD_contest_salaries()
