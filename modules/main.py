@@ -3,7 +3,7 @@ import ast
 import data_scrapping as ds
 import collections
 import difflib
-import numpy
+import numpy as np
 from openopt import *
 import general_utils as Ugen
 import FD_operations as fdo
@@ -19,42 +19,56 @@ def run_program(sport_list,update_model_interval,max_bet):
 	current_bet = 0
 	#last contest_time = get_last_contest_time() - return last time for latest contest tonight
 	run_time = 1000
-	if run_time > update_model_interval:
-		contest_rosters = {}
-		if 'MLB' in sport_list:
-			daily_contests = fdo.get_daily_contests(FD_session,'MLB')
-			MLB= Sport.MLB()
-			for contest,url in daily_contests.iteritems():
-				model_roster = MLB.optimal_roster(FD_session,url,0,False,False)
-				print model_roster
-				if model_roster['roster'] != []:
-					contest_rosters['MLB_' + str(contest) + '_' + str(contest_type)] = model_roster
-	while True:#current_time < last_contest_time
-		FD_contests = fdo.get_FD_contests(FD_session) #Ian: when we loop through the contests they get out of date really quick, i suggest we continue to re-pull contest data after each loop
-		for contest in FD_contests:
-			if int(contest['entryFee']) <=25 and (contest['sport'].upper() + '_' + str(contest['gameId']) + '_' + str(contest['flags'])) in contest_rosters.keys():
-				roster_data =contest_rosters[(contest['sport'].upper() + '_' + str(contest['gameId']) + '_' + str(contest['flags']))]
-				entry_decision,contest = enter_contest_decider(contest)
-				if current_bet >=max_bet:
-					return current_bet
-				elif entry_decision == True:
-					entry_id,entry_status =fdo.enter_contest(FD_session,session_id,'https://www.fanduel.com/e/Game/' + str(contest['gameId']) + '?tableId=' + str(contest['uniqueId']) + '&fromLobby=true',str(roster_data['roster']))
-					print str(contest['gameId']) + " entry attempt"
-					if entry_status == 'success':
-						current_bet = current_bet + int(contest['entryFee'])
-						contest['entry_id'] = entry_id
-						contest['timestamp'] = str(datetime.now())
-						contest['model_confidence'] = roster_data['confidence']
-						cols = ", ".join([key for key in contest.keys()])
-						data = ", ".join(['"' + str(v) + '"' for v in contest.values()])
-						dbo.insert_mysql('fanduel_contests',cols,data)
-						print str(contest['gameId']) + " entry success"
-						time.sleep(1)
-					else:
-						print str(contest['gameId']) + " entry failed - " + entry_status
-		time.sleep(120)
-		print 'loop'
+	while current_bet <= max_bet:
+		if run_time > update_model_interval:
+			contest_rosters = build_contest_rosters(FD_session,sport_list)
+			run_time = 10
+		else:
+			for contest_id,roster in contest_rosters.iteritems():
+				contest_list = fdo.fanduel_data(FD_session,"https://api.fanduel.com/contests?fixture_list="+contest_id)[0]['contests']
+				for contest in contest_list:
+					enter, enetered_contest = contest_entry_decider(FD_session,contest,roster)
+					enetered_contest['model_confidence'] = roster['confidence']
+					enetered_contest['timestamp'] = datetime.now()
+					if enter  ==True:
+						print 'entering contest'
+						os.system('pause')
+						if fdo.enter_contest(FD_session,session_id,contest['entries']['_url'],roster['roster'],entered_contest) == True:
+							current_bet = current_bet + contest['entry_fee']
+							print 'current bet=' + current_bet
+
+def build_contest_rosters(s,sport_list):
+	contest_rosters = {}
+	for sport in sport_list:
+		if sport == 'MLB':
+			Sport_Class = Sport.MLB()
+		daily_contests = fdo.get_daily_contests(s,sport)
+		for contest_id,url in daily_contests.iteritems():
+			model_roster = Sport_Class.optimal_roster(s,url,0,False,False)
+			model_roster['class'] = Sport_Class
+		if model_roster['roster'] != []:
+			print model_roster
+			contest_rosters[contest_id] = model_roster
 	return contest_rosters
+
+def contest_entry_decider(s,contest,roster):
+	Sport_Class = roster['class']
+	for key,data in Sport_Class.contest_constraints.iteritems():
+		if contest[key] not in data:
+			return False, contest
+	entries_data = fdo.fanduel_data(s,contest['entries']['_url'])[0]
+	if 'error' in entries_data.keys():
+		print entries_data['error']
+		return False, contest
+	if entries_data['_meta']['entries']['count'] > 0:
+		user_list = entries_data['users']
+		user_wins_dict = ds.get_contest_userwins(user_list)[Sport_Class.sport]
+	if np.mean(user_wins_dict) <= 100000:
+		contest['user_wins_dict'] = user_wins_dict
+		return True, contest
+	else:
+		contest['user_wins_dict'] = user_wins_dict
+		return False, contest
 
 def ian_contest_loop():
 	FD_session,session_id = fdo.get_fanduel_session()
@@ -81,19 +95,6 @@ def ian_contest_loop():
 			rw=rw+1
 			contests.append(contest['uniqueId'])
 	return
-
-def enter_contest_decider(contest):
-	contest_user_wins = ds.get_contest_userwins(contest)
-	print contest_user_wins
-	print numpy.mean(contest_user_wins[contest['sport'].upper()])
-	print float(contest['entriesData'])
-	print float(contest['size'])
-	print float(contest['entriesData'])/float(contest['size'])
-	if numpy.mean(contest_user_wins[contest['sport'].upper()]) <= 10000 and float(contest['entriesData'])/float(contest['size']) >=0.5: #Cole: this is where the decision clasifier will be used to determine contest entry
-		contest['entries_win_dict'] = contest_user_wins
-		return True,contest
-	else:
-		return False,contest
 
 def build_pWins_vs_topwins_dict(bin_size):
 	hist_performance = build_hist_win_tuples()
@@ -123,6 +124,7 @@ def build_hist_win_tuples():
 
 #print run_program(["MLB"],100,50)
 print run_program(["MLB"],100,50)
+os.system('pause')
 #MLB= Sport.MLB()
 #print MLB.optimal_roster("https://www.fanduel.com/games/12872/contests/12872-14373582/enter",0,False,False)
 # MLB = Sport.MLB()

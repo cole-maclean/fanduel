@@ -66,21 +66,15 @@ def get_starting_goalies():
 				goalie_list.append(goalie)
 	return goalie_list
 
-def get_contest_userwins(contest):
+def get_contest_userwins(user_list):
 	DB_parameters=Ugen.ConfigSectionMap('local text')
 	with open(DB_parameters['userwinscache'],"r") as myfile: #Ian: removed hard coded reference to Cole's path
 		data = myfile.read()
 	user_wins_cache = ast.literal_eval(data)
-	entry_url = 'https://www.fanduel.com/pg/Lobby/showTableEntriesJSON/' + contest['uniqueId'] + '/0/10000'
-	response = urllib2.urlopen(entry_url)
-	shtml = response.read()
-	entry_dict = ast.literal_eval(shtml)
 	user_wins_array = {'Total':[],'NFL':[],'MLB':[],'NBA':[],'NHL':[],'CBB':[],'CFB':[]}
-	for entry_data in entry_dict['entries']:
-		user_html = entry_data['userHTML']
-		intStart = user_html.find("alt=''>")
-		intEnd = user_html.find('<',intStart)
-		username = user_html[intStart:intEnd].replace("alt=''>","")
+	print user_list
+	for user_data in user_list:
+		username = user_data['username']
 		if username in user_wins_cache.keys():
 			for sport,wins in user_wins_cache[username].iteritems():
 				user_wins_array[sport].append(wins)
