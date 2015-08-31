@@ -20,13 +20,13 @@ def test():
 #ds.historical_vegas_odds()
 
 
-MLB=Sport.MLB()
+# MLB=Sport.MLB()
 #MLB.get_daily_game_data('20130408','20131030',True) #2013 Season
 #MLB.get_daily_game_data('20140906','20141029',True) #2014 Season
 
 # MLB.get_daily_game_data('20140322','20141029',True) #2014 Season
 
-MLB.get_daily_game_data('20150822','20150825',True) #2015 Season: LAST HISTORIZE
+# MLB.get_daily_game_data('20150822','20150825',True) #2015 Season: LAST HISTORIZE
 
 
 # dbo.delete_from_db('event_data','2014-05-07')
@@ -35,6 +35,9 @@ MLB.get_daily_game_data('20150822','20150825',True) #2015 Season: LAST HISTORIZE
 
 
 # backtest.hist_FD_contest_salaries()
+backtest.hist_model_lineups('2015-05-17','2015-05-17')
+
+# test_function(False)
 # MLB.modify_db_data('20131028','20150801',{'hist_player_data':['stuff']})
 
 

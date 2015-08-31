@@ -167,6 +167,7 @@ def get_contest_utlity(avg_top_wins,time_remaining,wins_data,bin_size):
 	return contest_utility,future_utility
 
 def mlb_starting_lineups(date=time.strftime("%Y-%m-%d")): #take date as string 'YYYY-MM-DD'. [desperately] Needs refactoring.
+	print date
 	url='http://www.baseballpress.com/lineups/'+date
 	content=urllib2.urlopen(url).read()
 	soup=BeautifulSoup(content)

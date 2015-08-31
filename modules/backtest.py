@@ -66,6 +66,7 @@ def hist_FD_playerdata(Sport,Url,ContestID):
     FD_dict = ast.literal_eval(Uds.parse_html(Url,"FD.playerpicker.allPlayersFullData = ",";"))
     todays_date=time.strftime("%Y-%m-%d")
     db_data=[]
+    # print Url
     for fd_key in FD_dict:
         player_name=FD_dict[fd_key][1]
         position=FD_dict[fd_key][0]
@@ -97,25 +98,17 @@ def hist_FD_contest_salaries():
         sport_contest_dict=(x for x in contest_dict if x['sport']==sport)
         test_dict_case=(x for x in contest_dict if x['sport']==sport) #assign duplicate var to avoid list mutation
         if len(list(test_dict_case))>0: #test if there are contests for the sport
-            i=1 #iterator
             historized_contests=[]
             ContestID=''
             rw=1
             for contest in sport_contest_dict: #loop through each for given sport
                 Url='https://www.fanduel.com/e/Game'+contest['entryURL'][contest['entryURL'].find('Game\\')+5:]
-                if i==1 and len(contest['startString'])<14 and contest['entryURL'].find('accept_public_challenge')==-1:
-                    ContestID=contest['gameId'] #ContestID is a unique identifier for contests @unique time
-                    print 'now historizing %s contest#: %d' % (sport,ContestID)
-                    hist_FD_playerdata(sport.upper(),Url,ContestID)
-                    print '%s contest#: %d historized succesfully' % (sport,ContestID)
-                    historized_contests.append(ContestID)
-                if contest['gameId']!=ContestID and contest['gameId'] not in historized_contests and len(contest['startString'])<14 and contest['entryURL'].find('accept_public_challenge')==-1: #check for contests at other times
-                    ContestID=contest['gameId']
-                    print 'now historizing %s contest#: %d' % (sport,ContestID)
-                    hist_FD_playerdata(sport.upper(),Url,ContestID)
-                    print '%s contest#: %d historized succesfully' % (sport,ContestID)
-                    historized_contests.append(ContestID)
-                i=i+1
+                # print contest['startString']
+                if  contest['gameId'] not in historized_contests and len(contest['startString'])<14 and contest['entryURL'].find('accept_public_challenge')==-1: #check for contests at other times
+                    print 'now historizing %s contest#: %d' % (sport,contest['gameId'])
+                    hist_FD_playerdata(sport.upper(),Url,contest['gameId'])
+                    print '%s contest#: %d historized succesfully' % (sport,contest['gameId'])
+                    historized_contests.append(contest['gameId'])
     fdo.end_fanduel_session(s)
     return
 
@@ -170,13 +163,12 @@ def hist_lineup_optimizer_points(lineup_optimizer,start_date,end_date):
 def hist_model_lineups(start_date,end_date): #date format in 'YYYY-MM-DD'
     date_list = [d.strftime('%Y-%m-%d') for d in pandas.date_range(start_date,end_date)]
     MLB=Sport.MLB()
-    rw=2587
+    rw=2676
     while Cell("Backtest_Output",rw,1).value: #Ian: Don't overwrite existing values
         rw=rw+1
     hist_roster_dict={}
     for date in date_list:
         contest_list=hist_get_contest_ids(date)
-        print contest_list
         hist_roster_dict={}
         for contestID in contest_list:
             print 'now modelling contestID: %s on %s' % (contestID,date)
