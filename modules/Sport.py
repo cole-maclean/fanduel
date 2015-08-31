@@ -954,7 +954,7 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 		weather_forecast={}
 		print 'getting weather'
 		for team,start_time in team_dict.iteritems():
-			weather_forecast[team]=weather.weather_hist(team,date,start_time)
+			weather_forecast[team]=weather.weather_hourly(team,start_time)
 			time.sleep(6.1)
 		print 'weather retrieved'
 
