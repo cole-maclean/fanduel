@@ -171,7 +171,7 @@ def hist_model_lineups(start_date,end_date): #date format in 'YYYY-MM-DD'
         contest_list=hist_get_contest_ids(date)
         hist_roster_dict={}
         for contestID in contest_list:
-            print 'now modelling contestID: %s on %s' % (contestID,date)
+            print 'now modelling contestID: %s on %s' % (str(contestID),date)
             roster,player_universe_size=MLB.optimal_roster("https://www.fanduel.com/e/Game/12298?tableId=12594597&fromLobby=true",-10,date,contestID)
             hist_roster_dict[date+"_"+contestID]={}
             hist_roster_dict[date+"_"+contestID]['roster']=roster

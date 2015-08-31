@@ -587,25 +587,25 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 		}
 
 		# # Ian: added this loop to replace nan values with previous year averages, otherwise give them a zero..
-		for outer_key,outer_val in season_averages.iteritems(): 
-			for inner_key,inner_val in outer_val.iteritems():
-				if numpy.isnan(inner_val) and "_" in inner_key:
-					# print 'nan found in %s for following key:val - %s:%s' %(outer_key,inner_key,inner_val)
-					split_key=inner_key.split("_")
-					if split_key[0]=='2013':
-						season_averages[outer_key][split_key[0]+'_away']=0
-						season_averages[outer_key][split_key[0]+'_home']=0
-						continue #otherwise we will error when we try prev_year_key of 2012
-					prev_year_key=str(int(split_key[0])-1)+'_'+split_key[1]
-					if not numpy.isnan(season_averages[outer_key][prev_year_key]):
-						season_averages[outer_key][inner_key]=season_averages[outer_key][prev_year_key]
-						if split_key[1]=='home': #If we're replacing one H/A avg with the previous year, replace the other too...
-							season_averages[outer_key][split_key[0]+'_away']=season_averages[outer_key][prev_year_key.split("_")[0]+'_away']														
-						else:	
-							season_averages[outer_key][split_key[0]+'_home']=season_averages[outer_key][prev_year_key.split("_")[0]+'_home']	
-					else: #If we don't have 2015 or 2014 data, put in a zero
-						season_averages[outer_key][split_key[0]+'_away']=0
-						season_averages[outer_key][split_key[0]+'_home']=0
+		# for outer_key,outer_val in season_averages.iteritems(): 
+		# 	for inner_key,inner_val in outer_val.iteritems():
+		# 		if numpy.isnan(inner_val) and "_" in inner_key:
+		# 			# print 'nan found in %s for following key:val - %s:%s' %(outer_key,inner_key,inner_val)
+		# 			split_key=inner_key.split("_")
+		# 			if split_key[0]=='2013':
+		# 				season_averages[outer_key][split_key[0]+'_away']=0
+		# 				season_averages[outer_key][split_key[0]+'_home']=0
+		# 				continue #otherwise we will error when we try prev_year_key of 2012
+		# 			prev_year_key=str(int(split_key[0])-1)+'_'+split_key[1]
+		# 			if not numpy.isnan(season_averages[outer_key][prev_year_key]):
+		# 				season_averages[outer_key][inner_key]=season_averages[outer_key][prev_year_key]
+		# 				if split_key[1]=='home': #If we're replacing one H/A avg with the previous year, replace the other too...
+		# 					season_averages[outer_key][split_key[0]+'_away']=season_averages[outer_key][prev_year_key.split("_")[0]+'_away']														
+		# 				else:	
+		# 					season_averages[outer_key][split_key[0]+'_home']=season_averages[outer_key][prev_year_key.split("_")[0]+'_home']	
+		# 			else: #If we don't have 2015 or 2014 data, put in a zero
+		# 				season_averages[outer_key][split_key[0]+'_away']=0
+		# 				season_averages[outer_key][split_key[0]+'_home']=0
 
 		return season_averages
 
@@ -649,12 +649,12 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 			# if player.split("_")[1]=='pitcher' and 'strikeouts' in feature_dict:			
 			# 	if '2013-04' in str(hist_data['Date'][reverse_index]): #Ian: added this since batter_lineup_stats features wont be accurate for older dates (since htey pull historical data starting from date)
 			# 		break
-			# feature_dict['rest_time'].append(self.time_between(hist_data['start_date_time'][reverse_index-1],hist_data['start_date_time'][reverse_index])) #this will include rest_days between season, need to remove
 			try:
 				team=hist_data['Team'][reverse_index]
 				home_team=team_map[hist_data['home_team'][reverse_index]]
 				away_team=team_map[hist_data['away_team'][reverse_index]]	
 				median_chunk_list = [FD_points[chunk_indx] for chunk_indx in range(reverse_index-self.median_stat_chunk_size[player_type],reverse_index-1)]
+				# feature_dict['rest_time'].append(self.time_between(hist_data['start_date_time'][reverse_index-1],hist_data['start_date_time'][reverse_index])) #this will include rest_days between season, need to remove
 
 				if player.split("_")[1]=='batter':
 					feature_dict['HR_ballpark_factor'].append(float(self.get_stadium_data()[hist_data['stadium'][reverse_index]]['HR']))
@@ -664,6 +664,7 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 				 		feature_dict['BH_ballpark_factor'].append(float(self.get_stadium_data()[hist_data['stadium'][reverse_index]]['LHB']))
 				 	else: #Accounts for switch hitters
 				 		feature_dict['BH_ballpark_factor'].append(float(self.get_stadium_data()[hist_data['stadium'][reverse_index]]['RHB']))
+
 					try:
 						if player in ast.literal_eval(hist_data['away_starting_lineup'][reverse_index]).keys():
 							op_pitcher_data = {player:data for player,data in ast.literal_eval(hist_data['home_starting_lineup'][reverse_index]).iteritems() if 'pitcher' in player}
@@ -899,7 +900,6 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 					else:
 						pitcher_data = self.get_db_gamedata(op_pitcher,"20130101","20170101")
 					if op_pitcher + '_pitcher' in pitcher_data.keys():
-						print "works for " + op_pitcher
 						parameters.append(self.median_stat(pitcher_data[op_pitcher + '_pitcher']['era'][-13:]))
 					else:
 						print op_pitcher + " not in db"

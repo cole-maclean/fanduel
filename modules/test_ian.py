@@ -18,12 +18,8 @@ import datetime as dt
 #backtest.hist_model_points()
 #backtest.run_hist_lineups()
 
-<<<<<<< HEAD
-backtest.hist_model_lineups('2015-05-06','2015-05-17')
-=======
 
-backtest.hist_model_lineups('2015-05-06','2015-08-25')
->>>>>>> 586a2db89a6409f0c0de2e4c8486c1f5c938bc3a
+backtest.hist_model_lineups('2015-05-06','2015-05-17')
 
 
 # backtest.hist_FD_contest_salaries()
