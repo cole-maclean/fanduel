@@ -349,12 +349,12 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 		else:
 			return 0.0
 
-	def optimal_roster(self,s,contest_url,confidence = 0,date=False,contestID=False): #Ian: added optional date for backtesting
+	def optimal_roster(self,FDSession,contest_url,confidence = -100,date=False,contestID=False): #Ian: added optional date for backtesting
 		DB_parameters=Ugen.ConfigSectionMap('local text')
 		if date:
 			player_universe=self.hist_build_player_universe(date,contestID)
 		else:
-			player_universe = self.build_player_universe(s,contest_url)
+			player_universe = self.build_player_universe(FDSession,contest_url)
 		items = ([{key:value for key,value in stats_data.iteritems() if key in self.optimizer_items}
 					 for player_key,stats_data in player_universe.iteritems()
 					 if 'salary' in stats_data.keys()])
@@ -362,7 +362,6 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 		if items:
 			p = KSP(objective, items, goal = 'max', constraints=self.get_constraints(confidence))
 			r = p.solve('glpk',iprint = 0)
-			os.system('pause')
 			roster_data = []
 			rw = 2
 			sum_confidence = 0
@@ -370,10 +369,10 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 				roster_dict={}
 				for player in r.xf:
 					roster_dict[player]={}
-					roster_dict[player]['FD_Position']=player_universe[player]['FD_Position']
+					roster_dict[player]['position']=player_universe[player]['position']
 					roster_dict[player]['projected_FD_points']=player_universe[player]['projected_FD_points']
 					roster_dict[player]['confidence']=player_universe[player]['confidence']
-					roster_dict[player]['Salary']=player_universe[player]['Salary']
+					roster_dict[player]['salary']=player_universe[player]['salary']
 				return roster_dict,len(player_universe)
 			else:
 				for player in r.xf:
@@ -386,11 +385,11 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 					Cell("Roster",rw,6).value = player_universe[player]['salary']
 					sum_confidence = sum_confidence + player_universe[player]['confidence']
 					rw = rw + 1
-			lineup = [{'position':str(player_universe[player]['position']),'player':{'id':str(player_universe[player]['id']}}) for player in r.xf]
-			sorted_roster = str(sorted(lineup, key=self.sort_positions).replace("'",'"'))
+			lineup = [{'position':player_universe[player]['position'],'player':{'id':player_universe[player]['id']}} for player in r.xf]
+			sorted_roster = sorted(lineup, key=self.sort_positions)
 			print sorted_roster
 			os.system('pause')
-			entry_dict = {'entries':[{'entry_fee':{'currency':"usd"},'roster':{'lineup':sorted_roster}}]}
+			entry_dict = {"entries":[{"entry_fee":{"currency":"usd"},"roster":{"lineup":sorted_roster}}]}
 			with open(DB_parameters['rostertext'],"w") as myfile: #Ian: replaced hard-coded folder path with reference to config file
 					myfile.write(str(entry_dict).replace(' ',''))
 			return {'confidence':sum_confidence,'roster':entry_dict}
@@ -423,11 +422,13 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 		self.features={'pitcher':['pred_strikeouts','FD_median'],'batter':['FD_median']}
 		self.model_description = "Lasso Linear regression and %s" % self.features
 		self.model_mean_score = -1.70
-		self.contest_constraints = ({'size':[{'max': 2, 'min': 2},{'max': 3, 'min': 3},{'max': 5, 'min': 5},{'max': 10, 'min': 10}],
-									'type':[{'_members': ['LEAGUE'], '_ref': 'contest_types.id'},{'_members': ['H2H'], '_ref': 'contest_types.id'},{'_members': ['FIFTY_FIFTY'], '_ref': 'contest_types.id'}],
-									'entry_fee':[1,2,5,10,25]})
+		self.contest_constraints = ({'size':[{'max': 2, 'min': 2},{'max': 3, 'min': 3},{'max': 4, 'min': 4},
+									{'max': 5, 'min': 5},{'max': 6, 'min': 6},{'max': 7, 'min': 7},{'max': 8, 'min': 8},{'max': 10, 'min': 10},
+									{'max': 14, 'min': 14},{'max': 20, 'min': 20},{'max': 50, 'min': 50}],
+									'type':[{u'_members': [u'FIFTY_FIFTY'], u'_ref': u'contest_types.id'}],
+									'entry_fee':[1,2,5]})
 
-	def get_constraints(self,confidence=0):
+	def get_constraints(self,confidence=-100):
 		return lambda values : (
 								values['salary'] <= 35000,
 							    values['P'] == 1,
@@ -440,7 +441,7 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 							    values['confidence'] >=confidence)
 
 	def sort_positions(self,sort_list):
-		return self.positions[sort_list['positions']]
+		return self.positions[sort_list['position']]
 	
 	def batter_lineup_stats(self,date,lineup_data,player_arm):
 		lineup_stats_dict={}
@@ -944,9 +945,9 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 	def weather_classfier():
 		pass
 
-	def build_player_universe(self,s,contest_url): #Cole: this desperately needs documentation. Entire data structure needs documentation
+	def build_player_universe(self,FDSession,contest_url): #Cole: this desperately needs documentation. Entire data structure needs documentation
 		team_map = Ugen.excel_mapping("Team Map",9,6)
-		FD_player_data = fdo.get_FD_player_dict(s,contest_url)#Cole:need to build some sort of test that FD_names and starting lineup names match - Ian: players now get mapped in the mlb_starting_lineups function itself.
+		FD_player_data = FDSession.fanduel_api_data(contest_url)['players']#Cole:need to build some sort of test that FD_names and starting lineup names match - Ian: players now get mapped in the mlb_starting_lineups function itself.
 		teams,starting_lineups = ds.mlb_starting_lineups() #Cole: need to write verification that all required teams have lineups
 		team_dict={team:data['start_time'] for team,data in teams.iteritems() if team==data['home_teamid']}
 		#weather_forecast={team:weather.weather_hourly(team,start_time) for team,start_time in team_dict.iteritems()}

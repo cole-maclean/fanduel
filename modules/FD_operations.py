@@ -7,69 +7,77 @@ import json
 import string_utils as Ustr
 import ast
 import datetime
+import time
+import dateutil.parser
 import data_scrapping_utils as Uds
 import database_operations as dbo
 
-def get_fanduel_session():#Refactor - think this needs to be turned into a class
-	Fanduel_login=Ugen.ConfigSectionMap('fanduel') #Ian added ref to config file to avoid hardcoding
-	s = requests.session()
-	r = s.get('https://www.fanduel.com/p/login')
-	soup = BeautifulSoup(r.text)
-	session_id = soup.find('input', {'name': 'cc_session_id'}).get('value')
-	headers = {'User-Agent' : 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/535.7 (KHTML, like Gecko) Chrome/16.0.912.77 Safari/535.7'}
-	data = {'cc_session_id':session_id,'cc_action':'cca_login','cc_failure_url':'https://www.fanduel.com/p/login',\
-	'cc_success_url':'https://www.fanduel.com/p/home','email':Fanduel_login['email'],'password':Fanduel_login['password'],'login':'Log in'}
-	s.post('https://www.fanduel.com/c/CCAuth',data,headers=headers)
-	return s, session_id
+class FDSession():
+	def __init__(self):
+		self.session, self.session_id = self.get_fanduel_session()
+		self.headers = self.get_fanduel_headers()
 
-def end_fanduel_session(s):
-	r = s.get('https://www.fanduel.com/c/CCAuth?cc_action=cca_logout&cc_success_url=https//www.fanduel.com/&cc_failure_url=https//www.fanduel.com/')
-	return r.headers
+	def get_fanduel_session(self):#Refactor - think this needs to be turned into a class
+		Fanduel_login=Ugen.ConfigSectionMap('fanduel') #Ian added ref to config file to avoid hardcoding
+		s = requests.session()
+		r = s.get('https://www.fanduel.com/p/login')
+		soup = BeautifulSoup(r.text)
+		session_id = soup.find('input', {'name': 'cc_session_id'}).get('value')
+		headers = {'User-Agent' : 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/535.7 (KHTML, like Gecko) Chrome/16.0.912.77 Safari/535.7'}
+		data = {'cc_session_id':session_id,'cc_action':'cca_login','cc_failure_url':'https://www.fanduel.com/p/login',\
+		'cc_success_url':'https://www.fanduel.com/p/home','email':Fanduel_login['email'],'password':Fanduel_login['password'],'login':'Log in'}
+		s.post('https://www.fanduel.com/c/CCAuth',data,headers=headers)
+		return s, session_id
 
-def get_daily_contests(s,sport):
-	contests = {contest['id']:contest['players']['_url'] for contest in fanduel_data(s,'https://api.fanduel.com/fixture-lists')[0]['fixture_lists'] if contest['sport'] == sport}
-	return contests
+	def get_fanduel_headers(self):
+		r = self.session.get('https://www.fanduel.com/games')
+		XAuth = r.cookies['X-Auth-Token']
+		r_text = r.text
+		intStart = r_text.find("apiClientId: '")
+		intEnd = r_text.find("',",intStart)
+		APIclientID = 'Basic ' + r_text[intStart:intEnd].replace("apiClientId: '","")
+		headers = {'Authorization':APIclientID,'X-Auth-Token':XAuth,'Accept':'*/*','Access-Control-Request-Headers':'accept, authorization, x-auth-token','Host':'api.fanduel.com','referer':'https://www.fanduel.com/games','Origin':'https://www.fanduel.com','User-Agent' : 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/535.7 (KHTML, like Gecko) Chrome/16.0.912.77 Safari/535.7','Content-Type':'application/json'}
+		return headers
 
-def enter_contest(s,session_id,contest_url,roster_data,entered_contest):#Cole: Need to wrtie to db on succesful entry
-	print contest_url
-	headers = fanduel_data(s,'https://www.fanduel.com/games')[1]
-	r = s.post(contest_url,json.dumps(roster_data),headers=headers)
-	if r.status_code == 201:
-		print r.text
-		os.system('pause')
-		cols = [col for col in entered_contest.keys()]
-		data = [data for data in entered_contest.values()]
-		dbo.insert_mysql("fanduel_contests", cols, data,placeholders=False)
-		return True
-	else:
-		print 'entry failed with HTTP error ' + str(r.status_code)
-		print r.text
-		entry_id = 0
-		entry_status = 'failed'
-		os.system('pause')
-		return False
+	def fanduel_api_data(self,sURL):
+		r = self.session.get(sURL,headers=self.headers)
+		if r.status_code == 200:
+			return json.loads(r.text)
+		else:
+			print 'fanduel api data call failed with ' + str(r.status_code)
+			print r.text
+			return {}
 
-def get_FD_player_dict(s,contest_url):
-	return fanduel_data(s, contest_url)[0]['players']
+	def get_daily_contests(self,sport,start_hours = []):
+		if start_hours == []:
+			contests = ({contest['id']:contest['players']['_url'] for contest in
+						 self.fanduel_api_data('https://api.fanduel.com/fixture-lists')['fixture_lists'] 
+						 if contest['sport'] == sport and (dateutil.parser.parse(contest['start_date'])- datetime.timedelta(hours=4)).day == datetime.datetime.now().day})
+		else:
+			contests = ({contest['id']:contest['players']['_url'] for contest in
+						 self.fanduel_api_data('https://api.fanduel.com/fixture-lists')['fixture_lists'] 
+						 if contest['sport'] == sport
+						 and (dateutil.parser.parse(contest['start_date'])- datetime.timedelta(hours=4)).hour in start_hours
+						 and (dateutil.parser.parse(contest['start_date'])- datetime.timedelta(hours=4)).day == datetime.datetime.now().day})
+		return contests
 
-def get_contest_teams(contest_url):
-	FD_team_dict= ast.literal_eval(Uds.parse_html(contest_url,"FD.playerpicker.teamIdToFixtureCompactString = ",";"))
-	team_dict = {}
-	for team,matchup in FD_team_dict.iteritems():
-		if '@<b>' in matchup:
-			matchup_split = matchup.split('@<b>')
-			team_dict[matchup_split[0]] = matchup_split[1][0:3]
-	inv_map = {v: k for k, v in team_dict.iteritems()}
-	team_dict.update(inv_map)
-	return team_dict
+	def enter_contest(self,contest_url,roster_data,entered_contest):#Cole: Need to wrtie to db on succesful entry
+		print contest_url
+		r = self.session.post(contest_url,json.dumps(roster_data),headers=self.headers)
+		if r.status_code == 201:
+			print "entry success"
+			os.system('pause')
+			cols =  ", ".join([key for key in entered_contest.keys()])
+			values =  ", ".join(['"' + json.dumps(data).replace('"',"'") + '"' for data in entered_contest.values()])
+			dbo.insert_mysql("fanduel_contests", cols, values)
+			return True
+		else:
+			print 'entry failed with HTTP error ' + str(r.status_code)
+			print r.text
+			entry_id = 0
+			entry_status = 'failed'
+			os.system('pause')
+			return False
 
-def fanduel_data(s,sURL):
-	r = s.get('https://www.fanduel.com/games')
-	XAuth = r.cookies['X-Auth-Token']
-	r_text = r.text
-	intStart = r_text.find("apiClientId: '")
-	intEnd = r_text.find("',",intStart)
-	APIclientID = 'Basic ' + r_text[intStart:intEnd].replace("apiClientId: '","")
-	headers = {'Authorization':APIclientID,'X-Auth-Token':XAuth,'Accept':'*/*','Access-Control-Request-Headers':'accept, authorization, x-auth-token','Host':'api.fanduel.com','referer':'https://www.fanduel.com/games','Origin':'https://www.fanduel.com','User-Agent' : 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/535.7 (KHTML, like Gecko) Chrome/16.0.912.77 Safari/535.7','Content-Type':'application/json'}
-	r =s.get(sURL,headers=headers)
-	return json.loads(r.text), headers
+
+

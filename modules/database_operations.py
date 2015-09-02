@@ -47,7 +47,7 @@ def build_data_dict_structure(player_dict,column_names, rw_data, start_rw =  0):
             player_dict[rw_data[0]] = d
         start_rw = start_rw + 1
     return player_dict
-def read_from_db(sql,primary_key_col = [0],dict_cursor=False):#Cole: updated to allow list of columns that make up key
+def read_from_db(sql,primary_key_col = [0],dict_cursor=True):#Cole: updated to allow list of columns that make up key
     cur = get_connection_cursor(dict_cursor)
     cur.execute(sql)
     resultset = cur.fetchall()
@@ -85,6 +85,7 @@ def insert_mysql(table, columns, data,placeholders=False):
         cur.execute('COMMIT')
     except MySQLdb.Error, e:
         print "MySQL Error [%d]: %s" % (e.args[0], e.args[1])
+        os.system('pause')
     time.sleep(.1)
 
 def load_csv_into_db(csv_file,table):
@@ -135,3 +136,8 @@ def modify_db_table(table_name,columns,values,table_key,table_key_val):
         cur.execute(sql)
     cur.close()
     return
+
+def download_hist_player_scores():
+    sql = "SELECT fanduel_contests.recordid,fanduel_contests._url FROM fanduel_contests WHERE fanduel_contests.results_dict IS NULL"
+    contests = read_from_db(sql,['recordid'])['1']
+    return contests

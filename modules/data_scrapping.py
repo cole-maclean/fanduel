@@ -71,13 +71,12 @@ def get_contest_userwins(user_list):
 	with open(DB_parameters['userwinscache'],"r") as myfile: #Ian: removed hard coded reference to Cole's path
 		data = myfile.read()
 	user_wins_cache = ast.literal_eval(data)
+	user_wins_dict = {}
 	user_wins_array = {'Total':[],'NFL':[],'MLB':[],'NBA':[],'NHL':[],'CBB':[],'CFB':[]}
-	print user_list
 	for user_data in user_list:
 		username = user_data['username']
 		if username in user_wins_cache.keys():
-			for sport,wins in user_wins_cache[username].iteritems():
-				user_wins_array[sport].append(wins)
+			user_wins_dict[username] = user_wins_cache[username]
 		else:
 			user_url = 'https://www.fanduel.com/users/'+username
 			response = urllib2.urlopen(user_url)
@@ -96,11 +95,12 @@ def get_contest_userwins(user_list):
 					user_wins_cache[username][th.text] = 0
 					td = td.findNext('td')					
 				except KeyError:
-					pass	
+					pass
+			user_wins_dict[username] = user_wins_cache[username]	
 			time.sleep(1)
 	with open(DB_parameters['userwinscache'],"w") as myfile: #Ian: removed hard coded reference to Cole's path
 		myfile.write(str(user_wins_cache))
-	return user_wins_array
+	return user_wins_dict
 def get_FD_playerlist(): #Cole: move this to FD operations
  	FD_list = ast.literal_eval(Uds.parse_html(Cell('Parameters','cLineUpURL').value,"FD.playerpicker.allPlayersFullData = ",";"))
  	return FD_list
