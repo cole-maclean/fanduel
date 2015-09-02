@@ -427,6 +427,7 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 									{'max': 14, 'min': 14},{'max': 20, 'min': 20},{'max': 50, 'min': 50}],
 									'type':[{u'_members': [u'FIFTY_FIFTY'], u'_ref': u'contest_types.id'}],
 									'entry_fee':[1,2,5]})
+		self.avg_plate_appearances={'1':0.12239,'2':0.11937,'3':0.11683,'4':0.11417,'5':0.11161,'6':0.10848,'7':0.10555,'8':0.10243,'9':0.09917} #move this to sport class init function
 
 	def get_constraints(self,confidence=-100):
 		return lambda values : (
@@ -445,24 +446,28 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 	
 	def batter_lineup_stats(self,date,lineup_data,player_arm):
 		lineup_stats_dict={}
-		hist_lineup_strikeout_rate=[]
+		hist_lineup_strikeout_rate,hist_lineup_ops,hist_lineup_slg,strikeout_PAs_list,ops_PAs_list,slg_PAs_list=([] for i in range(6))
 		team_map=Ugen.mlb_map(11,4)
-		avg_plate_appearances={'1':0.12239,'2':0.11937,'3':0.11683,'4':0.11417,'5':0.11161,'6':0.10848,'7':0.10555,'8':0.10243,'9':0.09917} #move this to sport class init function
-		avg_plate_appearances_list=[]
 		for player in lineup_data[0]:
-			hist_strikeout_rate=[]
-			hist_strikeout_rate_HA_splits=[]
+			player_strikeout_rate_splits,player_ops_splits,player_slg_splits=([] for i in range(3))
 			if player.split("_")[1]!='pitcher':
 				player_data=self.get_db_gamedata(player.split("_")[0],"20130301",Ugen.previous_day(str(date)).replace("-","")) #may need to play with how much data you use to get batter's K avg
 				try:
 					player_data=player_data[player] 
 				except KeyError:
-					#print 'player %s not in db, needs new player map' % player
+					print 'player %s not in db, needs new player map' % player
+					rw=2
+					map_list=[]
+					while Cell("Output",rw,7).value:
+						map_list.append(Cell("Output",rw,7).value)
+						rw+=1
+					if player not in map_list:
+						Cell("Output",rw,7).value=player
+						Cell("Output",rw,8).value=Ugen.previous_day(str(date)).replace("-","")
 					continue
-				events=[event for event in player_data['event_id']]
-				for indx,event in enumerate(events):
+				for indx,event in enumerate(player_data['event_id']):
 					try:
-						reverse_index = len(events)-indx-1
+						reverse_index = len(player_data['event_id'])-indx-1
 						team=player_data['Team'][reverse_index]
 						home_away=lineup_data[1] #This tells us whether the batter facing the current pitcher is at home or away. We want his K% splits for H/A
 						home_team=team_map[player_data['home_team'][reverse_index]]
@@ -474,7 +479,6 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 								matchup='away'
 								opposing_lineup=ast.literal_eval(player_data['home_starting_lineup'][reverse_index])
 							opposing_pitcher_hand=[opposing_player_data['arm'] for opposing_player,opposing_player_data in opposing_lineup.iteritems() if 'pitcher' in opposing_player][0]
-
 							if matchup==home_away and (player_arm==opposing_pitcher_hand or player_arm=='S'): #
 								strike_outs=player_data['strike_outs'][reverse_index]
 								plate_appearances=player_data['plate_appearances'][reverse_index]
@@ -482,9 +486,17 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 									strikeout_rate=float(strike_outs/plate_appearances)
 									if numpy.isnan(strikeout_rate):
 										print "isnan error for calculated strikeout rate %s,%s" % (player,player_data['GameID'][reverse_index])
-										hist_strikeout_rate.append(0.200)
+										player_strikeout_rate_splits.append(0.200)
 									else:
-										hist_strikeout_rate.append(strikeout_rate)
+										player_strikeout_rate_splits.append(strikeout_rate)
+									if player_data['ops'][reverse_index]>=0:
+										player_ops_splits.append(player_data['ops'][reverse_index])
+									else:
+										player_ops_splits.append(0)
+									if player_data['slg'][reverse_index]>=0:
+										player_slg_splits.append(player_data['slg'][reverse_index])
+									else:
+										player_slg_splits.append(0)
 						except ValueError: #This is when there is no starting lineups data (usually)
 							#print 'Value error %s %s' %(player_data["Date"][reverse_index],player)
 							pass
@@ -492,11 +504,21 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 						print 'index error'
 						break
 				batting_order=lineup_data[0][player]['batting_order']
-				if len(hist_strikeout_rate)>2: #say we need 3 min values to incorporate the players strikeout rate into feature
-					hist_lineup_strikeout_rate.append(float(avg_plate_appearances[batting_order]*numpy.mean(hist_strikeout_rate)))
-					avg_plate_appearances_list.append(avg_plate_appearances[batting_order])
-		lineup_stats_dict['strikeout_rate']=numpy.sum(hist_lineup_strikeout_rate)/numpy.sum(avg_plate_appearances_list)
-		#print lineup_stats_dict['strikeout_rate']
+				if len(player_strikeout_rate_splits)>2: #say we need 3 min values to incorporate the players strikeout rate into feature
+					hist_lineup_strikeout_rate.append(float(self.avg_plate_appearances[batting_order]*numpy.mean(player_strikeout_rate_splits)))
+					strikeout_PAs_list.append(self.avg_plate_appearances[batting_order])
+				if len(player_ops_splits)>2:
+					hist_lineup_ops.append(float(self.avg_plate_appearances[batting_order]*numpy.mean(player_ops_splits)))
+					ops_PAs_list.append(self.avg_plate_appearances[batting_order])
+				if len(player_slg_splits)>2:
+					hist_lineup_slg.append(float(self.avg_plate_appearances[batting_order]*numpy.mean(player_slg_splits)))
+					slg_PAs_list.append(self.avg_plate_appearances[batting_order])
+
+		lineup_stats_dict['strikeout_rate']=numpy.sum(hist_lineup_strikeout_rate)/numpy.sum(strikeout_PAs_list)
+		lineup_stats_dict['ops']=numpy.sum(hist_lineup_ops)/numpy.sum(ops_PAs_list)
+		lineup_stats_dict['slg']=numpy.sum(hist_lineup_slg)/numpy.sum(slg_PAs_list)
+		# print lineup_stats_dict
+		# os.system('pause')
 		return lineup_stats_dict
 
 	def season_averages(self,hist_data,player): #put this in mlb class? Specific to pitcher strikeouts right now, can change to generalize based on demand.
@@ -509,13 +531,23 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 							 if str(date).split("-")[0]=='2015' and (player in AT or player in HT) and team==team_map[home_team]])
 			s2015_pitcher_IP_away=numpy.mean([IP for AT,HT,IP,date,team,home_team,away_team in zip(hist_data['away_starting_lineup'],hist_data['home_starting_lineup'], \
 							 hist_data['innings_pitched'],hist_data['Date'],hist_data['Team'],hist_data['home_team'],hist_data['away_team']) \
+							 if str(date).split("-")[0]=='2015' and (player in AT or player in HT) and team==team_map[away_team]])	
+			s2015_pitcher_ER_home=numpy.mean([ER for AT,HT,ER,date,team,home_team,away_team in zip(hist_data['away_starting_lineup'],hist_data['home_starting_lineup'], \
+							 hist_data['earned_runs'],hist_data['Date'],hist_data['Team'],hist_data['home_team'],hist_data['away_team']) \
+							 if str(date).split("-")[0]=='2015' and (player in AT or player in HT) and team==team_map[home_team]])
+			s2015_pitcher_ER_away=numpy.mean([ER for AT,HT,ER,date,team,home_team,away_team in zip(hist_data['away_starting_lineup'],hist_data['home_starting_lineup'], \
+							 hist_data['earned_runs'],hist_data['Date'],hist_data['Team'],hist_data['home_team'],hist_data['away_team']) \
 							 if str(date).split("-")[0]=='2015' and (player in AT or player in HT) and team==team_map[away_team]])			
 		except:
 			s2015_pitcher_IP=numpy.mean([IP for IP,date in zip(hist_data['innings_pitched'],hist_data['Date']) if str(date).split("-")[0]=='2015'and IP>3])	
 			s2015_pitcher_IP_home=numpy.mean([IP for team,home_team,away_team,IP,date in zip(hist_data['Team'],hist_data['home_team'],hist_data['away_team'],\
 								  hist_data['innings_pitched'],hist_data['Date']) if str(date).split("-")[0]=='2015' and IP>3 and team==team_map[home_team]])
 			s2015_pitcher_IP_away=numpy.mean([IP for team,home_team,away_team,IP,date in zip(hist_data['Team'],hist_data['home_team'],hist_data['away_team'],\
-								  hist_data['innings_pitched'],hist_data['Date']) if str(date).split("-")[0]=='2015' and IP>3 and team==team_map[away_team]])				
+								  hist_data['innings_pitched'],hist_data['Date']) if str(date).split("-")[0]=='2015' and IP>3 and team==team_map[away_team]])
+			s2015_pitcher_ER_home=numpy.mean([ER for team,home_team,away_team,IP,date,ER in zip(hist_data['Team'],hist_data['home_team'],hist_data['away_team'],\
+								  hist_data['innings_pitched'],hist_data['Date'],hist_data['earned_runs']) if str(date).split("-")[0]=='2015' and IP>3 and team==team_map[home_team]])
+			s2015_pitcher_ER_away=numpy.mean([ER for team,home_team,away_team,IP,date,ER in zip(hist_data['Team'],hist_data['home_team'],hist_data['away_team'],\
+								  hist_data['innings_pitched'],hist_data['Date'],hist_data['earned_runs']) if str(date).split("-")[0]=='2015' and IP>3 and team==team_map[away_team]])
 		try:
 			s2014_pitcher_IP=numpy.mean([IP for AT,HT,IP,date in zip(hist_data['away_starting_lineup'],hist_data['home_starting_lineup'], \
 							 hist_data['innings_pitched'],hist_data['Date']) if str(date).split("-")[0]=='2014'and (player in AT or player in HT)])
@@ -524,13 +556,23 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 							 if str(date).split("-")[0]=='2014' and (player in AT or player in HT) and team==team_map[home_team]])
 			s2014_pitcher_IP_away=numpy.mean([IP for AT,HT,IP,date,team,home_team,away_team in zip(hist_data['away_starting_lineup'],hist_data['home_starting_lineup'], \
 							 hist_data['innings_pitched'],hist_data['Date'],hist_data['Team'],hist_data['home_team'],hist_data['away_team']) \
-							 if str(date).split("-")[0]=='2014' and (player in AT or player in HT) and team==team_map[away_team]])			
+							 if str(date).split("-")[0]=='2014' and (player in AT or player in HT) and team==team_map[away_team]])
+			s2014_pitcher_ER_home=numpy.mean([ER for AT,HT,ER,date,team,home_team,away_team in zip(hist_data['away_starting_lineup'],hist_data['home_starting_lineup'], \
+							 hist_data['earned_runs'],hist_data['Date'],hist_data['Team'],hist_data['home_team'],hist_data['away_team']) \
+							 if str(date).split("-")[0]=='2014' and (player in AT or player in HT) and team==team_map[home_team]])
+			s2014_pitcher_ER_away=numpy.mean([ER for AT,HT,ER,date,team,home_team,away_team in zip(hist_data['away_starting_lineup'],hist_data['home_starting_lineup'], \
+							 hist_data['earned_runs'],hist_data['Date'],hist_data['Team'],hist_data['home_team'],hist_data['away_team']) \
+							 if str(date).split("-")[0]=='2014' and (player in AT or player in HT) and team==team_map[away_team]])				
 		except:
 			s2014_pitcher_IP=numpy.mean([IP for IP,date in zip(hist_data['innings_pitched'],hist_data['Date']) if str(date).split("-")[0]=='2014'and IP>3])	
 			s2014_pitcher_IP_home=numpy.mean([IP for team,home_team,away_team,IP,date in zip(hist_data['Team'],hist_data['home_team'],hist_data['away_team'],\
 								  hist_data['innings_pitched'],hist_data['Date']) if str(date).split("-")[0]=='2014' and IP>3 and team==team_map[home_team]])
 			s2014_pitcher_IP_away=numpy.mean([IP for team,home_team,away_team,IP,date in zip(hist_data['Team'],hist_data['home_team'],hist_data['away_team'],\
 								  hist_data['innings_pitched'],hist_data['Date']) if str(date).split("-")[0]=='2014' and IP>3 and team==team_map[away_team]])
+			s2014_pitcher_ER_home=numpy.mean([ER for team,home_team,away_team,IP,date,ER in zip(hist_data['Team'],hist_data['home_team'],hist_data['away_team'],\
+								  hist_data['innings_pitched'],hist_data['Date'],hist_data['earned_runs']) if str(date).split("-")[0]=='2014' and IP>3 and team==team_map[home_team]])
+			s2014_pitcher_ER_away=numpy.mean([ER for team,home_team,away_team,IP,date,ER in zip(hist_data['Team'],hist_data['home_team'],hist_data['away_team'],\
+								  hist_data['innings_pitched'],hist_data['Date'],hist_data['earned_runs']) if str(date).split("-")[0]=='2014' and IP>3 and team==team_map[away_team]])
 		try:
 			s2013_pitcher_IP=numpy.mean([IP for AT,HT,IP,date in zip(hist_data['away_starting_lineup'],hist_data['home_starting_lineup'], \
 							 hist_data['innings_pitched'],hist_data['Date']) if str(date).split("-")[0]=='2013'and (player in AT or player in HT)])
@@ -540,12 +582,23 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 			s2013_pitcher_IP_away=numpy.mean([IP for AT,HT,IP,date,team,home_team,away_team in zip(hist_data['away_starting_lineup'],hist_data['home_starting_lineup'], \
 							 hist_data['innings_pitched'],hist_data['Date'],hist_data['Team'],hist_data['home_team'],hist_data['away_team']) \
 							 if str(date).split("-")[0]=='2013' and (player in AT or player in HT) and team==team_map[away_team]])			
+			s2013_pitcher_ER_home=numpy.mean([ER for AT,HT,ER,date,team,home_team,away_team in zip(hist_data['away_starting_lineup'],hist_data['home_starting_lineup'], \
+							 hist_data['earned_runs'],hist_data['Date'],hist_data['Team'],hist_data['home_team'],hist_data['away_team']) \
+							 if str(date).split("-")[0]=='2013' and (player in AT or player in HT) and team==team_map[home_team]])
+			s2013_pitcher_ER_away=numpy.mean([ER for AT,HT,ER,date,team,home_team,away_team in zip(hist_data['away_starting_lineup'],hist_data['home_starting_lineup'], \
+							 hist_data['earned_runs'],hist_data['Date'],hist_data['Team'],hist_data['home_team'],hist_data['away_team']) \
+							 if str(date).split("-")[0]=='2013' and (player in AT or player in HT) and team==team_map[away_team]])				
 		except:
 			s2013_pitcher_IP=numpy.mean([IP for IP,date in zip(hist_data['innings_pitched'],hist_data['Date']) if str(date).split("-")[0]=='2013'and IP>3])	
 			s2013_pitcher_IP_home=numpy.mean([IP for team,home_team,away_team,IP,date in zip(hist_data['Team'],hist_data['home_team'],hist_data['away_team'],\
 								  hist_data['innings_pitched'],hist_data['Date']) if str(date).split("-")[0]=='2013' and IP>3 and team==team_map[home_team]])
 			s2013_pitcher_IP_away=numpy.mean([IP for team,home_team,away_team,IP,date in zip(hist_data['Team'],hist_data['home_team'],hist_data['away_team'],\
 								  hist_data['innings_pitched'],hist_data['Date']) if str(date).split("-")[0]=='2013' and IP>3 and team==team_map[away_team]])
+			s2013_pitcher_ER_home=numpy.mean([ER for team,home_team,away_team,IP,date,ER in zip(hist_data['Team'],hist_data['home_team'],hist_data['away_team'],\
+								  hist_data['innings_pitched'],hist_data['Date'],hist_data['earned_runs']) if str(date).split("-")[0]=='2013' and IP>3 and team==team_map[home_team]])
+			s2013_pitcher_ER_away=numpy.mean([ER for team,home_team,away_team,IP,date,ER in zip(hist_data['Team'],hist_data['home_team'],hist_data['away_team'],\
+								  hist_data['innings_pitched'],hist_data['Date'],hist_data['earned_runs']) if str(date).split("-")[0]=='2013' and IP>3 and team==team_map[away_team]])		
+
 		season_averages={
 			"league_K%_avg": {
 						'2015':0.234,
@@ -589,29 +642,37 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 						'2014_away':s2014_pitcher_IP_away,
 						'2013_home':s2013_pitcher_IP_home,
 						'2013_away':s2013_pitcher_IP_away,
+			},
+			'pitcher_ER_avg_ha': {
+						'2015_home':s2015_pitcher_ER_home,
+						'2015_away':s2015_pitcher_ER_away,
+						'2014_home':s2014_pitcher_ER_home,
+						'2014_away':s2014_pitcher_ER_away,
+						'2013_home':s2013_pitcher_ER_home,
+						'2013_away':s2013_pitcher_ER_away,
 			}
 		}
 
 		# # Ian: added this loop to replace nan values with previous year averages, otherwise give them a zero..
-		# for outer_key,outer_val in season_averages.iteritems(): 
-		# 	for inner_key,inner_val in outer_val.iteritems():
-		# 		if numpy.isnan(inner_val) and "_" in inner_key:
-		# 			# print 'nan found in %s for following key:val - %s:%s' %(outer_key,inner_key,inner_val)
-		# 			split_key=inner_key.split("_")
-		# 			if split_key[0]=='2013':
-		# 				season_averages[outer_key][split_key[0]+'_away']=0
-		# 				season_averages[outer_key][split_key[0]+'_home']=0
-		# 				continue #otherwise we will error when we try prev_year_key of 2012
-		# 			prev_year_key=str(int(split_key[0])-1)+'_'+split_key[1]
-		# 			if not numpy.isnan(season_averages[outer_key][prev_year_key]):
-		# 				season_averages[outer_key][inner_key]=season_averages[outer_key][prev_year_key]
-		# 				if split_key[1]=='home': #If we're replacing one H/A avg with the previous year, replace the other too...
-		# 					season_averages[outer_key][split_key[0]+'_away']=season_averages[outer_key][prev_year_key.split("_")[0]+'_away']														
-		# 				else:	
-		# 					season_averages[outer_key][split_key[0]+'_home']=season_averages[outer_key][prev_year_key.split("_")[0]+'_home']	
-		# 			else: #If we don't have 2015 or 2014 data, put in a zero
-		# 				season_averages[outer_key][split_key[0]+'_away']=0
-		# 				season_averages[outer_key][split_key[0]+'_home']=0
+		for outer_key,outer_val in season_averages.iteritems(): 
+			for inner_key,inner_val in outer_val.iteritems():
+				if numpy.isnan(inner_val) and "_" in inner_key:
+					# print 'nan found in %s for following key:val - %s:%s' %(outer_key,inner_key,inner_val)
+					split_key=inner_key.split("_")
+					if split_key[0]=='2013':
+						season_averages[outer_key][split_key[0]+'_away']=0
+						season_averages[outer_key][split_key[0]+'_home']=0
+						continue #otherwise we will error when we try prev_year_key of 2012
+					prev_year_key=str(int(split_key[0])-1)+'_'+split_key[1]
+					if not numpy.isnan(season_averages[outer_key][prev_year_key]):
+						season_averages[outer_key][inner_key]=season_averages[outer_key][prev_year_key]
+						if split_key[1]=='home': #If we're replacing one H/A avg with the previous year, replace the other too...
+							season_averages[outer_key][split_key[0]+'_away']=season_averages[outer_key][prev_year_key.split("_")[0]+'_away']														
+						else:	
+							season_averages[outer_key][split_key[0]+'_home']=season_averages[outer_key][prev_year_key.split("_")[0]+'_home']	
+					else: #If we don't have 2015 or 2014 data, put in a zero
+						season_averages[outer_key][split_key[0]+'_away']=0
+						season_averages[outer_key][split_key[0]+'_home']=0
 
 		return season_averages
 
@@ -640,6 +701,18 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 			# feature_dict['strikeouts']=[]
 			feature_dict['pred_strikeouts']=[]
 			season_averages=self.season_averages(hist_data,player)
+			feature_dict['batter_lineup_ops']=[]
+			feature_dict['batter_lineup_slg']=[]
+			feature_dict['innings_pitched']=[]
+			feature_dict['earned_runs']=[]
+			# season_averages=self.season_averages(hist_data,player)
+		
+		# feature_dict['wind_dir'] = []
+		#feature_dict['wind_speed'] = []
+		#feature_dict['temp']=[]
+		#feature_dict['humidity']=[]
+		#feature_dict['rest_time'] = []
+		#feature_dict['day_of_month'] = []
 		for indx,FD_point in enumerate(FD_points):
 			reverse_index = len(FD_points)-indx -1
 			# if hist_data['home_starting_lineup'][reverse_index] and hist_data['away_starting_lineup'][reverse_index]:
@@ -655,7 +728,6 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 				home_team=team_map[hist_data['home_team'][reverse_index]]
 				away_team=team_map[hist_data['away_team'][reverse_index]]	
 				median_chunk_list = [FD_points[chunk_indx] for chunk_indx in range(reverse_index-self.median_stat_chunk_size[player_type],reverse_index-1)]
-
 				if player.split("_")[1]=='batter':
 					feature_dict['HR_ballpark_factor'].append(float(self.get_stadium_data()[hist_data['stadium'][reverse_index]]['HR']))
 					feature_dict['FD_points'].append(FD_points[reverse_index]) #Cole:Need to do some testing on most informative hist FD points data feature(ie avg, trend, combination)
@@ -676,6 +748,7 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 						else:
 							feature_dict['op_pitcher_arm'].append(0)
 						pitcher_data = self.get_db_gamedata(op_pitcher,GameID=hist_data['GameID'][reverse_index])
+
 						if op_pitcher + '_pitcher' in pitcher_data.keys():
 							feature_dict['op_pitcher_era'].append(pitcher_data[op_pitcher + '_pitcher']['era'][0])
 							feature_dict['op_pitcher_strikeouts'].append(pitcher_data[op_pitcher + '_pitcher']['strike_outs'][0])
@@ -703,7 +776,7 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 						continue
 					feature_dict['HR_ballpark_factor'].append(float(self.get_stadium_data()[hist_data['stadium'][reverse_index]]['HR']))
 					feature_dict['FD_points'].append(FD_points[reverse_index]) #Cole:Need to do some testing on most informative hist FD points data feature(ie avg, trend, combination)
-					
+					feature_dict['FD_median'].append(self.median_stat(median_chunk_list,False))
 														#VEGAS ODDS FEATURES
 					# try:
 					# 	odds_data=ast.literal_eval(odds_data_raw)[team]
@@ -730,42 +803,86 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 					# 	feature_dict['moneyline'].append(50)
 					# 	feature_dict['proj_run_total'].append(3)
 					
-														#PITCHER STRIKEOUT PREDICTOR FEATURE
+														#PITCHER V BATTER FEATURES (NEW)
+					
+					feature_dict['pred_strikeouts'].append(hist_data['strike_outs'][reverse_index]) 
+					feature_dict['innings_pitched'].append(hist_data['innings_pitched'][reverse_index])
+					feature_dict['earned_runs'].append(hist_data['earned_runs'][reverse_index])
 					try:
-						year=str(hist_data['Date'][reverse_index]).split("-")[0]
 						if team==home_team:
-							year_team=str(hist_data['Date'][reverse_index]).split("-")[0]+"_home"
-							lineup_data=[ast.literal_eval(hist_data['away_starting_lineup'][reverse_index]),'away']
+							lineup_data=ast.literal_eval(hist_data['away_starting_lineup'][reverse_index])
 						elif team==away_team:
-							lineup_data=[ast.literal_eval(hist_data['home_starting_lineup'][reverse_index]),'home']
-							year_team=str(hist_data['Date'][reverse_index]).split("-")[0]+"_away"
+							lineup_data=ast.literal_eval(hist_data['home_starting_lineup'][reverse_index])
 					except Exception,error:
-						print 'error for event: %s' % hist_data['event_id'][reverse_index]
-						print str(error)
+						print '%s for event: %s' % (str(error),hist_data['event_id'][reverse_index])
 						os.system('pause')
-
-
-					#feature_dict['FD_median'].append(self.median_stat(median_chunk_list,False))
-					#feature_dict['strikeouts'].append(hist_data['strike_outs'][reverse_index]) #this is for plotting strikeouts vs. predicted strikeouts.
 					if len(lineup_data)!=0: #will need to reconfigure this in future 
-						lineup_stats_dict=self.batter_lineup_stats(hist_data['Date'][reverse_index],lineup_data,player_arm)
-						if numpy.isnan(lineup_stats_dict['strikeout_rate']): #If function returned Nan value, assume lineup's K rate equal to league average
-							lineup_stats_dict['strikeout_rate']=season_averages['league_K%_avg'][year]
-						off_k_avg=float((lineup_stats_dict['strikeout_rate']-season_averages['league_K%_avg'][year])/season_averages['league_K%_avg'][year])
-						pred_strikeouts=float((season_averages['pitcher_K9_avg_ha'][year_team]*off_k_avg+season_averages['pitcher_K9_avg_ha'][year_team])/9*season_averages['pitcher_IP_avg_ha'][year_team])
-						if numpy.isnan(pred_strikeouts) or pred_strikeouts<0:
-							feature_dict['pred_strikeouts'].append(3)
+						lineup_ops,lineup_slg,ops_PAs,slg_PAs=([] for i in range(4))
+						for batter in lineup_data:
+							if batter.split("_")[1]!='pitcher':
+								batting_order=lineup_data[batter]['batting_order']
+								player_data=self.get_db_gamedata(batter.split("_")[0],GameID=hist_data['GameID'][reverse_index])
+								if batter in player_data.keys():
+									lineup_ops.append(player_data[batter]['ops'][0]*self.avg_plate_appearances[batting_order])
+									lineup_slg.append(player_data[batter]['slg'][0]*self.avg_plate_appearances[batting_order])
+									ops_PAs.append(self.avg_plate_appearances[batting_order])
+									slg_PAs.append(self.avg_plate_appearances[batting_order])
+								else:
+									print 'batter %s not in db' % batter
+						weighted_lineup_ops=numpy.sum(lineup_ops)/numpy.sum(ops_PAs)
+						weighted_lineup_slg=numpy.sum(lineup_slg)/numpy.sum(slg_PAs)
+						if numpy.isnan(weighted_lineup_ops) or weighted_lineup_ops<0:
+							feature_dict['batter_lineup_ops'].append(0.710)
+						else:
+							feature_dict['batter_lineup_ops'].append(weighted_lineup_ops)
+						if numpy.isnan(weighted_lineup_slg) or weighted_lineup_slg<0:
+							feature_dict['batter_lineup_slg'].append(0.400)
 						else:
 							feature_dict['pred_strikeouts'].append(pred_strikeouts)
-					else:
-						pred_strikeouts=float(season_averages['pitcher_K9_avg_ha'][year_team]/9*season_averages['pitcher_IP_avg_ha'][year_team])
-						if numpy.isnan(pred_strikeouts) or pred_strikeouts<0: #if pitcher doesnt have enough data for given season, append 3 K's.
-							feature_dict['pred_strikeouts'].append(3)
-						else:
-							feature_dict['pred_strikeouts'].append(pred_strikeouts)
-					feature_dict['FD_median'].append(self.median_stat(median_chunk_list,False))
 					#Ian: need to fix this to eliminate any Nan values!!				
+							feature_dict['batter_lineup_slg'].append(weighted_lineup_slg)
+					else:
+						feature_dict['batter_lineup_ops'].append(0.710)
+						feature_dict['batter_lineup_slg'].append(0.400)
 
+					# 									#OLD PvB Features
+					# try:
+					# 	year=str(hist_data['Date'][reverse_index]).split("-")[0]
+					# 	if team==home_team:
+					# 		year_team=str(hist_data['Date'][reverse_index]).split("-")[0]+"_home"
+					# 		lineup_data=[ast.literal_eval(hist_data['away_starting_lineup'][reverse_index]),'away']
+					# 	elif team==away_team:
+					# 		lineup_data=[ast.literal_eval(hist_data['home_starting_lineup'][reverse_index]),'home']
+					# 		year_team=str(hist_data['Date'][reverse_index]).split("-")[0]+"_away"
+					# except Exception,error:
+					# 	print '%s for event: %s' % (str(error),hist_data['event_id'][reverse_index])
+					# 	os.system('pause')
+
+					# if len(lineup_data)!=0: #will need to reconfigure this in future 
+					# 	lineup_stats_dict=self.batter_lineup_stats(hist_data['Date'][reverse_index],lineup_data,player_arm)
+					# 	if numpy.isnan(lineup_stats_dict['strikeout_rate']): #If function returned Nan value, assume lineup's K rate equal to league average
+					# 		lineup_stats_dict['strikeout_rate']=season_averages['league_K%_avg'][year]
+					# 	off_k_avg=float((lineup_stats_dict['strikeout_rate']-season_averages['league_K%_avg'][year])/season_averages['league_K%_avg'][year])
+					# 	pred_strikeouts=float((season_averages['pitcher_K9_avg_ha'][year_team]*off_k_avg+season_averages['pitcher_K9_avg_ha'][year_team])/9*season_averages['pitcher_IP_avg_ha'][year_team])
+					# 	if numpy.isnan(pred_strikeouts) or pred_strikeouts<0:
+					# 		feature_dict['pred_strikeouts'].append(3)
+					# 	else:
+					# 		feature_dict['pred_strikeouts'].append(pred_strikeouts)
+					# 	if numpy.isnan(lineup_stats_dict['ops']):
+					# 		feature_dict['batter_lineup_ops'].append(0.710) #Ian: 2015 OPS avg according to Fangraphs
+					# 	else:
+					# 		feature_dict['batter_lineup_ops'].append(lineup_stats_dict['ops'])
+					# 	if numpy.isnan(lineup_stats_dict['slg']):
+					# 		feature_dict['batter_lineup_slg'].append(0.400) #Ian: 2015 SLG avg according to ESPN
+					# 	else:
+					# 		feature_dict['batter_lineup_slg'].append(lineup_stats_dict['slg'])
+
+					# else:
+					# 	pred_strikeouts=float(season_averages['pitcher_K9_avg_ha'][year_team]/9*season_averages['pitcher_IP_avg_ha'][year_team])
+					# 	if numpy.isnan(pred_strikeouts) or pred_strikeouts<0: #if pitcher doesnt have enough data for given season, append 3 K's.
+					# 		feature_dict['pred_strikeouts'].append(3)
+					# 	else:
+					# 		feature_dict['pred_strikeouts'].append(pred_strikeouts)			
 								#WEATHER FEATURE
 				# try:
 				# 	wunderground_data=ast.literal_eval(hist_data['wunderground_forecast'][reverse_index])
@@ -824,6 +941,20 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 		else:
 			BH_factor= stadium_data[home_team]['RHB']
 		parameters = []
+		if ('pred_strikeouts' or 'batter_lineup_ops' or 'batter_lineup_slg') in features and len(starting_lineups[player]['opposing_lineup'])!=0:
+			season_averages=self.season_averages(hist_data,player)
+			year=str(hist_data['Date'][-1]).split("-")[0]
+			if player_team==home_team:
+				year_team=year+"_home"
+				batter_matchup='away'
+			else:
+				year_team=year+"_away"
+				batter_matchup='home'
+			if date:
+				opposing_lineup_stats=self.batter_lineup_stats(date,[starting_lineups[player]['opposing_lineup'],batter_matchup],player_arm)
+			else:
+				opposing_lineup_stats=self.batter_lineup_stats(time.strftime("%Y-%m-%d"),[starting_lineups[player]['opposing_lineup'],batter_matchup],player_arm)
+		
 		print features
 		for feature in features: 
 			if feature == 'rest_time':
@@ -860,18 +991,6 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 				parameters.append(weather_data['wind']['wind_speed'])
 			elif feature=='pred_strikeouts': 
 				if len(starting_lineups[player]['opposing_lineup'])!=0:
-					year=str(hist_data['Date'][-1]).split("-")[0]
-					if player_team==home_team:
-						year_team=year+"_home"
-						batter_matchup='away'
-					else:
-						year_team=year+"_away"
-						batter_matchup='home'
-					if date:
-						opposing_lineup_stats=self.batter_lineup_stats(date,[starting_lineups[player]['opposing_lineup'],batter_matchup],player_arm)
-					else:
-						opposing_lineup_stats=self.batter_lineup_stats(time.strftime("%Y-%m-%d"),[starting_lineups[player]['opposing_lineup'],batter_matchup],player_arm)
-					season_averages=self.season_averages(hist_data,player)
 					if numpy.isnan(opposing_lineup_stats['strikeout_rate']):
 						opposing_lineup_stats['strikeout_rate']=season_averages['league_K%_avg'][year]
 					off_k_avg=float((opposing_lineup_stats['strikeout_rate']-season_averages['league_K%_avg'][year])/season_averages['league_K%_avg'][year])
@@ -883,6 +1002,18 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 					parameters.append(0)#Ian: consider giving him a zero to force a lower score? if we dont have enough data we don't want him
 				else:
 					parameters.append(pred_strikeouts)
+			elif feature=='batter_lineup_ops':
+				if len(starting_lineups[player]['opposing_lineup'])!=0:
+					parameters.append(opposing_lineup_stats['ops'])
+			elif feature=='batter_lineup_slg':
+				if len(starting_lineups[player]['opposing_lineup'])!=0:
+					parameters.append(opposing_lineup_stats['slg'])
+			elif feature=='innings_pitched':
+				if len(starting_lineups[player]['opposing_lineup'])!=0:
+					parameters.append(season_averages['pitcher_IP_avg_ha'][year_team])
+			elif feature=='earned_runs':
+				if len(starting_lineups[player]['opposing_lineup'])!=0:
+					parameters.append(season_averages['pitcher_ER_avg_ha'][year_team])
 			elif feature=='op_pitcher_arm':
 				if len(starting_lineups[player]['opposing_lineup'])!=0:
 					op_pitcher_data = {player:data for player,data in starting_lineups[player]['opposing_lineup'].iteritems() if 'pitcher' in player}

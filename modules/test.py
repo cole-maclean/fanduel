@@ -35,7 +35,8 @@ def test():
 
 
 # backtest.hist_FD_contest_salaries()
-backtest.hist_model_lineups('2015-05-17','2015-05-17')
+
+backtest.hist_model_lineups('2015-05-06','2015-05-17')
 
 # test_function(False)
 # MLB.modify_db_data('20131028','20150801',{'hist_player_data':['stuff']})
