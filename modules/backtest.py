@@ -163,7 +163,7 @@ def hist_lineup_optimizer_points(lineup_optimizer,start_date,end_date):
 def hist_model_lineups(start_date,end_date): #date format in 'YYYY-MM-DD'
     date_list = [d.strftime('%Y-%m-%d') for d in pandas.date_range(start_date,end_date)]
     MLB=Sport.MLB()
-    rw=2676
+    rw=2734
     while Cell("Backtest_Output",rw,1).value: #Ian: Don't overwrite existing values
         rw=rw+1
     hist_roster_dict={}

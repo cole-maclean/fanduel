@@ -18,11 +18,11 @@ import datetime as dt
 #backtest.hist_model_points()
 #backtest.run_hist_lineups()
 
+# backtest.hist_model_lineups('2015-04-17','2015-04-21')
+# backtest.hist_model_lineups('2015-08-01','2015-08-05')
 
-backtest.hist_model_lineups('2015-05-06','2015-05-17')
 
-
-# backtest.hist_FD_contest_salaries()
+backtest.hist_FD_contest_salaries()
 
 # MLB=Sport.MLB()
 # MLB.get_daily_game_data('20150420','20150524',True)
