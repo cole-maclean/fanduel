@@ -275,16 +275,13 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 		return event_data_dict
 
 	def get_db_gamedata(self,player,start_date="",end_date="",GameID=""): #Updated to get by GameID or by Dates
-		if start_date:
-			sql = ("SELECT hist_player_data.*, event_data.* FROM hist_player_data "
-					 "INNER JOIN event_data ON hist_player_data.GameID=event_data.event_id "
-					   "WHERE hist_player_data.Sport = '"+ self.sport +"' AND Player = '"+ player.replace("'","''") +"' AND Date BETWEEN '" + start_date +"' AND "
-					    "'" + end_date + "' ORDER BY Date ASC") #Ian: modified SQL statement so it can read names like "Travis D'Arnaud" from DB
-		else:
-			sql = ("SELECT hist_player_data.* FROM hist_player_data "
-					"WHERE Player = '"+ player.replace("'","''") +"' AND "
-					"GameID = '"+ GameID.replace("'","''") +"'")
-		db_data = dbo.read_from_db(sql,["Player","GameID","Player_Type"],True)
+		sql = ("SELECT hist_player_data.*, event_data.* FROM hist_player_data "
+				 "INNER JOIN event_data ON hist_player_data.GameID=event_data.event_id "
+				   "WHERE hist_player_data.Sport = '"+ self.sport +"' AND Player = '"+ player.replace("'","''") +"' AND Date BETWEEN '" + start_date +"' AND "
+				    "'" + end_date + "' ORDER BY Date ASC") #Ian: modified SQL statement so it can read names like "Travis D'Arnaud" from DB
+		db_dataFrame = dbo.read_from_db(sql)
+		db_dataFrame.rename()
+		return db_dataFrame
 		player_data_dict = {}
 		for key,player_game in db_data.iteritems():
 			player_type = player_game['Player_Type']
@@ -336,19 +333,6 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 		else:
 			return median
 
-	def trend_stat(self,stats_data):
-		xi = numpy.arange(0,len(stats_data))
-		matrix_ones = numpy.ones(len(stats_data))
-		array = numpy.array([xi,matrix_ones])
-		return numpy.linalg.lstsq(array.T,stats_data)[0][0]
-
-	def time_between(self,start_time,end_time):
-		secondsdelta = (dateutil.parser.parse(end_time) - dateutil.parser.parse(start_time)).seconds
-		if  abs(secondsdelta) < 864000: #Timedelta needs to be less then 10days to ensure exclusion of rest_time between seasons
-			return float(secondsdelta)
-		else:
-			return 0.0
-
 	def optimal_roster(self,FDSession,contest_url,confidence = -100,date=False,contestID=False): #Ian: added optional date for backtesting
 		DB_parameters=Ugen.ConfigSectionMap('local text')
 		if date:
@@ -365,16 +349,6 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 			roster_data = []
 			rw = 2
 			sum_confidence = 0
-			if date:
-				roster_dict={}
-				for player in r.xf:
-					roster_dict[player]={}
-					roster_dict[player]['position']=player_universe[player]['position']
-					roster_dict[player]['projected_FD_points']=player_universe[player]['projected_FD_points']
-					roster_dict[player]['confidence']=player_universe[player]['confidence']
-					roster_dict[player]['salary']=player_universe[player]['salary']
-				return roster_dict,len(player_universe)
-			else:
 				for player in r.xf:
 					#roster_data.append([player_universe[player]['position'],str(int(player_universe[player]['FD_playerid'])),str(int(player_universe[player]['MatchupID'])),str(int(player_universe[player]['TeamID']))])
 					Cell("Roster",rw,1).value = player
@@ -392,9 +366,9 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 			entry_dict = {"entries":[{"entry_fee":{"currency":"usd"},"roster":{"lineup":sorted_roster}}]}
 			with open(DB_parameters['rostertext'],"w") as myfile: #Ian: replaced hard-coded folder path with reference to config file
 					myfile.write(str(entry_dict).replace(' ',''))
-			return {'confidence':sum_confidence,'roster':entry_dict}
+			return {'confidence':sum_confidence,'roster':entry_dict,'optimizer':r}
 		else:
-			return {'confidence':0,'roster':[]}
+			return {'confidence':0,'roster':[],'optimizer':None}
 
 class MLB(Sport): #Cole: data modelling may need to be refactored, might be more elegant solution
 	def __init__(self):
@@ -1081,7 +1055,6 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 		pass
 
 	def build_player_universe(self,FDSession,contest_url): #Cole: this desperately needs documentation. Entire data structure needs documentation
-		team_map = Ugen.excel_mapping("Team Map",9,6)
 		FD_player_data = FDSession.fanduel_api_data(contest_url)['players']#Cole:need to build some sort of test that FD_names and starting lineup names match - Ian: players now get mapped in the mlb_starting_lineups function itself.
 		teams,starting_lineups = ds.mlb_starting_lineups() #Cole: need to write verification that all required teams have lineups
 		team_dict={team:data['start_time'] for team,data in teams.iteritems() if team==data['home_teamid']}
