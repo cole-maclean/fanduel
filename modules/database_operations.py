@@ -136,8 +136,3 @@ def modify_db_table(table_name,columns,values,table_key,table_key_val):
         cur.execute(sql)
     cur.close()
     return
-
-def download_hist_player_scores():
-    sql = "SELECT fanduel_contests.recordid,fanduel_contests._url FROM fanduel_contests WHERE fanduel_contests.results_dict IS NULL"
-    contests = read_from_db(sql,['recordid'])['1']
-    return contests

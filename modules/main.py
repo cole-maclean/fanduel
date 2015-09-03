@@ -47,7 +47,6 @@ def build_contest_rosters(FDSession,sport_list):
 		if sport == 'MLB':
 			Sport_Class = Sport.MLB()
 		daily_contests = FDSession.get_daily_contests(sport,[19])
-		os.system('pause')
 		for contest_id,url in daily_contests.iteritems():
 			model_roster = Sport_Class.optimal_roster(FDSession,url,-100,False,False)
 			model_roster['slate_player_count'] = len(FDSession.fanduel_api_data(url)['players'])
@@ -65,11 +64,10 @@ def contest_entry_decider(FDSession,contest,roster):
 	if entries_data == {}:
 		return False, contest
 	if float(entries_data['_meta']['entries']['count'])/float(contest['size']['max']) > 0.25:
-		user_list = entries_data['users']
-		user_wins_dict = ds.get_contest_userwins(user_list)
-		contest['user_wins_dict'] = user_wins_dict
 		return True, contest
 	else:
 		return False,contest
 
+# MLB=Sport.MLB()
+# MLB.get_daily_game_data('20150831','20150901',True)
 print run_program(["MLB"],10,20)
