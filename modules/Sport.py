@@ -1,11 +1,9 @@
 import data_scrapping as ds
 import data_scrapping_utils as Uds
 import database_operations as dbo
-import string_utils as Ustr
 import collections
 import XMLStats
 import os
-import math
 import numpy
 import ast
 from openopt import *
@@ -14,24 +12,22 @@ import pandas
 import datetime, dateutil.parser
 import general_utils as Ugen
 import FD_operations as fdo
-from sklearn.cross_validation import train_test_split
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.feature_extraction import DictVectorizer
 import time
 import weather
 import datetime as dt
 import TeamOdds
+import features as ff
 
 class Sport(): #Cole: Class has functions that should be stripped out and place into more appropriate module/class
 	def __init__(self,sport):
 		self.sport = sport
 		self.gameid = None
 
-	def FD_points_model(self,player,hist_data,starting_lineups,weather_forecast=False,visualize = True,odds_dict=False,date=False):
+	def FD_points_model(self,df,visualize = True):
 		FD_projection= collections.namedtuple("FD_projection", ["projected_points", "confidence"])
-		self.player_model_data = self.build_model_dataset(hist_data,starting_lineups,player)
+		self.player_model_data = self.build_model_dataset(df)
 		player_model = Model.Model(self.player_model_data,player)
-		print '%s modelled' % player
+		print '%s modelled' % df['name'][0]
 		player_model.FD_points_model(visualize)
 		if player_model.modelled:	#Cole: need to develop parameters for each player
 			parameters = numpy.nan_to_num(self.get_parameters(player_model.feature_labels,player,starting_lineups,hist_data,weather_forecast,odds_dict,date))
@@ -274,64 +270,33 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 			dbo.insert_mysql('event_data',cols,data)
 		return event_data_dict
 
-	def get_db_gamedata(self,player,start_date="",end_date="",GameID=""): #Updated to get by GameID or by Dates
-		sql = ("SELECT hist_player_data.*, event_data.* FROM hist_player_data "
+	def get_db_gamedata(self,player,player_type,start_date="20100101",end_date="21000101",GameID=None): #Updated to get by GameID or by Dates
+		if GameID:
+			sql = ("SELECT hist_player_data.*, event_data.* FROM hist_player_data "
 				 "INNER JOIN event_data ON hist_player_data.GameID=event_data.event_id "
-				   "WHERE hist_player_data.Sport = '"+ self.sport +"' AND Player = '"+ player.replace("'","''") +"' AND Date BETWEEN '" + start_date +"' AND "
-				    "'" + end_date + "' ORDER BY Date ASC") #Ian: modified SQL statement so it can read names like "Travis D'Arnaud" from DB
-		db_dataFrame = dbo.read_from_db(sql)
-		db_dataFrame.rename()
-		return db_dataFrame
-		player_data_dict = {}
-		for key,player_game in db_data.iteritems():
-			player_type = player_game['Player_Type']
-			player_data_map = self.inv_db_data_model[player_type]
-			data_map = {key:player_data_map[key] if 'Stat' in key else key for key in player_data_map} #Cole: updated so only Stat columns change
-			player_key = player_game['Player'] + '_' + player_game['Player_Type']
-			if player_key in player_data_dict.keys():
-				player_data_dict[player_key]['name'].append(player_key) #Cole: adding the field 'name' is required for openopts results output
-				for db_key,player_data in player_game.iteritems():
-					stat_key = data_map[db_key] if db_key in data_map.keys() else db_key
-					try:
-						player_data_dict[player_key][stat_key].append(float(player_data))#Cole: Attempt to convert data to float, else keep as string
-					except:
-						player_data_dict[player_key][stat_key].append(player_data)
-			else:
-				player_data_dict[player_key] = {}
-				player_data_dict[player_key]['name'] = [player_key]
-				for db_key,player_data in player_game.iteritems():
-					stat_key = data_map[db_key] if db_key in data_map.keys() else db_key
-					try:
-						player_data_dict[player_key][stat_key] = [float(player_data)]
-					except:
-						player_data_dict[player_key][stat_key] = [player_data]
-		return player_data_dict
+				   "WHERE hist_player_data.Sport = '"+ self.sport +"' AND "
+				   " Player = '"+ player.replace("'","''") +"' AND Player_Type ='"+ player_type +"'" +"' AND GameID ='"+ GameID +"'"
+				    " ORDER BY Date ASC")
+		else:
+			sql = ("SELECT hist_player_data.*, event_data.* FROM hist_player_data "
+					 "INNER JOIN event_data ON hist_player_data.GameID=event_data.event_id "
+					   "WHERE hist_player_data.Sport = '"+ self.sport +"' AND "
+					   "Player = '"+ player.replace("'","''") +"' AND Player_Type ='"+ player_type +"' AND "
+					    "Date BETWEEN '" + start_date +"' AND "
+					    "'" + end_date + "' ORDER BY Date ASC")
+		df = dbo.read_from_db(sql)
+		df.rename(columns=self.inv_db_data_model[df['Player_Type'][0]],inplace=True)
+		df['name'] = df['display_name'] + "_" + df['Player_Type']  #Cole: adding the field 'name' is required for openopts results output
+		for col in list(df):
+			try:
+				df[col] = df[col].astype(float)
+			except:
+				pass
+		return df
 
 	def get_stadium_data(self,prime_key = 'stadium'):
 		sql = "SELECT * FROM stadium_data"
 		return dbo.read_from_db(sql,[prime_key],True)
-
-	def avg_stat(self,stats_data,include_zero = True):
-		np_array = numpy.array(stats_data)
-		if include_zero:
-			avg =numpy.mean(np_array)
-		else:
-			avg =numpy.mean(np_array[numpy.nonzero(np_array)])
-		if numpy.isnan(avg):
-			return 0
-		else:
-			return avg
-
-	def median_stat(self,stats_data,include_zero=True):
-		np_array = numpy.array(stats_data)
-		if include_zero:
-			median =numpy.median(np_array)
-		else:
-			median =numpy.median(np_array[numpy.nonzero(np_array)])
-		if numpy.isnan(median):
-			return 0
-		else:
-			return median
 
 	def optimal_roster(self,FDSession,contest_url,confidence = -100,date=False,contestID=False): #Ian: added optional date for backtesting
 		DB_parameters=Ugen.ConfigSectionMap('local text')
@@ -349,16 +314,16 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 			roster_data = []
 			rw = 2
 			sum_confidence = 0
-				for player in r.xf:
-					#roster_data.append([player_universe[player]['position'],str(int(player_universe[player]['FD_playerid'])),str(int(player_universe[player]['MatchupID'])),str(int(player_universe[player]['TeamID']))])
-					Cell("Roster",rw,1).value = player
-					Cell("Roster",rw,2).value = player_universe[player]['team']
-					Cell("Roster",rw,3).value = player_universe[player]['position']
-					Cell("Roster",rw,4).value = player_universe[player]['projected_FD_points']
-					Cell("Roster",rw,5).value = player_universe[player]['confidence']
-					Cell("Roster",rw,6).value = player_universe[player]['salary']
-					sum_confidence = sum_confidence + player_universe[player]['confidence']
-					rw = rw + 1
+			for player in r.xf:
+				#roster_data.append([player_universe[player]['position'],str(int(player_universe[player]['FD_playerid'])),str(int(player_universe[player]['MatchupID'])),str(int(player_universe[player]['TeamID']))])
+				Cell("Roster",rw,1).value = player
+				Cell("Roster",rw,2).value = player_universe[player]['team']
+				Cell("Roster",rw,3).value = player_universe[player]['position']
+				Cell("Roster",rw,4).value = player_universe[player]['projected_FD_points']
+				Cell("Roster",rw,5).value = player_universe[player]['confidence']
+				Cell("Roster",rw,6).value = player_universe[player]['salary']
+				sum_confidence = sum_confidence + player_universe[player]['confidence']
+				rw = rw + 1
 			lineup = [{'position':player_universe[player]['position'],'player':{'id':player_universe[player]['id']}} for player in r.xf]
 			sorted_roster = sorted(lineup, key=self.sort_positions)
 			print sorted_roster
@@ -391,9 +356,8 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 									'away_team':{'team_id':'away_team'},'home_team':{'team_id':'home_team','site_name':'stadium'}})
 
 		self.optimizer_items = ['name','Player_Type','salary','P','C','1B','2B','3B','SS','OF','projected_FD_points','confidence']
-		self.median_stat_chunk_size = {'batter':13,'pitcher':15} #Cole: might need to play with these
 		self.model_version = '0.0.0001'
-		self.features={'pitcher':['pred_strikeouts','FD_median'],'batter':['FD_median']}
+		self.features={'pitcher':[ff.FD_median],'batter':[ff.FD_median]}
 		self.model_description = "Lasso Linear regression and %s" % self.features
 		self.model_mean_score = -1.70
 		self.contest_constraints = ({'size':[{'max': 2, 'min': 2},{'max': 3, 'min': 3},{'max': 4, 'min': 4},
@@ -650,243 +614,12 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 
 		return season_averages
 #Ian: reverse index is day before, check how this may affect your stuff
-	def build_model_dataset(self,hist_data,starting_lineups,player):#Cole: How do we generalize this method. Some out-of-box method likely exists. Defs need to refactor
-		print 'now building dataset for %s' % player
-		player_arm=starting_lineups[player]['arm']
-		team_map=Ugen.mlb_map(11,4)
-		player_type = hist_data['Player_Type'][-1]
-		FD_points = self.FD_points(hist_data)
-		feature_dict = {}
-		if player.split("_")[1]=='batter':
-			feature_dict['FD_points'] = []
-			feature_dict['FD_median'] = []
-			feature_dict['op_pitcher_arm'] = []
-			feature_dict['op_pitcher_strikeouts'] = []
-			feature_dict['op_pitcher_era'] = []
-			feature_dict['BH_ballpark_factor']=[]
-		if player.split("_")[1]=='pitcher':
-			#feature_dict['moneyline'] = []
-			feature_dict['FD_points'] = []
-			feature_dict['FD_median'] = []
-			#feature_dict['proj_run_total']=[]
-			# feature_dict['strikeouts']=[]
-			feature_dict['pred_strikeouts']=[]
-			feature_dict['batter_lineup_ops']=[]
-			feature_dict['batter_lineup_slg']=[]
-			feature_dict['innings_pitched']=[]
-			feature_dict['earned_runs']=[]
-			# season_averages=self.season_averages(hist_data,player)
-		
-		# feature_dict['wind_dir'] = []
-		#feature_dict['wind_speed'] = []
-		#feature_dict['temp']=[]
-		#feature_dict['humidity']=[]
-		#feature_dict['rest_time'] = []
-		feature_dict['HR_ballpark_factor'] = [] 
-		#feature_dict['day_of_month'] = []
-		for indx,FD_point in enumerate(FD_points):
-			reverse_index = len(FD_points)-indx -1
-			# if hist_data['home_starting_lineup'][reverse_index] and hist_data['away_starting_lineup'][reverse_index]:
-			# 	if player not in hist_data['home_starting_lineup'][reverse_index] and player not in hist_data['away_starting_lineup'][reverse_index]:
-			# 		continue
-				# else:
-				# 	pass
-			# if player.split("_")[1]=='pitcher' and 'strikeouts' in feature_dict:			
-			# 	if '2013-04' in str(hist_data['Date'][reverse_index]): #Ian: added this since batter_lineup_stats features wont be accurate for older dates (since htey pull historical data starting from date)
-			# 		break
-			try:
-				team=hist_data['Team'][reverse_index]
-				home_team=team_map[hist_data['home_team'][reverse_index]]
-				away_team=team_map[hist_data['away_team'][reverse_index]]	
-				median_chunk_list = [FD_points[chunk_indx] for chunk_indx in range(reverse_index-self.median_stat_chunk_size[player_type],reverse_index-1)]
-				# feature_dict['rest_time'].append(self.time_between(hist_data['start_date_time'][reverse_index-1],hist_data['start_date_time'][reverse_index])) #this will include rest_days between season, need to remove
-				if player.split("_")[1]=='batter':
-					feature_dict['HR_ballpark_factor'].append(float(self.get_stadium_data()[hist_data['stadium'][reverse_index]]['HR']))
-					feature_dict['FD_points'].append(FD_points[reverse_index]) #Cole:Need to do some testing on most informative hist FD points data feature(ie avg, trend, combination)
-					feature_dict['FD_median'].append(self.median_stat(median_chunk_list,False))
-					if player_arm=='L':
-				 		feature_dict['BH_ballpark_factor'].append(float(self.get_stadium_data()[hist_data['stadium'][reverse_index]]['LHB']))
-				 	else: #Accounts for switch hitters
-				 		feature_dict['BH_ballpark_factor'].append(float(self.get_stadium_data()[hist_data['stadium'][reverse_index]]['RHB']))
-
-					try:
-						if player in ast.literal_eval(hist_data['away_starting_lineup'][reverse_index]).keys():
-							op_pitcher_data = {player:data for player,data in ast.literal_eval(hist_data['home_starting_lineup'][reverse_index]).iteritems() if 'pitcher' in player}
-						else:
-							op_pitcher_data = {player:data for player,data in ast.literal_eval(hist_data['away_starting_lineup'][reverse_index]).iteritems() if 'pitcher' in player}
-						op_pitcher = op_pitcher_data.keys()[0].split("_")[0]
-						if op_pitcher_data[op_pitcher + '_pitcher']['arm'] == 'R':
-							feature_dict['op_pitcher_arm'].append(1)
-						else:
-							feature_dict['op_pitcher_arm'].append(0)
-						pitcher_data = self.get_db_gamedata(op_pitcher,GameID=hist_data['GameID'][reverse_index])
-
-						if op_pitcher + '_pitcher' in pitcher_data.keys():
-							feature_dict['op_pitcher_era'].append(pitcher_data[op_pitcher + '_pitcher']['era'][0])
-							feature_dict['op_pitcher_strikeouts'].append(pitcher_data[op_pitcher + '_pitcher']['strike_outs'][0])
-						else:
-							print op_pitcher +  " not in db"
-							feature_dict['op_pitcher_era'].append(3) #What #'s to use if pitcher doesnt exist?' Ian: let's try the league avg pitcher era for that year?
-							feature_dict['op_pitcher_strikeouts'].append(3)
-					except:
-						feature_dict['op_pitcher_arm'].append(1)
-						feature_dict['op_pitcher_era'].append(3) #What #'s to use if pitcher doesnt exist?'
-						feature_dict['op_pitcher_strikeouts'].append(3)
-
-				
-				# odds_data_raw=hist_data['vegas_odds'][reverse_index]				
-
-				if player.split("_")[1]=='pitcher':
-					if hist_data['home_starting_lineup'][reverse_index] and hist_data['away_starting_lineup'][reverse_index]: #If there is lineup data for given evenet
-						if player not in hist_data['home_starting_lineup'][reverse_index] and player not in hist_data['away_starting_lineup'][reverse_index]: #Check if they werent starting if they werent starting
-							#print 'player %s did not start on %s for team %s' %(player,hist_data['Date'][reverse_index],team)
-							continue #skip to next iteration
-						else:
-							pass
-					else: #this means there is no lineup data
-						continue
-					feature_dict['HR_ballpark_factor'].append(float(self.get_stadium_data()[hist_data['stadium'][reverse_index]]['HR']))
-					feature_dict['FD_points'].append(FD_points[reverse_index]) #Cole:Need to do some testing on most informative hist FD points data feature(ie avg, trend, combination)
-					feature_dict['FD_median'].append(self.median_stat(median_chunk_list,False))
-								
-														#VEGAS ODDS FEATURES
-					# try:
-					# 	odds_data=ast.literal_eval(odds_data_raw)[team]
-					# 	try:
-					# 		if odds_data['moneyline']>5: #Ian: check if value is nothing
-					# 			feature_dict['moneyline'].append(odds_data['moneyline'])
-					# 		else:
-					# 			feature_dict['moneyline'].append(50)
-					# 	except:
-					# 		print 'no moneyline data available for event: %s' % hist_data['event_id'][reverse_index]
-					# 		# print odds_data
-					# 		# os.system('pause')
-					# 		feature_dict['moneyline'].append(50)
-					# 	try:
-					# 		if odds_data['proj_run_total']>0:
-					# 			feature_dict['proj_run_total'].append(odds_data['proj_run_total'])
-					# 		else:
-					# 			feature_dict['proj_run_total'].append(3)
-					# 	except:
-					# 		print 'no projected run total for this event: %s' % hist_data['event_id'][reverse_index]
-					# 		feature_dict['proj_run_total'].append(3)
-					# except:
-					# 	print 'malformed vegas_odds string/nonetype for event: %s' % hist_data['event_id'][reverse_index]
-					# 	feature_dict['moneyline'].append(50)
-					# 	feature_dict['proj_run_total'].append(3)
-					
-														#PITCHER V BATTER FEATURES (NEW)
-					
-					feature_dict['pred_strikeouts'].append(hist_data['strike_outs'][reverse_index]) 
-					feature_dict['innings_pitched'].append(hist_data['innings_pitched'][reverse_index])
-					feature_dict['earned_runs'].append(hist_data['earned_runs'][reverse_index])
-					try:
-						if team==home_team:
-							lineup_data=ast.literal_eval(hist_data['away_starting_lineup'][reverse_index])
-						elif team==away_team:
-							lineup_data=ast.literal_eval(hist_data['home_starting_lineup'][reverse_index])
-					except Exception,error:
-						print '%s for event: %s' % (str(error),hist_data['event_id'][reverse_index])
-						os.system('pause')
-					if len(lineup_data)!=0: #will need to reconfigure this in future 
-						lineup_ops,lineup_slg,ops_PAs,slg_PAs=([] for i in range(4))
-						for batter in lineup_data:
-							if batter.split("_")[1]!='pitcher':
-								batting_order=lineup_data[batter]['batting_order']
-								player_data=self.get_db_gamedata(batter.split("_")[0],GameID=hist_data['GameID'][reverse_index])
-								if batter in player_data.keys():
-									lineup_ops.append(player_data[batter]['ops'][0]*self.avg_plate_appearances[batting_order])
-									lineup_slg.append(player_data[batter]['slg'][0]*self.avg_plate_appearances[batting_order])
-									ops_PAs.append(self.avg_plate_appearances[batting_order])
-									slg_PAs.append(self.avg_plate_appearances[batting_order])
-								else:
-									print 'batter %s not in db' % batter
-						weighted_lineup_ops=numpy.sum(lineup_ops)/numpy.sum(ops_PAs)
-						weighted_lineup_slg=numpy.sum(lineup_slg)/numpy.sum(slg_PAs)
-						if numpy.isnan(weighted_lineup_ops) or weighted_lineup_ops<0:
-							feature_dict['batter_lineup_ops'].append(0.710)
-						else:
-							feature_dict['batter_lineup_ops'].append(weighted_lineup_ops)
-						if numpy.isnan(weighted_lineup_slg) or weighted_lineup_slg<0:
-							feature_dict['batter_lineup_slg'].append(0.400)
-						else:
-							feature_dict['batter_lineup_slg'].append(weighted_lineup_slg)
-					else:
-						feature_dict['batter_lineup_ops'].append(0.710)
-						feature_dict['batter_lineup_slg'].append(0.400)
-
-					# 									#OLD PvB Features
-					# try:
-					# 	year=str(hist_data['Date'][reverse_index]).split("-")[0]
-					# 	if team==home_team:
-					# 		year_team=str(hist_data['Date'][reverse_index]).split("-")[0]+"_home"
-					# 		lineup_data=[ast.literal_eval(hist_data['away_starting_lineup'][reverse_index]),'away']
-					# 	elif team==away_team:
-					# 		lineup_data=[ast.literal_eval(hist_data['home_starting_lineup'][reverse_index]),'home']
-					# 		year_team=str(hist_data['Date'][reverse_index]).split("-")[0]+"_away"
-					# except Exception,error:
-					# 	print '%s for event: %s' % (str(error),hist_data['event_id'][reverse_index])
-					# 	os.system('pause')
-
-					# if len(lineup_data)!=0: #will need to reconfigure this in future 
-					# 	lineup_stats_dict=self.batter_lineup_stats(hist_data['Date'][reverse_index],lineup_data,player_arm)
-					# 	if numpy.isnan(lineup_stats_dict['strikeout_rate']): #If function returned Nan value, assume lineup's K rate equal to league average
-					# 		lineup_stats_dict['strikeout_rate']=season_averages['league_K%_avg'][year]
-					# 	off_k_avg=float((lineup_stats_dict['strikeout_rate']-season_averages['league_K%_avg'][year])/season_averages['league_K%_avg'][year])
-					# 	pred_strikeouts=float((season_averages['pitcher_K9_avg_ha'][year_team]*off_k_avg+season_averages['pitcher_K9_avg_ha'][year_team])/9*season_averages['pitcher_IP_avg_ha'][year_team])
-					# 	if numpy.isnan(pred_strikeouts) or pred_strikeouts<0:
-					# 		feature_dict['pred_strikeouts'].append(3)
-					# 	else:
-					# 		feature_dict['pred_strikeouts'].append(pred_strikeouts)
-					# 	if numpy.isnan(lineup_stats_dict['ops']):
-					# 		feature_dict['batter_lineup_ops'].append(0.710) #Ian: 2015 OPS avg according to Fangraphs
-					# 	else:
-					# 		feature_dict['batter_lineup_ops'].append(lineup_stats_dict['ops'])
-					# 	if numpy.isnan(lineup_stats_dict['slg']):
-					# 		feature_dict['batter_lineup_slg'].append(0.400) #Ian: 2015 SLG avg according to ESPN
-					# 	else:
-					# 		feature_dict['batter_lineup_slg'].append(lineup_stats_dict['slg'])
-
-					# else:
-					# 	pred_strikeouts=float(season_averages['pitcher_K9_avg_ha'][year_team]/9*season_averages['pitcher_IP_avg_ha'][year_team])
-					# 	if numpy.isnan(pred_strikeouts) or pred_strikeouts<0: #if pitcher doesnt have enough data for given season, append 3 K's.
-					# 		feature_dict['pred_strikeouts'].append(3)
-					# 	else:
-					# 		feature_dict['pred_strikeouts'].append(pred_strikeouts)			
-
-								#WEATHER FEATURE
-				# try:
-				# 	wunderground_data=ast.literal_eval(hist_data['wunderground_forecast'][reverse_index])
-				# 	if wunderground_data['temp']>0 and wunderground_data['temp']<150:
-				# 		feature_dict['temp'].append(wunderground_data['temp'])
-				# 	else:
-				# 		feature_dict['temp'].append(0) #Change to value regression will ignore
-				# 	# if wunderground_data['humidity']>0 and wunderground_data['humidity']<100: #Ian: assuming given a relative humidity, need to check
-				# 	# 	feature_dict['humidity'].append(wunderground_data['humidity'])
-				# 	# else:
-				# 	# 	feature_dict['humidity'].append(0) #Change to value regression will ignore
-				# except:
-				# 	feature_dict['temp'].append(0)
-					# feature_dict['humidity'].append(0)
-				# wind_data=hist_data['wind'][reverse_index]
-				# if wind_data:
-				# 	wind_speed=float(wind_data.split('_')[1])
-				# 	wind_dir=float(wind_data.split('_')[0])
-				# 	if wind_dir>=0 and wind_dir<=360 and wind_speed>=0 and wind_speed<=100:
-				# 		# if hist_data['Player_Type'][-1]=='pitcher':
-				# 		# 	feature_dict['wind_dir'].append(180-wind_dir)
-				# 		# else:
-				# 		# 	feature_dict['wind_dir'].append(wind_dir)
-				# 		feature_dict['wind_speed'].append(wind_speed)
-				# 	else: #Ian: these need to be changed to values that the regression will ignore...
-				# 		#feature_dict['wind_dir'].append(0)
-				# 		feature_dict['wind_speed'].append(0) 	
-				# else: #Ian: these need to be changed to values that the regression will ignore...
-				# 	#feature_dict['wind_dir'].append(0)
-				# 	feature_dict['wind_speed'].append(0)
-			except IndexError: #Ian: May need to change this? Depending on which feature has an index error first, other features may have already appended values for that indx...
-				break
-		return feature_dict
+	def build_model_dataset(self,df):#Cole: How do we generalize this method. Some out-of-box method likely exists. Defs need to refactor
+		print 'now building dataset for %s' % df['name'][0]
+		feature_df= pandas.DataFrame(ff.FD_points(df))
+		for feature in self.features[df['Player_Type'][0]]:
+			feature_df[feature.__name__] = feature(df)
+		return feature_df
 
 	def get_parameters(self,features,player,starting_lineups,hist_data,weather_forecast=False,odds_dict=False,date=False): #Ian: added date variable for backtesting
 		player_id =player.split("_")
@@ -1028,17 +761,6 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 						parameters.append(3)
 		return parameters
 
-	def FD_points(self, data):
-		if data['Player_Type'][-1] == 'batter':
-			FD_points = (numpy.array(data['singles'])*1+numpy.array(data['doubles'])*2+numpy.array(data['triples'])*3+
-							numpy.array(data['home_runs'])*4+numpy.array(data['rbi'])*1+numpy.array(data['runs'])*1+
-								numpy.array(data['walks'])*1+numpy.array(data['stolen_bases'])*1+numpy.array(data['hit_by_pitch'])*1+
-								numpy.subtract(numpy.array(data['at_bats']),numpy.array(data['hits']))*-.25)
-		else:
-			FD_points= (numpy.array(data['win'])*4+numpy.array(data['earned_runs'])*-1+
-								numpy.array(data['strike_outs'])*1+numpy.array(data['innings_pitched'])*1)
-		return FD_points
-
 	def weather_checker(self,stadium,forecast):
 		sql = "SELECT * FROM event_data WHERE stadium = '" + stadium +"'"
 		event_data = dbo.read_from_db(sql,['event_id'],True)
@@ -1057,33 +779,22 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 	def build_player_universe(self,FDSession,contest_url): #Cole: this desperately needs documentation. Entire data structure needs documentation
 		FD_player_data = FDSession.fanduel_api_data(contest_url)['players']#Cole:need to build some sort of test that FD_names and starting lineup names match - Ian: players now get mapped in the mlb_starting_lineups function itself.
 		teams,starting_lineups = ds.mlb_starting_lineups() #Cole: need to write verification that all required teams have lineups
-		team_dict={team:data['start_time'] for team,data in teams.iteritems() if team==data['home_teamid']}
-		#weather_forecast={team:weather.weather_hourly(team,start_time) for team,start_time in team_dict.iteritems()}
-		weather_forecast={}
-		print 'getting weather'
-		for team,start_time in team_dict.iteritems():
-			weather_forecast[team]=weather.weather_hourly(team,start_time)
-			time.sleep(6.1)
-		print 'weather retrieved'
-		omitted_teams = []
 		missing_lineups = [team for team in teams.keys() if len(teams[team]['lineup'])<8 and team not in omitted_teams] #Cole: this whole method needs to be split out into more reasonable functions
 		print missing_lineups
 		starting_players = [player.split("_")[0] for player in starting_lineups.keys() if starting_lineups[player]['teamid'] not in omitted_teams and 'PPD' not in starting_lineups[player]['start_time']] #Cole: is the PPD working?
 		FD_starting_player_data = {player['first_name'] + " " + player['last_name']:player for player in FD_player_data if player['first_name'] + " " + player['last_name'] in starting_players} #data[1] is FD_player_name
 		player_universe = {}
-		odds_dict=TeamOdds.vegas_odds_sportsbook(dt.datetime.today().strftime("%Y%m%d"))
 		for FD_playerid,data in FD_starting_player_data.iteritems():
-			db_data = self.get_db_gamedata(FD_playerid,"20140301","20151212")
-			try: #Cole: this is terrible, need a better solution
+			try: #Cole: this tests if the player is a batter or pitcher in tonights lineup - this might cause issues if FD name doesnt math lineup names
 				test = starting_lineups[FD_playerid +"_batter"]
 				player_type = 'batter'
 			except KeyError:
 				player_type = 'pitcher'
+			db_df = self.get_db_gamedata(FD_playerid,player_type)
  			player_key = FD_playerid + '_' + player_type	
-			if player_key in db_data.keys():
+			if player_key == db_df['name']:
 				player_universe[player_key] = {}
-				player_universe[player_key]['FD_playerid'] = FD_playerid
-				projected_FD_points = self.FD_points_model(player_key,db_data[player_key],starting_lineups,False,False,dt.datetime.today().strftime("%Y%m%d"))
+				projected_FD_points = self.FD_points_model(db_df)
 				player_universe[player_key]['projected_FD_points'] = projected_FD_points.projected_points
 				player_universe[player_key]['confidence'] = projected_FD_points.confidence
 				player_universe[player_key]['Player_Type'] = player_type
