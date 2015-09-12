@@ -23,13 +23,13 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 		self.sport = sport
 		self.gameid = None
 
-	def FD_points_model(self,df,visualize = True):
+	def FD_points_model(self,df,visualize = False):
 		FD_projection= collections.namedtuple("FD_projection", ["projected_points", "confidence"])
 		self.player_model_data = self.build_model_dataset(df)
-		player_model = Model.Model(self.player_model_data,player)
-		print '%s modelled' % df['name'][0]
+		player_model = Model.Model(self.player_model_data,df['name'][0])
 		player_model.FD_points_model(visualize)
 		if player_model.modelled:	#Cole: need to develop parameters for each player
+			print '%s modelled' % df['name'][0]
 			parameters = numpy.nan_to_num(self.get_parameters(player_model.feature_labels,player,starting_lineups,hist_data,weather_forecast,odds_dict,date))
 			if len(player_model.test_feature_matrix) > 1: #Test dataset needs to contain at least 2 datapoints to compute score
 				projected_FD_points = (FD_projection(player_model.model.predict(parameters)[-1],
@@ -38,6 +38,7 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 			else:
 				projected_FD_points = FD_projection(player_model.model.predict(parameters)[-1],0)
 		else:
+			print '%s not modelled' % df['name'][0]
 			try:
 				default_projection = self.player_model_data['FD_median'][-1]
 				projected_FD_points = FD_projection(default_projection,0) #Cole: this is the default model prediction and confidence if player cannot be modelled
@@ -357,7 +358,7 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 
 		self.optimizer_items = ['name','Player_Type','salary','P','C','1B','2B','3B','SS','OF','projected_FD_points','confidence']
 		self.model_version = '0.0.0001'
-		self.features={'pitcher':[ff.FD_median],'batter':[ff.FD_median]}
+		self.features={'pitcher':[ff.FD_median,ff.FD_median_5],'batter':[ff.FD_median,ff.FD_median_5]}
 		self.model_description = "Lasso Linear regression and %s" % self.features
 		self.model_mean_score = -1.70
 		self.contest_constraints = ({'size':[{'max': 2, 'min': 2},{'max': 3, 'min': 3},{'max': 4, 'min': 4},
@@ -779,6 +780,7 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 	def build_player_universe(self,FDSession,contest_url): #Cole: this desperately needs documentation. Entire data structure needs documentation
 		FD_player_data = FDSession.fanduel_api_data(contest_url)['players']#Cole:need to build some sort of test that FD_names and starting lineup names match - Ian: players now get mapped in the mlb_starting_lineups function itself.
 		teams,starting_lineups = ds.mlb_starting_lineups() #Cole: need to write verification that all required teams have lineups
+		omitted_teams = []
 		missing_lineups = [team for team in teams.keys() if len(teams[team]['lineup'])<8 and team not in omitted_teams] #Cole: this whole method needs to be split out into more reasonable functions
 		print missing_lineups
 		starting_players = [player.split("_")[0] for player in starting_lineups.keys() if starting_lineups[player]['teamid'] not in omitted_teams and 'PPD' not in starting_lineups[player]['start_time']] #Cole: is the PPD working?
@@ -791,8 +793,8 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 			except KeyError:
 				player_type = 'pitcher'
 			db_df = self.get_db_gamedata(FD_playerid,player_type)
- 			player_key = FD_playerid + '_' + player_type	
-			if player_key == db_df['name']:
+ 			player_key = FD_playerid + '_' + player_type
+			if player_key == db_df['name'][0]:
 				player_universe[player_key] = {}
 				projected_FD_points = self.FD_points_model(db_df)
 				player_universe[player_key]['projected_FD_points'] = projected_FD_points.projected_points

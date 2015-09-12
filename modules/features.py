@@ -12,4 +12,9 @@ def FD_points(df):
 	return df['FD_points']
 
 def FD_median(df):
-	return pd.rolling_median(df['FD_points'],window=2)
+	median_df =pd.rolling_median(df['FD_points'],window=12)
+	return median_df.fillna(median_df.mean())
+
+def FD_median_5(df):
+	median_df =pd.rolling_median(df['FD_points'],window=5)
+	return median_df.fillna(median_df.mean())
