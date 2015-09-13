@@ -15,6 +15,19 @@ def read_from_db(sql):#Cole: updated to allow list of columns that make up key
     df = pd.read_sql(sql,conn)
     return df
 
+def read_dict_from_db(sql,primary_key_col = [0]):#Cole: updated to allow list of columns that make up key
+    cur = get_db_connection().cursor(MySQLdb.cursors.DictCursor)
+    cur.execute(sql)
+    resultset = cur.fetchall()
+    query_dict = collections.OrderedDict()
+    for rw in resultset:
+        prime_key = "_".join(str(rw[s]) for s in primary_key_col)
+        query_dict[prime_key] = rw
+    cur.close()
+    return query_dict
+
+
+
 def write_to_db(table,static_columns,static_data,write_data={}):
     row_data = [str(v) for v in write_data.values()]
     if row_data != []:

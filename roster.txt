@@ -1,1 +1,1 @@
-{'entries':[{'entry_fee':{'currency':'usd'},'roster':{'lineup':[{'position':u'P','player':{'id':u'38120'}},{'position':u'C','player':{'id':u'5244'}},{'position':u'1B','player':{'id':u'38140'}},{'position':u'2B','player':{'id':u'21885'}},{'position':u'3B','player':{'id':u'12924'}},{'position':u'SS','player':{'id':u'6319'}},{'position':u'OF','player':{'id':u'12572'}},{'position':u'OF','player':{'id':u'11989'}},{'position':u'OF','player':{'id':u'5269'}}]}}]}
+{'entries':[{'entry_fee':{'currency':'usd'},'roster':{'lineup':[]}}]}

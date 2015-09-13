@@ -172,7 +172,7 @@ def hist_model_lineups(start_date,end_date): #date format in 'YYYY-MM-DD'
         hist_roster_dict={}
         for contestID in contest_list:
             print 'now modelling contestID: %s on %s' % (str(contestID),date)
-            roster,player_universe_size=MLB.optimal_roster("https://www.fanduel.com/e/Game/12298?tableId=12594597&fromLobby=true",-10,date,contestID)
+            roster,player_universe_size=MLB.optimal_roster("Backtesting","Backtesting",-100,date,contestID)
             hist_roster_dict[date+"_"+contestID]={}
             hist_roster_dict[date+"_"+contestID]['roster']=roster
             hist_roster_dict[date+"_"+contestID]['size']=player_universe_size
@@ -217,7 +217,7 @@ def hist_model_points(rw):
 def hist_get_contest_ids(date):
     contest_list=[]
     sql = "SELECT * FROM hist_fanduel_data Where Sport='MLB' And Date="+"'" +date+"'"
-    FD_db_data= dbo.read_from_db(sql,['Player','Position','contestID'],True)
+    FD_db_data= dbo.read_dict_from_db(sql,['Player','position','contestID'])
     for e in FD_db_data:
         if e.split("_")[2] not in contest_list:
             contest_list.append(e.split("_")[2])

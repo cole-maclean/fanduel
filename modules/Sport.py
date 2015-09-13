@@ -25,23 +25,23 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 
 	def FD_points_model(self,df,visualize = False):
 		FD_projection= collections.namedtuple("FD_projection", ["projected_points", "confidence"])
-		self.player_model_data = self.build_model_dataset(df)
-		player_model = Model.Model(self.player_model_data,df['name'][0])
+		player_model_data,parameter_array = self.build_model_dataset(df)
+		print parameter_array
+		player_model = Model.Model(player_model_data,df['name'][0])
 		player_model.FD_points_model(visualize)
 		if player_model.modelled:	#Cole: need to develop parameters for each player
 			print '%s modelled' % df['name'][0]
-			parameters = numpy.nan_to_num(self.get_parameters(player_model.feature_labels,player,starting_lineups,hist_data,weather_forecast,odds_dict,date))
 			if len(player_model.test_feature_matrix) > 1: #Test dataset needs to contain at least 2 datapoints to compute score
-				projected_FD_points = (FD_projection(player_model.model.predict(parameters)[-1],
+				projected_FD_points = (FD_projection(player_model.model.predict(parameter_array)[-1],
 												player_model.model.score(player_model.test_feature_matrix,player_model.test_target_matrix)))
 				print projected_FD_points
 			else:
-				projected_FD_points = FD_projection(player_model.model.predict(parameters)[-1],0)
+				projected_FD_points = FD_projection(player_model.model.predict(parameter_array)[-1],0)
 		else:
 			print '%s not modelled' % df['name'][0]
 			try:
 				default_projection = self.player_model_data['FD_median'][-1]
-				projected_FD_points = FD_projection(default_projection,0) #Cole: this is the default model prediction and confidence if player cannot be modelled
+				projected_FD_points = FD_projection(0,0) #Cole: this is the default model prediction and confidence if player cannot be modelled
 			except:
 				projected_FD_points = FD_projection(0,0)
 		player_model = None
@@ -302,7 +302,7 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 	def optimal_roster(self,FDSession,contest_url,confidence = -100,date=False,contestID=False): #Ian: added optional date for backtesting
 		DB_parameters=Ugen.ConfigSectionMap('local text')
 		if date:
-			player_universe=self.hist_build_player_universe(date,contestID)
+			player_universe=self.build_player_universe(FDSession,contest_url,date,contestID)
 		else:
 			player_universe = self.build_player_universe(FDSession,contest_url)
 		items = ([{key:value for key,value in stats_data.iteritems() if key in self.optimizer_items}
@@ -316,7 +316,6 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 			rw = 2
 			sum_confidence = 0
 			for player in r.xf:
-				#roster_data.append([player_universe[player]['position'],str(int(player_universe[player]['FD_playerid'])),str(int(player_universe[player]['MatchupID'])),str(int(player_universe[player]['TeamID']))])
 				Cell("Roster",rw,1).value = player
 				Cell("Roster",rw,2).value = player_universe[player]['team']
 				Cell("Roster",rw,3).value = player_universe[player]['position']
@@ -358,7 +357,8 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 
 		self.optimizer_items = ['name','Player_Type','salary','P','C','1B','2B','3B','SS','OF','projected_FD_points','confidence']
 		self.model_version = '0.0.0001'
-		self.features={'pitcher':[ff.FD_median,ff.FD_median_5],'batter':[ff.FD_median,ff.FD_median_5]}
+		self.features=({'pitcher':[[ff.FD_median,ff.param_FD_median],[ff.FD_median_5,ff.param_FD_median_5]],
+						'batter':[[ff.FD_median,ff.param_FD_median],[ff.FD_median_5,ff.param_FD_median_5]]})
 		self.model_description = "Lasso Linear regression and %s" % self.features
 		self.model_mean_score = -1.70
 		self.contest_constraints = ({'size':[{'max': 2, 'min': 2},{'max': 3, 'min': 3},{'max': 4, 'min': 4},
@@ -618,149 +618,11 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 	def build_model_dataset(self,df):#Cole: How do we generalize this method. Some out-of-box method likely exists. Defs need to refactor
 		print 'now building dataset for %s' % df['name'][0]
 		feature_df= pandas.DataFrame(ff.FD_points(df))
+		parameter_array = []
 		for feature in self.features[df['Player_Type'][0]]:
-			feature_df[feature.__name__] = feature(df)
-		return feature_df
-
-	def get_parameters(self,features,player,starting_lineups,hist_data,weather_forecast=False,odds_dict=False,date=False): #Ian: added date variable for backtesting
-		player_id =player.split("_")
-		player_name = player_id[0]
-		player_type = player_id[1]
-		player_gtd = starting_lineups[player]
-		player_arm=player_gtd['arm']
-		player_team=player_gtd['teamid']
-		home_team = player_gtd['home_teamid'] #Ian: updated this as function now returns a nested dict
-		if odds_dict:
-			try:
-				odds_dict=odds_dict[starting_lineups[player]['teamid']]
-			except:
-				odds_dict={}
-				odds_dict['moneyline']=50
-				odds_dict['proj_run_total']=5
-		if weather_forecast:
-			weather_data=weather_forecast[starting_lineups[player]['home_teamid']]
-		stadium_data = self.get_stadium_data('home_team')
-		HR_factor = stadium_data[home_team]['HR']
-		if player_arm=='L':
-			BH_factor= stadium_data[home_team]['LHB']
-		else:
-			BH_factor= stadium_data[home_team]['RHB']
-		parameters = []
-		if ('pred_strikeouts' or 'batter_lineup_ops' or 'batter_lineup_slg') in features and len(starting_lineups[player]['opposing_lineup'])!=0:
-			season_averages=self.season_averages(hist_data,player)
-			year=str(hist_data['Date'][-1]).split("-")[0]
-			if player_team==home_team:
-				year_team=year+"_home"
-				batter_matchup='away'
-			else:
-				year_team=year+"_away"
-				batter_matchup='home'
-			if date:
-				opposing_lineup_stats=self.batter_lineup_stats(date,[starting_lineups[player]['opposing_lineup'],batter_matchup],player_arm)
-			else:
-				opposing_lineup_stats=self.batter_lineup_stats(time.strftime("%Y-%m-%d"),[starting_lineups[player]['opposing_lineup'],batter_matchup],player_arm)
-		
-		print features
-		for feature in features: 
-			if feature == 'rest_time':
-				parameters.append(86400) #Cole: default 1 day for now
-			elif feature == 'FD_median':
-			 	 parameters.append(self.median_stat(self.player_model_data['FD_points'][-self.median_stat_chunk_size[player_type]:]))
-			elif feature == 'HR_ballpark_factor':
-				parameters.append(float(HR_factor))
-			elif feature == 'BH_ballpark_factor':
-				parameters.append(float(BH_factor))
-			elif feature == 'temp':
-				parameters.append(weather_data['temp'])
-			elif feature == 'humidity':
-				if weather_data['humidity']>=0 and weather_data['humidity']<=100:  
-					parameters.append(weather_data['humidity'])	
-				else:
-					parameters.append(50)	 
-			elif feature == 'moneyline':
-				try:
-					parameters.append(odds_dict['moneyline'])
-				except:
-					parameters.append(50)
-			elif feature == 'proj_run_total':
-				try:
-					parameters.append(odds_dict['proj_run_total'])
-				except:
-					parameters.append(3)
-			elif feature=='wind_dir':
-				if player_type=='pitcher':
-					parameters.append(180-weather_data['wind']['wind_dir'])
-				else:
-					parameters.append(weather_data['wind']['wind_dir'])
-			elif feature=='wind_speed':
-				parameters.append(weather_data['wind']['wind_speed'])
-			elif feature=='pred_strikeouts': 
-				if len(starting_lineups[player]['opposing_lineup'])!=0:
-					if numpy.isnan(opposing_lineup_stats['strikeout_rate']):
-						opposing_lineup_stats['strikeout_rate']=season_averages['league_K%_avg'][year]
-					off_k_avg=float((opposing_lineup_stats['strikeout_rate']-season_averages['league_K%_avg'][year])/season_averages['league_K%_avg'][year])
-					pred_strikeouts=float((season_averages['pitcher_K9_avg_ha'][year_team]*off_k_avg+season_averages['pitcher_K9_avg_ha'][year_team])/9*season_averages['pitcher_IP_avg_ha'][year_team])
-				else:
-					pred_strikeouts=float(season_averages['pitcher_K9_avg_ha'][year_team]/9*season_averages['pitcher_IP_avg_ha'][year_team])
-				if pred_strikeouts<0 or numpy.isnan(pred_strikeouts): 
-					parameters.append(0)#Ian: consider giving him a zero to force a lower score? if we dont have enough data we don't want him
-				else:
-					parameters.append(pred_strikeouts)
-			elif feature=='batter_lineup_ops':
-				if len(starting_lineups[player]['opposing_lineup'])>1:
-					parameters.append(opposing_lineup_stats['ops'])
-				else:
-					parameters.append(0.710)
-			elif feature=='batter_lineup_slg':
-				if len(starting_lineups[player]['opposing_lineup'])>1:
-					parameters.append(opposing_lineup_stats['slg'])
-				else:
-					parameters.append(0.400)
-			elif feature=='innings_pitched':
-				if len(starting_lineups[player]['opposing_lineup'])>1:
-					parameters.append(season_averages['pitcher_IP_avg_ha'][year_team])
-				else:
-					parameters.append(5)
-			elif feature=='earned_runs':
-				if len(starting_lineups[player]['opposing_lineup'])>1:
-					parameters.append(season_averages['pitcher_ER_avg_ha'][year_team])
-				else:
-					parameters.append(4)
-			elif feature=='op_pitcher_arm':
-				if len(starting_lineups[player]['opposing_lineup'])!=0:
-					op_pitcher_data = {player:data for player,data in starting_lineups[player]['opposing_lineup'].iteritems() if 'pitcher' in player}
-					op_pitcher = op_pitcher_data.keys()[0]
-					if op_pitcher_data[op_pitcher]['arm'] == 'R':
-						parameters.append(1)
-					else:
-						parameters.append(0)
-			elif feature =='op_pitcher_era':
-				if len(starting_lineups[player]['opposing_lineup'])!=0:
-					op_pitcher_data = {player:data for player,data in starting_lineups[player]['opposing_lineup'].iteritems() if 'pitcher' in player}
-					op_pitcher = op_pitcher_data.keys()[0].split("_")[0]
-					if date:
-						pitcher_data = self.get_db_gamedata(op_pitcher,"20130101",Ugen.previous_day(date).replace("-",""))
-					else:
-						pitcher_data = self.get_db_gamedata(op_pitcher,"20130101","20170101")
-					if op_pitcher + '_pitcher' in pitcher_data.keys():
-						parameters.append(self.median_stat(pitcher_data[op_pitcher + '_pitcher']['era'][-13:]))
-					else:
-						print op_pitcher + " not in db"
-						parameters.append(3)
-			elif feature =='op_pitcher_strikeouts':
-				if len(starting_lineups[player]['opposing_lineup'])!=0:
-					op_pitcher_data = {player:data for player,data in starting_lineups[player]['opposing_lineup'].iteritems() if 'pitcher' in player}
-					op_pitcher = op_pitcher_data.keys()[0].split("_")[0]
-					if date:
-						pitcher_data = self.get_db_gamedata(op_pitcher,"20130101",Ugen.previous_day(date).replace("-",""))
-					else:
-						pitcher_data = self.get_db_gamedata(op_pitcher,"20130101","20170101")
-					if op_pitcher + '_pitcher' in pitcher_data.keys():
-						parameters.append(self.median_stat(pitcher_data[op_pitcher + '_pitcher']['strike_outs'][-13:]))
-					else:
-						print op_pitcher + " not in db"
-						parameters.append(3)
-		return parameters
+			feature_df[feature[0].__name__] = feature[0](df)#Index 0 is the feature function of each feature, index 1 is the corresponding parameter function
+			parameter_array.append(feature[1](df))
+		return feature_df,parameter_array
 
 	def weather_checker(self,stadium,forecast):
 		sql = "SELECT * FROM event_data WHERE stadium = '" + stadium +"'"
@@ -777,9 +639,14 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 	def weather_classfier():
 		pass
 
-	def build_player_universe(self,FDSession,contest_url): #Cole: this desperately needs documentation. Entire data structure needs documentation
-		FD_player_data = FDSession.fanduel_api_data(contest_url)['players']#Cole:need to build some sort of test that FD_names and starting lineup names match - Ian: players now get mapped in the mlb_starting_lineups function itself.
-		teams,starting_lineups = ds.mlb_starting_lineups() #Cole: need to write verification that all required teams have lineups
+	def build_player_universe(self,FDSession,contest_url,date="20250101",contestID = ""): #Cole: this desperately needs documentation. Entire data structure needs documentation
+		if date != "20250101":
+			sql = "SELECT * FROM hist_fanduel_data Where Sport='MLB' And Date="+"'" +date+"' And contestID=" + "'" +contestID+"'"
+			FD_player_data= dbo.read_dict_from_db(sql,['Player']).values()
+			teams,starting_lineups = ds.mlb_starting_lineups(date)
+		else:
+			FD_player_data = FDSession.fanduel_api_data(contest_url)['players']#Cole:need to build some sort of test that FD_names and starting lineup names match - Ian: players now get mapped in the mlb_starting_lineups function itself.
+			teams,starting_lineups = ds.mlb_starting_lineups() #Cole: need to write verification that all required teams have lineups
 		omitted_teams = []
 		missing_lineups = [team for team in teams.keys() if len(teams[team]['lineup'])<8 and team not in omitted_teams] #Cole: this whole method needs to be split out into more reasonable functions
 		print missing_lineups
@@ -792,7 +659,7 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 				player_type = 'batter'
 			except KeyError:
 				player_type = 'pitcher'
-			db_df = self.get_db_gamedata(FD_playerid,player_type)
+			db_df = self.get_db_gamedata(FD_playerid,player_type,end_date=Ugen.previous_day(date).replace("-",""))
  			player_key = FD_playerid + '_' + player_type
 			if player_key == db_df['name'][0]:
 				player_universe[player_key] = {}
@@ -809,80 +676,3 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 			else:
 				print player_key + ' not in db_player_data'
 		return player_universe
-
-	def hist_build_player_universe(self,date,contestID): #Ian: Decided to build separate from original, thought it would get too big..consider refactoring both.. 'yyyy-mm-dd'
-			sql = "SELECT * FROM hist_fanduel_data Where Sport='MLB' And Date="+"'" +date+"' And contestID=" + "'" +contestID+"'"
-			FD_db_data= dbo.read_from_db(sql,['Player','Position','contestID'],True)
-			teams,starting_lineups = ds.mlb_starting_lineups(date)
-			weather_forecast={}
-			team_dict={team:data['start_time'] for team,data in teams.iteritems() if team==data['home_teamid']}
-			#odds_dict=TeamOdds.vegas_odds_sportsbook(date)
-			odds_dict={}
-
-			#Ian: if you add this back in add weather var back into FD_points_model function call
-			#weather_forecast={team:weather.weather_hist(team,date,start_time) for team,start_time in team_dict.iteritems()}
-			# print 'getting weather'
-			# for team,start_time in team_dict.iteritems():
-			# 	weather_forecast[team]=weather.weather_hist(team,date,start_time)
-			# 	time.sleep(6.1)
-			#print 'weather retrieved'
-
-			omitted_teams = []
-			for FD_playerid,data in FD_db_data.iteritems(): #Ian: could this be turned into generator??
-				if data['Position'] == 'P':
-					player_type = 'pitcher'
-				else:
-					player_type = 'batter'
-	 			data['player_key'] = data['Player']+ '_' + player_type
-			
-			starting_players = [player for player in starting_lineups.keys() if starting_lineups[player]['teamid'] not in omitted_teams and 'PPD' not in starting_lineups[player]['start_time']] #Cole: is the PPD working?
-			#FD_starting_player_data = {FD_playerid:data for FD_playerid,data in FD_db_data.iteritems() if data['player_key'] in starting_players and (int(starting_lineups[data['player_key']]['batting_order'])<=5 or int(starting_lineups[data['player_key']]['batting_order'])==10)}
-			FD_starting_player_data = {FD_playerid:data for FD_playerid,data in FD_db_data.iteritems() if data['player_key'] in starting_players}
-			player_universe = {}
-			for FD_playerid,data in FD_starting_player_data.iteritems():
-				db_data = self.get_db_gamedata(data['Player'],"20140301",Ugen.previous_day(date).replace("-",""))
-				# db_data = self.get_db_gamedata('Roenis Elias',"20130301",Ugen.previous_day(date).replace("-",""))
-				player_key=data['player_key']
-				# player_key='Roenis Elias_pitcher'
-				if player_key in db_data.keys():
-					player_universe[player_key] = {}
-					player_universe[player_key]['FD_playerid'] = FD_playerid
-					projected_FD_points = self.FD_points_model(player_key,db_data[player_key],starting_lineups,False,False,odds_dict,date)
-					time.sleep(0.5)
-					# os.system('pause')
-					player_universe[player_key]['projected_FD_points'] = projected_FD_points.projected_points
-					player_universe[player_key]['confidence'] = projected_FD_points.confidence
-					player_universe[player_key]['Player_Type'] = player_key.split("_")[1]
-					# if player_universe[player_key]['Player_Type']=='pitcher':
-					# 	os.system('pause')
-					player_universe[player_key]['name'] = player_key
-					player_universe[player_key]['Salary']=float(data['FD_Salary'])
-					player_universe[player_key]['GamesPlayed']=float(data['FD_GP'])
-					player_universe[player_key]['PPG']=float(data['FD_FPPG'])
-					player_universe[player_key]['FD_Position']=data['Position']
-					player_universe[player_key]['FD_name']=data['Player']
-					position_map = {key:1 if key == player_universe[player_key]['FD_Position'] else 0 for key in self.positions.keys()}
-					tmp_dict = position_map.copy()
-					player_universe[player_key].update(tmp_dict)
-				else:
-					print player_key + ' not in db_player_data'
-			return player_universe
-
-# mlb=MLB()
-#data=mlb.hist_build_player_universe('2015-08-06','12748')
-# data=mlb.hist_build_player_universe('2015-07-25','12691')
-# data=mlb.get_db_gamedata("20140301",Ugen.previous_day('2015-06-10').replace("-",""),'Shane Victorino')
-# data=data['Shane Victorino_batter']
-
-# i=0
-# for e,date,event_id in zip(data['wunderground_forecast'],data['Date'],data['event_id']):
-# 	try:
-# 		e=ast.literal_eval(e)
-# 		print e['temp']
-# 	except:
-# 		i=i+1
-# 		print event_id
-# 		os.system('pause')
-# print i
-# os.system('pause')
-

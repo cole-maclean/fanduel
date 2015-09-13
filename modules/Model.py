@@ -10,7 +10,6 @@ from sklearn.decomposition import PCA
 from sklearn.pipeline import Pipeline, FeatureUnion
 from sklearn.grid_search import GridSearchCV
 from sklearn.svm import SVC
-from sklearn.datasets import load_iris
 from sklearn.decomposition import PCA
 from sklearn.feature_selection import SelectKBest
 import math
@@ -19,14 +18,11 @@ class Model():
 	def __init__(self,model_df,player): #Cole: Class accepts model_data in form {'feature1':[data],feature2:[data]}
 		self.player = player
 		self.model_data = model_df
-		os.system('pause')
 		self.target = 'FD_points'
 		self.dataset_length = len(model_df[self.target])
 		self.target_matrix = numpy.array(model_df[self.target]).astype(float)
 		self.feature_matrix = numpy.array([[model_df[key][index] for key in model_df.keys() if key != self.target] for index in range(0,len(model_df[self.target]))]).astype(float)
 		self.feature_labels = [feature for feature in  model_df.keys() if feature !=self.target]
-		print self.feature_labels
-		os.system('pause')
 
 	def best_estimator(self, X, y):
 		try:
