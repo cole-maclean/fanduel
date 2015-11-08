@@ -19,6 +19,7 @@ import string
 import weather
 from selenium import webdriver
 from selenium.webdriver.support.ui import Select
+import os
 
 def get_NHL_gamedata(sGameSeason,sGameID):
 	game_stats_Url = 'http://live.nhle.com/GameData/' + sGameSeason + '/' + sGameID + '/gc/gcbx.jsonp'
@@ -160,49 +161,42 @@ def get_contest_utlity(avg_top_wins,time_remaining,wins_data,bin_size):
 		contest_utility = 0
 	return contest_utility,future_utility
 
-def mlb_starting_lineups(date=time.strftime("%Y-%m-%d")): #take date as string 'YYYY-MM-DD'. [desperately] Needs refactoring.
+def mlb_starting_lineups(date=time.strftime("%Y-%m-%d")): #take date as string 'YYYY-MM-DD'.
 	print date
 	url='http://www.baseballpress.com/lineups/'+date
 	content=urllib2.urlopen(url).read()
-	soup=BeautifulSoup(content)
+	soup=BeautifulSoup(content,"html.parser") #Ian: added this html.parser option based on suggestion from OSX terminal...may not be necessary on windows??
 	team_map=Ugen.mlb_map(6,4)
 	player_map=Ugen.mlb_map(2,0)
-	# print 'player/team maps complete'
 	team_list,pitcher_list,lineups_list,gametime_list,weather_list,pitcher_arm_list,player_arm_list=([] for i in range(7))
 	teamid_dict={}
 	playerid_dict={}
-	for event_date in soup.findAll("div",{"class":"game-time"}):
-		gametime_list.append(event_date.text)
+
+	gametime_list=[event_date.text for event_date in soup.findAll("div",{"class":"game-time"})]
+	gametime_list=[x for pair in zip(gametime_list,gametime_list) for x in pair] #duplicate elements in list
 	for forecast in soup.findAll("a",{"target":"forecast"}):
 		forecast_string=filter(lambda x: x in string.printable, forecast.text).split('Forecast: ')[1].split(' PoP')[0].replace(" ","-").replace("--","-").replace('F','degF')
 		if len(forecast_string.split('-'))==4:
 			forecast_string=forecast_string.split('-')[0]+'-'+forecast_string.split('-')[1]+' '+forecast_string.split('-')[2]+'-'+forecast_string.split('-')[3]
 		weather_list.append(forecast_string)
+		weather_list.append(forecast_string)
+
 	for team in soup.findAll("div",{"class":"team-data"}):
-		try:
-			team_name=team.find("div",{"class":"team-name"}).get_text()
-		except:
-			team_name=''
-		try:
-			pitcher_name=team.find("a",{"class":"player-link"}).get_text()
-		except:
-			pitcher_name=''
-		try:
-			pitcher_arm=team.find('div',{"class":"text"}).get_text().split('(')[1].split(')')[0]
-		except:
-			pitcher_arm=''
+		team_name=team.find("div",{"class":"team-name"}).get_text()
+		pitcher_name=team.find("a",{"class":"player-link"}).get_text()
+		pitcher_arm=team.find('div',{"class":"text"}).get_text().split('(')[1].split(')')[0]
 		if team_name in team_map: #Ian: Check if team name has been listed
-			team_list.append(team_map[team_name])
-		else:
-			team_list.append(team_name)
+			team_name=team_map[team_name]
 		if pitcher_name in player_map:
 			pitcher_name=player_map[pitcher_name]
+		team_list.append(team_name)
 		pitcher_list.append(pitcher_name.replace("'","")+'_'+'pitcher')
 		pitcher_arm_list.append(pitcher_arm)
+	
 	for table in soup.findAll("div",{"class":"cssDialog clearfix"}):
 		table_string=table.get_text()
 		home_lineup,away_lineup,home_lineup_arms,away_lineup_arms=([] for i in range(4))  
-		if table_string.count("9. ")==2: #Ian: rethink-checks that both teams lineups have been listed. What if only one has been.. 
+		if table_string.count("9. ")==2: #Ian: rethink; checks that both teams lineups have been listed. What if only one has been.. 
 			for j in range(1,10):
 				name_list_raw=table_string[table_string.find(str(j)+". ")+3:].split(" (")
 				player=name_list_raw[0]
@@ -225,48 +219,25 @@ def mlb_starting_lineups(date=time.strftime("%Y-%m-%d")): #take date as string '
 			lineups_list.append(['no away_lineup listed'])
 			player_arm_list.append(['no hitting style listed'])
 			player_arm_list.append(['no hitting style listed'])
-	i=j=0
-	while i<len(lineups_list):
-		#if pitcher_list[i] not in lineups_list[i]
+
+
+	opponent_dict={team_list[i]:{'home_team':team_list[i],'opponent':team_list[i-1]} for i in range(0,len(team_list)) if i%2 !=0}
+	opponent_dict.update({team_list[i]:{'home_team':team_list[i+1],'opponent':team_list[i+1]} for i in range(0,len(team_list)) if team_list[i] not in opponent_dict})
+	
+	teamid_dict={}
+	for i in range(0,len(lineups_list)):
+		batting_order=range(1,len(lineups_list[i])+1)
 		lineups_list[i].append(pitcher_list[i])
 		player_arm_list[i].append(pitcher_arm_list[i])
-		teamid_dict[team_list[i]]={}
-		teamid_dict[team_list[i]]['start_time']=gametime_list[j]
-		teamid_dict[team_list[i]]['weather_forecast']=weather_list[j]
-		teamid_dict[team_list[i]]['date']=date
-		
-		player_arm_dict={}
-		z=1
-		for player,arm in zip(lineups_list[i],player_arm_list[i]):
-			player_arm_dict[player]={}
-			player_arm_dict[player]['arm']=arm			
-			player_arm_dict[player]['batting_order']=str(z)
-			z=z+1
-		teamid_dict[team_list[i]]['lineup']=player_arm_dict
-		if i%2 !=0:
-			j=j+1
-			teamid_dict[team_list[i]]['home_teamid']=team_list[i]
-			teamid_dict[team_list[i]]['opponent']=team_list[i-1]
-		else:
-			teamid_dict[team_list[i]]['home_teamid']=team_list[i+1]	
-			teamid_dict[team_list[i]]['opponent']=team_list[i+1]
-		i=i+1
-	i=j=0
-	while i<len(lineups_list):
-		z=1
-		for player,arm in zip(lineups_list[i],player_arm_list[i]):
-			playerid_dict[player]={}
-			playerid_dict[player]['start_time']=gametime_list[j]
-			playerid_dict[player]['weather_forecast']=weather_list[j]
-			playerid_dict[player]['teamid']=team_list[i]
-			playerid_dict[player]['arm']=arm
-			playerid_dict[player]['home_teamid']=teamid_dict[playerid_dict[player]['teamid']]['home_teamid']
-			playerid_dict[player]['opposing_lineup']=teamid_dict[teamid_dict[playerid_dict[player]['teamid']]['opponent']]['lineup']
-			playerid_dict[player]['batting_order']=str(z)
-			z=z+1
-		if i%2 !=0:
-			j=j+1	
-		i=i+1	
+		player_arm_dict={player:{'arm':arm,'batting_order':order} for player,arm,order in zip(lineups_list[i],player_arm_list[i],batting_order)}
+		teamid_dict.update({team_list[i]:{'start_time':gametime_list[i],'date':date,'lineup':player_arm_dict,'home_teamid':opponent_dict[team_list[i]]['home_team'], \
+							'opponent':opponent_dict[team_list[i]]['opponent'],'weather_forecast':weather_list[i]}})
+	
+	playerid_dict={player:{'start_time':teamid_dict[team_id]['start_time'],'weather_forecast':teamid_dict[team_id]['weather_forecast'], \
+					'teamid':team_id,'opposing_lineup': teamid_dict[teamid_dict[team_id]['opponent']]['lineup'],'arm':teamid_dict[team_id]['lineup'][player]['arm'], \
+					'batting_order':teamid_dict[team_id]['lineup'][player]['batting_order'],'home_teamid':teamid_dict[team_id]['home_teamid']} \
+					 for team_id in teamid_dict for player in teamid_dict[team_id]['lineup']}
+
 	return teamid_dict,playerid_dict
 
 def get_rw_optimal_lineups(sport): #Ian: Need to remove time.sleep's and change to loops till pages are loaded
@@ -350,18 +321,7 @@ def roster_nerds(sport):
 	return lineup_string.rsplit(', ',1)[0]
 
 
-# date='2014-06-18'
-# rw=1
-# while date!='2014-05-01':
-# 	game_dict=historical_vegas_odds_sportsbook(date)
-#  	Cell('Output',rw,1).value=game_dict
-#  	os.system('pause')
 
-
-	#rw=rw+1
-# 	date=Ugen.previous_day(date)
-# os.system('pause')
-
-# a,b=mlb_starting_lineups()
+a,b=mlb_starting_lineups('2015-10-04')
 # print a
 # os.system('pause')

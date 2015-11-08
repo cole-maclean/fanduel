@@ -7,6 +7,7 @@ import getpass
 import sys
 import csv
 import unicodedata
+import os
 
 def convert_proj_total(total):
 	if len(total)==2:
@@ -138,7 +139,8 @@ def ConfigSectionMap(section):
 	if getpass.getuser() == 'Cole':
 		config_path = 'C:/Users/Cole/Desktop/FanDuel/db.ini'
 	else:
-		config_path = 'C:/Users/Ian Whitestone/Documents/Python Projects/fanduel-master/db.ini'
+		config_path = '/Users/whitesi/Documents/Programming/Python/Fanduel/db.ini'
+		# config_path = 'C:/Users/Ian Whitestone/Documents/Python Projects/fanduel-master/db.ini'
 	Config.read(config_path)
 	dict1 = {}
 	options = Config.options(section)
