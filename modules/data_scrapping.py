@@ -322,6 +322,6 @@ def roster_nerds(sport):
 
 
 
-a,b=mlb_starting_lineups('2015-10-04')
+# a,b=mlb_starting_lineups('2015-10-04')
 # print a
 # os.system('pause')

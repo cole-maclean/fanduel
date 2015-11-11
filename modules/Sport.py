@@ -21,6 +21,7 @@ import time
 import weather
 import datetime as dt
 import TeamOdds
+import pprint
 
 class Sport(): #Cole: Class has functions that should be stripped out and place into more appropriate module/class
 	def __init__(self,sport):
@@ -70,111 +71,14 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 	def get_game_data(self,game_id):
 		self.gameid = game_id
 		return XMLStats.main(self,'boxscore',None)
-	
-	def modify_db_data(self,start_date,end_date,modify_dict): # modify_dict in form {hist_player_data:[column1,column2],event_data:[column1,column2,...]}
-		event_dates = [d.strftime('%Y%m%d') for d in pandas.date_range(start_date,end_date)]
-		db_eventids = self.get_db_event_data()
-		# print db_eventids
-		# os.system('pause')
-		team_map=Ugen.mlb_map(11,4)
-		#player_map = Ugen.mlb_map(1,0) #Ian: this player map isnt working for some names...
-		player_map = Ugen.excel_mapping("Player Map",6,5) 
-		for event_date in event_dates:
-			# odds_dict=TeamOdds.vegas_odds_sportsbook(event_date)
-			team_dict,player_dict = ds.mlb_starting_lineups(event_date)
-			day_events = self.events(event_date)
-			event_list = ([game['event_id'] for game in day_events if game['event_status'] == 'completed'
-						 and game['season_type'] == 'regular' or 'post'])
-			for indx,game_id in enumerate(event_list):
-				if game_id in db_eventids.keys():
-					print "modifying " + game_id
-					self.gameid = game_id
-					if "event_data" in modify_dict:
-						self.modify_event_data(day_events,indx,event_date,team_dict,modify_dict['event_data'],team_map)
-					if 'hist_player_data' in modify_dict: #Ian: may be put this part below in separate function? function would return cols,vals. Right now it modifies all columns.
-						boxscore_data = XMLStats.main(self,'boxscore',None)
-						if boxscore_data != None and boxscore_data:
-							self.modify_boxscore_data(boxscore_data,player_map,modify_dict['hist_player_data'])
-							print "hist_player_data successfully modified for " + game_id 
-				else:
-					print "event %s not in database. event not modified" % (game_id)
-		return 
 
-	def modify_event_data(self,day_events,indx,event_date,team_dict,modify_cols,team_map): #Ian: pass in odds dict?
-		event_data_dict={}
-		away_team=team_map[day_events[indx]['away_team']['team_id']]
-		home_team=team_map[day_events[indx]['home_team']['team_id']]
-		if "vegas_odds" in modify_cols:
-			event_data_dict['vegas_odds']={}
-			event_data_dict['vegas_odds'][away_team]=odds_dict[away_team]
-			event_data_dict['vegas_odds'][home_team]=odds_dict[home_team]
-		if "wunderground_forecast" in modify_cols:
-			event_date = event_date[0:4] + "-" + event_date[4:6] + "-" + event_date[6:8]
-			if home_team in team_dict and away_team in team_dict:
-				if 'PPD' not in team_dict[home_team]['start_time']:
-					wunderground_dict=weather.weather_hist(home_team,event_date,team_dict[home_team]['start_time'])
-				try:			
-					event_data_dict['wunderground_forecast']=wunderground_dict
-					event_data_dict['wind']=str(wunderground_dict['wind']['wind_dir'])+'_'+str(wunderground_dict['wind']['wind_speed'])
-				except:
-					print 'no weather data for %s' % event_data_dict['event_id']
-		if "home_starting_lineup" or "away_starting_lineup" in modify_cols:
-				event_data_dict['home_starting_lineup'] = team_dict[home_team]['lineup']
-				event_data_dict['away_starting_lineup'] = team_dict[away_team]['lineup']
-				event_data_dict['forecast'] = team_dict[home_team]['weather_forecast']
-		cols = ", ".join(event_data_dict.keys())
-		data = ", ".join(['"' + unicode(v) + '"' for v in event_data_dict.values()])
-		try:
-			dbo.modify_db_table('event_data',cols,data,['event_id'],[game_id])
-			print 'event_id table - event: %s was updated' % game_id
-		except:
-			print 'event: %s was not updated' % game_id
-		return
-	
-	def modify_boxscore_data(self,boxscore_data,player_map,modify_cols): #Right now it modifies all columns in hist_player_data
-		for dataset,data_model in self.data_model.iteritems():
-			for player in boxscore_data[dataset]:
-				if self.player_type_map[dataset]=='pitcher':
-					continue
-				player_data = collections.OrderedDict()
-				player_data['GameID'] = self.gameid
-				player_data['Sport'] = self.sport
-				player_data['Player_Type'] = self.player_type_map[dataset]
-				player_data['Date'] = self.gameid[0:8]
-				meta_cols = [col for col in player_data.keys()]
-				for datum in data_model.keys():
-					if datum[0] == '$': #Cole: prefix with $ denotes hard coded value
-						player_data[datum] = datum[1:]
-					elif player[datum] == True: #Cole: Convert bool to int for db write
-						player_data[datum] = 1
-					elif player[datum] ==False:
-						player_data[datum] = 0
-					elif datum == 'display_name': #Cole: this deals with the player mapping on the front end, so whats in db matches FD 
-						if player[datum] in player_map.keys():
-							player_data[datum] = player_map[player[datum]]
-						else:
-							player_data[datum] = player[datum]
-					else:
-						player_data[datum] = player[datum]
-				data_cols = [data_model[datum] for datum in player_data.keys() if datum in data_model.keys()]
-				# cols = ", ".join(meta_cols + data_cols)
-				# data = ", ".join(['"' + unicode(v) + '"' for v in player_data.values()])
-				cols = [meta_cols + data_cols][0]
-				data = ['"' + unicode(v) + '"' for v in player_data.values()]
-				data = [s.replace("'","''") for s in data]
-				try:
-					dbo.modify_db_table('hist_player_data',cols,data,['GameID',"Player","Player_Type"],[player_data['GameID'],player_data['display_name'].replace("'","''"),player_data['Player_Type']])
-					# print "hist_player_data was updated for event: %s player: %s" % (game_id,player_data['display_name'])
-				except:
-					print 'event: %s was not updated for player %s' % (game_id,player_data['display_name'])
-		return
 
 	def get_daily_game_data(self,start_date,end_date,store = False):
 		event_dates = [d.strftime('%Y%m%d') for d in pandas.date_range(start_date,end_date)]
 		#db_eventids = self.get_db_event_data()
-		# xml_name_list=[] #Ian: part of player mapping
+
 		for event_date in event_dates:
-			odds_dict= {}#ds.historical_vegas_odds_sportsbook(event_date) #Ian: only call it once for speed purposes
+			odds_dict= {}
 			day_events = self.events(event_date)
 			event_list = ([game['event_id'] for game in day_events if game['event_status'] == 'completed'
 							 and game['season_type'] == 'regular' or 'post'])
@@ -190,7 +94,7 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 					game_data = XMLStats.main(self,'boxscore',None)
 					if game_data != None:
 					 	parsed_data = self.parse_boxscore_data(game_data)
-					 	# xml_name_list.extend(player for player in parsed_data if player not in xml_name_list)
+
 					print game_id + " succesfully loaded"
 				else:
 					game_data = None
@@ -199,7 +103,7 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 		return all_game_data #xml_team_list #Ian: part of player mapping
 
 	def parse_boxscore_data(self,boxscore_data):
-		player_map = Ugen.excel_mapping("Player Map",6,5)
+		player_map = Ugen.excel_mapping("Player Map",6,5) #Ian: this needs to be generalized for each sport
 		# player_name_list=[] #Ian: Part of player mapping
 		if boxscore_data: 
 			for dataset,data_model in self.data_model.iteritems():
@@ -396,9 +300,34 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 		else:
 			return {'confidence':0,'roster':[]}
 
+class NBA(Sport): #Cole: data modelling may need to be refactored, might be more elegant solution
+	def __init__(self):
+		Sport.__init__(self,"NBA")
+		self.positions = {'PG':1,'SG':2,'SF':3,'PF':4,'C':5}
+
+		self.player_type_map = {'away_batters':'batter','home_batters':'batter','away_pitchers':'pitcher','home_pitchers':'pitcher'}
+		self.db_data_model = collections.OrderedDict({'meta':{'gameid':'GameID','sport':'Sport','type':'Player_Type'}, #Cole: prefix with $ to denote a hard coded value
+							'batter':{'display_name':'Player','position':'Position','team_abbreviation':'Team',
+								'singles':'Stat1','doubles':'Stat2','triples':'Stat3','home_runs':'Stat4',
+									'hits':'Stat5','rbi':'Stat6','at_bats':'Stat7','stolen_bases':'Stat8','total_bases':'Stat9','runs':'Stat10',
+										'walks':'Stat11','strike_outs':'Stat12','hit_by_pitch':'Stat13','plate_appearances':'Stat14','obp':'Stat15','slg':'Stat16','ops':'Stat17','sac_flies':'Stat18'},
+										  'pitcher':{'display_name':'Player','$P':'Position','team_abbreviation':'Team','win':'Stat1','era':'Stat2',
+										     'whip':'Stat3','innings_pitched':'Stat4','hits_allowed':'Stat5','runs_allowed':'Stat6',
+										       'earned_runs':'Stat7','walks':'Stat8','strike_outs':'Stat9','home_runs_allowed':'Stat10',
+										          'pitch_count':'Stat11','pitches_strikes':'Stat12','intentional_walks':'Stat13','errors':'Stat14','hits_allowed':'Stat15','wild_pitches':'Stat16'}})
+		self.optimizer_items = ['name','Player_Type','salary','P','C','1B','2B','3B','SS','OF','projected_FD_points','confidence']
+
+	def FD_points(self, data):
+		FD_points = (numpy.array(data['singles'])*1+numpy.array(data['doubles'])*2+numpy.array(data['triples'])*3+
+						numpy.array(data['home_runs'])*4+numpy.array(data['rbi'])*1+numpy.array(data['runs'])*1+
+							numpy.array(data['walks'])*1+numpy.array(data['stolen_bases'])*1+numpy.array(data['hit_by_pitch'])*1+
+							numpy.subtract(numpy.array(data['at_bats']),numpy.array(data['hits']))*-.25)
+		return FD_points
+
 class MLB(Sport): #Cole: data modelling may need to be refactored, might be more elegant solution
 	def __init__(self):
 		Sport.__init__(self,"MLB")
+		#2 PGs, 2 SGs, 2 SFs, 2 PFs, 1 C
 		self.positions = {'P':1,'C':2,'1B':3,'2B':4,'3B':5,'SS':6,'OF':7}
 		self.player_type_map = {'away_batters':'batter','home_batters':'batter','away_pitchers':'pitcher','home_pitchers':'pitcher'}
 		self.db_data_model = collections.OrderedDict({'meta':{'gameid':'GameID','sport':'Sport','type':'Player_Type'}, #Cole: prefix with $ to denote a hard coded value
@@ -1183,20 +1112,12 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 			return player_universe
 
 # mlb=MLB()
-#data=mlb.hist_build_player_universe('2015-08-06','12748')
-# data=mlb.hist_build_player_universe('2015-07-25','12691')
-# data=mlb.get_db_gamedata("20140301",Ugen.previous_day('2015-06-10').replace("-",""),'Shane Victorino')
-# data=data['Shane Victorino_batter']
 
-# i=0
-# for e,date,event_id in zip(data['wunderground_forecast'],data['Date'],data['event_id']):
-# 	try:
-# 		e=ast.literal_eval(e)
-# 		print e['temp']
-# 	except:
-# 		i=i+1
-# 		print event_id
-# 		os.system('pause')
-# print i
-# os.system('pause')
+nba=NBA()
+events=nba.events('2015-11-10')
+pp = pprint.PrettyPrinter(indent=4)
+pp.pprint(events)
+
+#data=mlb.hist_build_player_universe('2015-08-06','12748')
+
 

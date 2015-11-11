@@ -22,10 +22,10 @@ import datetime as dt
 # backtest.hist_model_lineups('2015-08-01','2015-08-05')
 
 
-backtest.hist_FD_contest_salaries()
+# backtest.hist_FD_contest_salaries()
 
 # MLB=Sport.MLB()
-# MLB.get_daily_game_data('20150420','20150524',True)
+MLB.get_daily_game_data('20150420','20150524',True)
 
 
 
