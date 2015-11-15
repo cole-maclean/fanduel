@@ -1113,10 +1113,10 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 
 # mlb=MLB()
 
-nba=NBA()
-events=nba.events('2015-11-10')
-pp = pprint.PrettyPrinter(indent=4)
-pp.pprint(events)
+# nba=NBA()
+# events=nba.get_daily_game_data('2015-11-09','2015-11-09',False)
+# pp = pprint.PrettyPrinter(indent=4)
+# pp.pprint(events)
 
 #data=mlb.hist_build_player_universe('2015-08-06','12748')
 

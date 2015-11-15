@@ -305,7 +305,7 @@ def roster_nerds(sport):
 	driver = webdriver.Chrome()
 	driver.get(url)
 	time.sleep(5)
-	html=driver.page_source
+	html=driver.page_sourceB
 	driver.close() 
 	# html= urllib2.urlopen(url).read()
 	soup = BeautifulSoup(html)

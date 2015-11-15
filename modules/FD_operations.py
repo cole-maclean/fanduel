@@ -21,7 +21,7 @@ class FDSession():
 		Fanduel_login=Ugen.ConfigSectionMap('fanduel') #Ian added ref to config file to avoid hardcoding
 		s = requests.session()
 		r = s.get('https://www.fanduel.com/p/login')
-		soup = BeautifulSoup(r.text)
+		soup = BeautifulSoup(r.text,"html.parser")
 		session_id = soup.find('input', {'name': 'cc_session_id'}).get('value')
 		headers = {'User-Agent' : 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/535.7 (KHTML, like Gecko) Chrome/16.0.912.77 Safari/535.7'}
 		data = {'cc_session_id':session_id,'cc_action':'cca_login','cc_failure_url':'https://www.fanduel.com/p/login',\
