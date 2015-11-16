@@ -75,26 +75,25 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 
 	def get_daily_game_data(self,start_date,end_date,store = False):
 		event_dates = [d.strftime('%Y%m%d') for d in pandas.date_range(start_date,end_date)]
-		#db_eventids = self.get_db_event_data()
-
 		for event_date in event_dates:
 			odds_dict= {}
 			day_events = self.events(event_date)
 			event_list = ([game['event_id'] for game in day_events if game['event_status'] == 'completed'
 							 and game['season_type'] == 'regular' or 'post'])
 			all_game_data = {}
+			#Ian: need to add a check if events have alreayd been historized? investigate what happens if you don't check??
 			for indx,game_id in enumerate(event_list):
 				#if game_id not in db_eventids.key():
 				self.gameid = game_id
 				if store == False:
 					game_data = XMLStats.main(self,'boxscore',None)
-				elif store == True and self.gameid not in self.gameids().all_gameids: 
+				elif store == True: #and self.gameid not in self.gameids().all_gameids: 
 					print "loading " + game_id
-					self.parse_event_data(day_events[indx],event_date,odds_dict) 
+					# self.parse_event_data(day_events[indx],event_date,odds_dict) 
 					game_data = XMLStats.main(self,'boxscore',None)
 					if game_data != None:
+						self.parse_nba_event_data(game_data)
 					 	parsed_data = self.parse_boxscore_data(game_data)
-
 					print game_id + " succesfully loaded"
 				else:
 					game_data = None
@@ -102,38 +101,46 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 					all_game_data[game_id] = game_data
 		return all_game_data #xml_team_list #Ian: part of player mapping
 
+	def parse_nba_event_data(self,boxscore_data): #Ian: how to generalize?
+		event_data_dict={}
+		event_data_dict['event_id']=self.gameid
+		event_data_dict['sport']=self.sport
+		event_data_dict['away_period_scores']=boxscore_data['away_period_scores']
+		event_data_dict['away_team']=boxscore_data['away_team']['abbreviation']
+		event_data_dict['home_period_scores']=boxscore_data['home_period_scores']
+		event_data_dict['home_team']=boxscore_data['home_team']['abbreviation']
+		event_data_dict['away_totals']=boxscore_data['away_totals']
+		event_data_dict['home_totals']=boxscore_data['home_totals']
+		event_data_dict['event_information']={'attendance':boxscore_data['event_information']['attendance'],
+											  'duration':boxscore_data['event_information']['duration'],'season_type':boxscore_data['event_information']['season_type']}
+		event_data_dict['officials']=[official['first_name']+' '+official['last_name'] for official in boxscore_data['officials']]
+		#add in historize function
+		return
+
+
 	def parse_boxscore_data(self,boxscore_data):
-		player_map = Ugen.excel_mapping("Player Map",6,5) #Ian: this needs to be generalized for each sport
-		# player_name_list=[] #Ian: Part of player mapping
+		player_map = {}#Ugen.excel_mapping("Player Map",6,5) #Ian: this needs to be generalized for each sport
 		if boxscore_data: 
 			for dataset,data_model in self.data_model.iteritems():
 				for player in boxscore_data[dataset]:
-					player_data = collections.OrderedDict()
+					player_data={}
 					player_data['GameID'] = self.gameid
 					player_data['Sport'] = self.sport
 					player_data['Player_Type'] = self.player_type_map[dataset]
 					player_data['Date'] = self.gameid[0:8]
 					meta_cols = [col for col in player_data.keys()]
-					for datum in data_model.keys():
+					for datum,val in data_model.iteritems():
 						if datum[0] == '$': #Cole: prefix with $ denotes hard coded value
-							player_data[datum] = datum[1:]
-						elif player[datum] == True: #Cole: Convert bool to int for db write
-							player_data[datum] = 1
-						elif player[datum] ==False:
-							player_data[datum] = 0
+							player_data[val] = datum[1:]
 						elif datum == 'display_name': #Cole: this deals with the player mapping on the front end, so whats in db matches FD 
 							if player[datum] in player_map.keys():
-								player_data[datum] = player_map[player[datum]]
+								player_data[val] = player_map[player[datum]]
 							else:
-								player_data[datum] = player[datum]
+								player_data[val] = player[datum]
 						else:
-							player_data[datum] = player[datum]
-					data_cols = [data_model[datum] for datum in player_data.keys() if datum in data_model.keys()]
-					cols = ", ".join(meta_cols + data_cols)
-					data = ", ".join(['"' + unicode(v) + '"' for v in player_data.values()])
-					data.replace("'","''")
-					# player_name_list.append(player_data['display_name']) #Ian: part of player mapping
-					dbo.insert_mysql('hist_player_data',cols,data)
+							player_data[val] = player[datum]
+					print player_data
+					return
 		return self
 
 	def parse_event_data(self,event_data,event_date,odds_data): #Cole: How to generalize parsing event data for each sport?
@@ -304,18 +311,16 @@ class NBA(Sport): #Cole: data modelling may need to be refactored, might be more
 	def __init__(self):
 		Sport.__init__(self,"NBA")
 		self.positions = {'PG':1,'SG':2,'SF':3,'PF':4,'C':5}
+		self.player_type_map = {'away_stats':'bplayer','home_stats':'bplayer'} #Ian: all players are the same for stats in NBA, therefore give random name bplayer (basketbll player) not to be confused with player
+		self.db_data_model = {'bplayer':{'display_name':'Player','position':'position',	#Ian: no meta required for NBA, only one player type. Cole: prefix with $ to denote a hard coded value
+							'team_abbreviation':'Team','turnovers':'turnovers','assists':'assists','blocks':'blocks','points':'points',
+								'field_goals_made':'FGM','field_goals_attempted':'FGA','is_starter':'starter','free_throws_made':'FTM',
+								'free_throws_attempted':'FTA','three_point_field_goals_made':'3FGM','personal_fouls':'fouls',
+										'three_point_field_goals_attempted':'3FGA','steals':'steals','rebounds':'rebounds','minutes':'minutes'}}
+		
+		self.optimizer_items = ['name','Player_Type','salary','P','C','1B','2B','3B','SS','OF','projected_FD_points','confidence'] #Ian: we need to change Player_Type to position???
 
-		self.player_type_map = {'away_batters':'batter','home_batters':'batter','away_pitchers':'pitcher','home_pitchers':'pitcher'}
-		self.db_data_model = collections.OrderedDict({'meta':{'gameid':'GameID','sport':'Sport','type':'Player_Type'}, #Cole: prefix with $ to denote a hard coded value
-							'batter':{'display_name':'Player','position':'Position','team_abbreviation':'Team',
-								'singles':'Stat1','doubles':'Stat2','triples':'Stat3','home_runs':'Stat4',
-									'hits':'Stat5','rbi':'Stat6','at_bats':'Stat7','stolen_bases':'Stat8','total_bases':'Stat9','runs':'Stat10',
-										'walks':'Stat11','strike_outs':'Stat12','hit_by_pitch':'Stat13','plate_appearances':'Stat14','obp':'Stat15','slg':'Stat16','ops':'Stat17','sac_flies':'Stat18'},
-										  'pitcher':{'display_name':'Player','$P':'Position','team_abbreviation':'Team','win':'Stat1','era':'Stat2',
-										     'whip':'Stat3','innings_pitched':'Stat4','hits_allowed':'Stat5','runs_allowed':'Stat6',
-										       'earned_runs':'Stat7','walks':'Stat8','strike_outs':'Stat9','home_runs_allowed':'Stat10',
-										          'pitch_count':'Stat11','pitches_strikes':'Stat12','intentional_walks':'Stat13','errors':'Stat14','hits_allowed':'Stat15','wild_pitches':'Stat16'}})
-		self.optimizer_items = ['name','Player_Type','salary','P','C','1B','2B','3B','SS','OF','projected_FD_points','confidence']
+		self.data_model = ({'away_stats':self.db_data_model['bplayer'],'home_stats':self.db_data_model['bplayer']})		
 
 	def FD_points(self, data):
 		FD_points = (numpy.array(data['singles'])*1+numpy.array(data['doubles'])*2+numpy.array(data['triples'])*3+
@@ -1113,8 +1118,8 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 
 # mlb=MLB()
 
-# nba=NBA()
-# events=nba.get_daily_game_data('2015-11-09','2015-11-09',False)
+nba=NBA()
+events=nba.get_daily_game_data('2015-11-09','2015-11-09',True)
 # pp = pprint.PrettyPrinter(indent=4)
 # pp.pprint(events)
 

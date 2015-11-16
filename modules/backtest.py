@@ -20,25 +20,24 @@ import pprint
 import ssl
 
 
-
 def hist_FD_contest_salaries():
     todays_date=time.strftime("%Y-%m-%d")
     pp = pprint.PrettyPrinter(indent=4)
     FDSession = fdo.FDSession()
+    sport_list=['NBA','NHL','NFL','MLB']
 
-    sport_list=['NBA','NHL','NFL','MLB'] #['mlb','nba','nhl','nfl']
     for sport in sport_list:
-        # print sport
         daily_contests = FDSession.get_daily_contests(sport)
-        # print daily_contests
+
         for contest_ID,contest_url in daily_contests.iteritems():
             player_dict={player['first_name']+' '+player['last_name']:{'fppg':player['fppg'],'salary':player['salary'],'position':player['position'],
                          'games_played':player['played'],'injury_status':player['injury_status']}
                          for player in FDSession.fanduel_api_data(contest_url)['players']}
+            
+            print 'now historizing %s contest: %s' % (sport,contest_ID)
             dbo.write_to_db('hist_fanduel_data',{'sport':sport,'date':todays_date,'contest_ID':contest_ID,'contest_dict':player_dict},False)
-
-            # pp.pprint(player_dict)
-            # raw_input("Press enter to continue")
+            print 'contest: %s historized successfully' % sport
+    
     return
 
 

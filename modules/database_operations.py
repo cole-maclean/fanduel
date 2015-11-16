@@ -24,6 +24,17 @@ def remove_from_db(collection,query,max_docs=False):
     client.close()
 
 
+def read_from_db(collection,query,projection=False):
+    db,client=create_db_connection('fanduel')
+
+    if projection:
+        resultset=db[collection].find(query,projection)
+    else:
+        resultset=db[collection].find(query).limit(1)
+    client.close()
+
+    return resultset
+
 def test_db():
     db,client=create_db_connection('fanduel')
     collection=db.hist_fanduel_data
@@ -33,7 +44,11 @@ def test_db():
     client.close()
 
 
-test_db()
+
+# query={'date':'2015-11-16','sport':'NHL'}
+# resultset=read_from_db('hist_fanduel_data',query)
+# for doc in resultset:
+#     print doc
 
 #make read from db, write to db, modify db functions as required
 
