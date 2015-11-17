@@ -92,7 +92,8 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 					# self.parse_event_data(day_events[indx],event_date,odds_dict) 
 					game_data = XMLStats.main(self,'boxscore',None)
 					if game_data != None:
-						self.parse_nba_event_data(game_data)
+						if self.sport=='NBA':
+							self.parse_nba_event_data(game_data)
 					 	parsed_data = self.parse_boxscore_data(game_data)
 					print game_id + " succesfully loaded"
 				else:
@@ -101,22 +102,6 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 					all_game_data[game_id] = game_data
 		return all_game_data #xml_team_list #Ian: part of player mapping
 
-	def parse_nba_event_data(self,boxscore_data): #Ian: how to generalize?
-		event_data_dict={}
-		event_data_dict['event_id']=self.gameid
-		event_data_dict['sport']=self.sport
-		event_data_dict['away_period_scores']=boxscore_data['away_period_scores']
-		event_data_dict['away_team']=boxscore_data['away_team']['abbreviation']
-		event_data_dict['home_period_scores']=boxscore_data['home_period_scores']
-		event_data_dict['home_team']=boxscore_data['home_team']['abbreviation']
-		event_data_dict['away_totals']=boxscore_data['away_totals']
-		event_data_dict['home_totals']=boxscore_data['home_totals']
-		event_data_dict['event_information']={'attendance':boxscore_data['event_information']['attendance'],
-											  'duration':boxscore_data['event_information']['duration'],'season_type':boxscore_data['event_information']['season_type']}
-		event_data_dict['officials']=[official['first_name']+' '+official['last_name'] for official in boxscore_data['officials']]
-		#add in historize function
-		return
-
 
 	def parse_boxscore_data(self,boxscore_data):
 		player_map = {}#Ugen.excel_mapping("Player Map",6,5) #Ian: this needs to be generalized for each sport
@@ -124,10 +109,10 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 			for dataset,data_model in self.data_model.iteritems():
 				for player in boxscore_data[dataset]:
 					player_data={}
-					player_data['GameID'] = self.gameid
-					player_data['Sport'] = self.sport
-					player_data['Player_Type'] = self.player_type_map[dataset]
-					player_data['Date'] = self.gameid[0:8]
+					player_data['gameID'] = self.gameid
+					player_data['sport'] = self.sport
+					player_data['player_type'] = self.player_type_map[dataset]
+					player_data['date'] = dt.datetime.strptime(self.gameid[0:8],'%Y%m%d')
 					meta_cols = [col for col in player_data.keys()]
 					for datum,val in data_model.iteritems():
 						if datum[0] == '$': #Cole: prefix with $ denotes hard coded value
@@ -139,8 +124,7 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 								player_data[val] = player[datum]
 						else:
 							player_data[val] = player[datum]
-					print player_data
-					return
+					dbo.write_to_db('hist_player_data',player_data,False)
 		return self
 
 	def parse_event_data(self,event_data,event_date,odds_data): #Cole: How to generalize parsing event data for each sport?
@@ -185,7 +169,7 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 			dbo.insert_mysql('event_data',cols,data)
 		return event_data_dict
 
-	def get_db_gamedata(self,player,start_date="",end_date="",GameID=""): #Updated to get by GameID or by Dates
+	def get_db_gamedata_old(self,player,start_date="",end_date="",GameID=""): #Updated to get by GameID or by Dates
 		if start_date:
 			sql = ("SELECT hist_player_data.*, event_data.* FROM hist_player_data "
 					 "INNER JOIN event_data ON hist_player_data.GameID=event_data.event_id "
@@ -220,6 +204,19 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 					except:
 						player_data_dict[player_key][stat_key] = [player_data]
 		return player_data_dict
+
+	def get_db_gamedata(self,player,start_date,end_date,GameID=False): #Ian: query by date or GameID
+		if GameID:
+			query={'sport':self.sport,'player':player,'gameID':GameID}
+		else:
+			query={'sport':self.sport,'player':player,'date':{"$gte":dt.datetime.strptime(start_date,'%Y-%m-%d'),"$lte":dt.datetime.strptime(end_date,'%Y-%m-%d')}}
+		player_data=dbo.read_from_db('hist_player_data',query)
+		for doc in player_data:
+			print doc
+
+		player_data_sorted=define_here
+		player_data_dict={key:[doc[key] for doc in player_data_sorted] for key in player_data.keys()}
+		return player_data
 
 	def get_stadium_data(self,prime_key = 'stadium'):
 		sql = "SELECT * FROM stadium_data"
@@ -312,14 +309,20 @@ class NBA(Sport): #Cole: data modelling may need to be refactored, might be more
 		Sport.__init__(self,"NBA")
 		self.positions = {'PG':1,'SG':2,'SF':3,'PF':4,'C':5}
 		self.player_type_map = {'away_stats':'bplayer','home_stats':'bplayer'} #Ian: all players are the same for stats in NBA, therefore give random name bplayer (basketbll player) not to be confused with player
-		self.db_data_model = {'bplayer':{'display_name':'Player','position':'position',	#Ian: no meta required for NBA, only one player type. Cole: prefix with $ to denote a hard coded value
+		self.db_data_model = {'bplayer':{'display_name':'player','position':'position',	#Ian: no meta required for NBA, only one player type. Cole: prefix with $ to denote a hard coded value
 							'team_abbreviation':'Team','turnovers':'turnovers','assists':'assists','blocks':'blocks','points':'points',
 								'field_goals_made':'FGM','field_goals_attempted':'FGA','is_starter':'starter','free_throws_made':'FTM',
 								'free_throws_attempted':'FTA','three_point_field_goals_made':'3FGM','personal_fouls':'fouls',
 										'three_point_field_goals_attempted':'3FGA','steals':'steals','rebounds':'rebounds','minutes':'minutes'}}
 		
 		self.optimizer_items = ['name','Player_Type','salary','P','C','1B','2B','3B','SS','OF','projected_FD_points','confidence'] #Ian: we need to change Player_Type to position???
-
+		
+		self.totals_data_model={'assists':'assists','blocks':'blocks','field_goals_attempted':'FGA','field_goals_made':'FGM',
+								'free_throws_made':'FTM','free_throws_attempted':'FTA','three_point_field_goals_attempted':'3FGA',
+								'three_point_field_goals_made':'3FGM','personal_fouls':'fouls','points':'points',
+								'rebounds':'rebounds','steals':'steals','turnovers':'turnovers'}
+		
+		self.event_info_data_model=['attendance','duration','season_type']
 		self.data_model = ({'away_stats':self.db_data_model['bplayer'],'home_stats':self.db_data_model['bplayer']})		
 
 	def FD_points(self, data):
@@ -328,6 +331,24 @@ class NBA(Sport): #Cole: data modelling may need to be refactored, might be more
 							numpy.array(data['walks'])*1+numpy.array(data['stolen_bases'])*1+numpy.array(data['hit_by_pitch'])*1+
 							numpy.subtract(numpy.array(data['at_bats']),numpy.array(data['hits']))*-.25)
 		return FD_points
+
+	def parse_nba_event_data(self,boxscore_data): 
+		event_data={}
+		if boxscore_data:
+			event_data['gameID']=self.gameid
+			event_data['sport']=self.sport
+			event_data['date']=dt.datetime.strptime(self.gameid[0:8],'%Y%m%d')
+			event_data['away_period_scores']=boxscore_data['away_period_scores']
+			event_data['away_team']=boxscore_data['away_team']['abbreviation']
+			event_data['home_period_scores']=boxscore_data['home_period_scores']
+			event_data['home_team']=boxscore_data['home_team']['abbreviation']
+			event_data['away_totals']={val:boxscore_data['away_totals'][key] for key,val in self.totals_data_model.iteritems()}
+			event_data['home_totals']={val:boxscore_data['home_totals'][key] for key,val in self.totals_data_model.iteritems()}
+			event_data['event_information']={key:boxscore_data['event_information'][key] for key in self.event_info_data_model}
+			event_data['officials']=[official['first_name']+' '+official['last_name'] for official in boxscore_data['officials']]
+			dbo.write_to_db('hist_event_data',event_data,False)
+		return
+
 
 class MLB(Sport): #Cole: data modelling may need to be refactored, might be more elegant solution
 	def __init__(self):
@@ -1119,7 +1140,16 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 # mlb=MLB()
 
 nba=NBA()
-events=nba.get_daily_game_data('2015-11-09','2015-11-09',True)
+# events=nba.get_daily_game_data('2011-12-25','2015-11-15',True)
+
+events=nba.get_daily_game_data('2012-02-15','2012-03-31',True)
+
+# data=nba.get_db_gamedata('Paul George','2011-11-11','2015-12-01')
+
+# date_s='20151109'
+# new_date=dt.datetime.strptime(date_s,'%Y%m%d')
+# print new_date
+
 # pp = pprint.PrettyPrinter(indent=4)
 # pp.pprint(events)
 
