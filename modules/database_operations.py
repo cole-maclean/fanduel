@@ -39,10 +39,10 @@ def read_from_db(collection,query,projection=False):
     if projection:
         resultset=db[collection].find(query,projection)
     else:
-        resultset=db[collection].find(query).limit(5)
+        resultset=db[collection].find(query)#.limit(5)
     client.close()
 
-    return resultset
+    return list(resultset)
 
 
 def delete_by_date(sport,collection,start_date,end_date=False): #date ranges are inclusive, YYYY-MM-DD format
@@ -64,13 +64,12 @@ def test_db():
 # date='2012-02-15'
 # new_date=dt.datetime.strptime(date,'%Y-%m-%d')
 
-# resultset=read_from_db('hist_event_data',{'date':new_date,'sport':'NBA'})
-# print resultset
+# resultset=read_from_db('hist_player_data',{'date':new_date,'sport':'NBA'})
+# # print resultset
 # for doc in resultset:
 #     print doc
 
 # remove_from_db('hist_event_data',{'sport':'NBA','date':new_date})
 # remove_from_db('hist_player_data',{'sport':'NBA','date':new_date})
-
 
 

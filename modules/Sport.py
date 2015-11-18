@@ -117,6 +117,10 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 					for datum,val in data_model.iteritems():
 						if datum[0] == '$': #Cole: prefix with $ denotes hard coded value
 							player_data[val] = datum[1:]
+						elif player[datum] == True: #Cole: Convert bool to int for db write
+							player_data[val] = 1
+						elif player[datum] ==False:
+							player_data[val] = 0
 						elif datum == 'display_name': #Cole: this deals with the player mapping on the front end, so whats in db matches FD 
 							if player[datum] in player_map.keys():
 								player_data[val] = player_map[player[datum]]
@@ -210,13 +214,14 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 			query={'sport':self.sport,'player':player,'gameID':GameID}
 		else:
 			query={'sport':self.sport,'player':player,'date':{"$gte":dt.datetime.strptime(start_date,'%Y-%m-%d'),"$lte":dt.datetime.strptime(end_date,'%Y-%m-%d')}}
-		player_data=dbo.read_from_db('hist_player_data',query)
-		for doc in player_data:
-			print doc
-
-		player_data_sorted=define_here
-		player_data_dict={key:[doc[key] for doc in player_data_sorted] for key in player_data.keys()}
-		return player_data
+		
+		player_data=dbo.read_from_db('hist_player_data',query,{'_id':0,'sport':0,'player':0})
+		player_data.sort(key=lambda e: e['date'], reverse=False)
+		player_data_dict={key:[doc[key] for doc in player_data] for key in player_data[0].keys()}
+		event_data=[dbo.read_from_db('hist_event_data',{'sport':self.sport,'gameID':gameID},{'_id':0,'date':0,'sport':0,'gameID':0})[0] for gameID in player_data_dict['gameID']]
+		event_data_dict={key:[doc[key] for doc in event_data] for key in event_data[0].keys()}
+		player_data_dict.update(event_data_dict)
+		return player_data_dict
 
 	def get_stadium_data(self,prime_key = 'stadium'):
 		sql = "SELECT * FROM stadium_data"
@@ -310,7 +315,7 @@ class NBA(Sport): #Cole: data modelling may need to be refactored, might be more
 		self.positions = {'PG':1,'SG':2,'SF':3,'PF':4,'C':5}
 		self.player_type_map = {'away_stats':'bplayer','home_stats':'bplayer'} #Ian: all players are the same for stats in NBA, therefore give random name bplayer (basketbll player) not to be confused with player
 		self.db_data_model = {'bplayer':{'display_name':'player','position':'position',	#Ian: no meta required for NBA, only one player type. Cole: prefix with $ to denote a hard coded value
-							'team_abbreviation':'Team','turnovers':'turnovers','assists':'assists','blocks':'blocks','points':'points',
+							'team_abbreviation':'team','turnovers':'turnovers','assists':'assists','blocks':'blocks','points':'points',
 								'field_goals_made':'FGM','field_goals_attempted':'FGA','is_starter':'starter','free_throws_made':'FTM',
 								'free_throws_attempted':'FTA','three_point_field_goals_made':'3FGM','personal_fouls':'fouls',
 										'three_point_field_goals_attempted':'3FGA','steals':'steals','rebounds':'rebounds','minutes':'minutes'}}
@@ -1140,18 +1145,31 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 # mlb=MLB()
 
 nba=NBA()
-# events=nba.get_daily_game_data('2011-12-25','2015-11-15',True)
 
-events=nba.get_daily_game_data('2012-02-15','2012-03-31',True)
+# events=nba.get_daily_game_data('2011-12-25','2015-11-15',True) #2011 regular season?
+# events=nba.get_daily_game_data('2012-02-15','2012-03-31',True)
 
-# data=nba.get_db_gamedata('Paul George','2011-11-11','2015-12-01')
+
+# dbo.delete_by_date(nba.sport,'hist_event_data','2012-11-01','2015-11-10')
+# dbo.delete_by_date(nba.sport,'hist_player_data','2012-11-01','2015-11-10')
+
+
+# events=nba.get_daily_game_data('2015-11-06','2015-11-08',True)
+# events=nba.get_daily_game_data('2012-11-03','2012-11-04',True)
+# events=nba.get_daily_game_data('2014-10-29','2014-11-02',True)
+
+
+dataset=nba.get_db_gamedata('DeMar DeRozan','2011-12-31','2015-12-10')
+
+pp = pprint.PrettyPrinter(indent=4)
+pp.pprint(dataset)
+
+
 
 # date_s='20151109'
 # new_date=dt.datetime.strptime(date_s,'%Y%m%d')
 # print new_date
 
-# pp = pprint.PrettyPrinter(indent=4)
-# pp.pprint(events)
 
 #data=mlb.hist_build_player_universe('2015-08-06','12748')
 

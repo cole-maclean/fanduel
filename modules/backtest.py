@@ -1,6 +1,6 @@
 import os
 import time
-import datetime
+import datetime as dt
 import ast
 import database_operations as dbo
 import data_scrapping as ds
@@ -21,7 +21,7 @@ import ssl
 
 
 def hist_FD_contest_salaries():
-    todays_date=time.strftime("%Y-%m-%d")
+    todays_date=dt.datetime.strptime(time.strftime("%Y-%m-%d"),"%Y-%m-%d")
     pp = pprint.PrettyPrinter(indent=4)
     FDSession = fdo.FDSession()
     sport_list=['NBA','NHL','NFL','MLB']
@@ -45,7 +45,5 @@ def hist_model_lineups(start_date,end_date): #date format in 'YYYY-MM-DD'
     date_list = [d.strftime('%Y-%m-%d') for d in pandas.date_range(start_date,end_date)]
     MLB=Sport.MLB()
     return
-
-
 
 # hist_FD_contest_salaries()
