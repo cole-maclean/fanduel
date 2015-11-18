@@ -262,7 +262,6 @@ class NBA(Sport): #Cole: data modelling may need to be refactored, might be more
 
 		return FD_points
 
-
 	def parse_event_data(self,boxscore_data): 
 		event_data={}
 		if boxscore_data:
@@ -279,6 +278,7 @@ class NBA(Sport): #Cole: data modelling may need to be refactored, might be more
 			event_data['officials']=[official['first_name']+' '+official['last_name'] for official in boxscore_data['officials']]
 			dbo.write_to_db('hist_event_data',event_data,False)
 		return
+
 
 
 class MLB(Sport): #Cole: data modelling may need to be refactored, might be more elegant solution
@@ -532,28 +532,28 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 		season_averages=season_averages_check(season_averages)
 		return season_averages
 
-		def season_averages_check(season_averages):
-			#Ian: added this loop to replace nan values with previous year averages, otherwise give them a zero..
-			for outer_key,outer_val in season_averages.iteritems(): 
-				for inner_key,inner_val in outer_val.iteritems():
-					if numpy.isnan(inner_val) and "_" in inner_key:
-						# print 'nan found in %s for following key:val - %s:%s' %(outer_key,inner_key,inner_val)
-						split_key=inner_key.split("_")
-						if split_key[0]=='2013':
-							season_averages[outer_key][split_key[0]+'_away']=0
-							season_averages[outer_key][split_key[0]+'_home']=0
-							continue #otherwise we will error when we try prev_year_key of 2012
-						prev_year_key=str(int(split_key[0])-1)+'_'+split_key[1]
-						if not numpy.isnan(season_averages[outer_key][prev_year_key]):
-							season_averages[outer_key][inner_key]=season_averages[outer_key][prev_year_key]
-							if split_key[1]=='home': #If we're replacing one H/A avg with the previous year, replace the other too...
-								season_averages[outer_key][split_key[0]+'_away']=season_averages[outer_key][prev_year_key.split("_")[0]+'_away']														
-							else:	
-								season_averages[outer_key][split_key[0]+'_home']=season_averages[outer_key][prev_year_key.split("_")[0]+'_home']	
-						else: #If we don't have 2015 or 2014 data, put in a zero
-							season_averages[outer_key][split_key[0]+'_away']=0
-							season_averages[outer_key][split_key[0]+'_home']=0
-		return season_averages
+	def season_averages_check(season_averages):
+		#Ian: added this loop to replace nan values with previous year averages, otherwise give them a zero..
+		for outer_key,outer_val in season_averages.iteritems(): 
+			for inner_key,inner_val in outer_val.iteritems():
+				if numpy.isnan(inner_val) and "_" in inner_key:
+					# print 'nan found in %s for following key:val - %s:%s' %(outer_key,inner_key,inner_val)
+					split_key=inner_key.split("_")
+					if split_key[0]=='2013':
+						season_averages[outer_key][split_key[0]+'_away']=0
+						season_averages[outer_key][split_key[0]+'_home']=0
+						continue #otherwise we will error when we try prev_year_key of 2012
+					prev_year_key=str(int(split_key[0])-1)+'_'+split_key[1]
+					if not numpy.isnan(season_averages[outer_key][prev_year_key]):
+						season_averages[outer_key][inner_key]=season_averages[outer_key][prev_year_key]
+						if split_key[1]=='home': #If we're replacing one H/A avg with the previous year, replace the other too...
+							season_averages[outer_key][split_key[0]+'_away']=season_averages[outer_key][prev_year_key.split("_")[0]+'_away']														
+						else:	
+							season_averages[outer_key][split_key[0]+'_home']=season_averages[outer_key][prev_year_key.split("_")[0]+'_home']	
+					else: #If we don't have 2015 or 2014 data, put in a zero
+						season_averages[outer_key][split_key[0]+'_away']=0
+						season_averages[outer_key][split_key[0]+'_home']=0
+	return season_averages
 
 	def build_model_dataset(self,hist_data,starting_lineups,player):#Cole: How do we generalize this method. Some out-of-box method likely exists. Defs need to refactor
 		print 'now building dataset for %s' % player
