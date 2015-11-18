@@ -47,6 +47,7 @@ def build_contest_rosters(FDSession,sport_list):
 		if sport == 'MLB':
 			Sport_Class = Sport.MLB()
 		daily_contests = FDSession.get_daily_contests(sport,[19])
+		print daily_contests
 		for contest_id,url in daily_contests.iteritems():
 			model_roster = Sport_Class.optimal_roster(FDSession,url,-100,False,False)
 			model_roster['slate_player_count'] = len(FDSession.fanduel_api_data(url)['players'])

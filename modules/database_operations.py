@@ -1,6 +1,7 @@
 import general_utils as Ugen
 import time
 import os
+<<<<<<< HEAD
 from Tkinter import Tk
 from pymongo import MongoClient
 import datetime as dt
@@ -42,7 +43,7 @@ def read_from_db(collection,query,projection=False):
         resultset=db[collection].find(query)#.limit(5)
     client.close()
 
-    return list(resultset)
+    return list(resultset) #Ian: may need to return this as a dataframe??
 
 
 def delete_by_date(sport,collection,start_date,end_date=False): #date ranges are inclusive, YYYY-MM-DD format
@@ -71,5 +72,3 @@ def test_db():
 
 # remove_from_db('hist_event_data',{'sport':'NBA','date':new_date})
 # remove_from_db('hist_player_data',{'sport':'NBA','date':new_date})
-
-
