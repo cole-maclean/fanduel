@@ -257,8 +257,8 @@ class NBA(Sport): #Cole: data modelling may need to be refactored, might be more
 		FGM2=numpy.subtract(numpy.array(data['FGM']),numpy.array(data['3FGM']))
 		FGM2[FGM2<0]=0
 
-		FD_points=numpy.array(data['3FGM'])*3+numpy.array(FGM2)*2+numpy.array(data['FTM'])*1+numpy.array(data['rebounds'])*1.2+
-					numpy.array(data['assists'])*1.5+numpy.array(data['blocks'])*2+numpy.array(data['steals'])*2+numpy.array(data['turnovers'])*-1
+		FD_points=(numpy.array(data['3FGM'])*3+numpy.array(FGM2)*2+numpy.array(data['FTM'])*1+numpy.array(data['rebounds'])*1.2+
+					numpy.array(data['assists'])*1.5+numpy.array(data['blocks'])*2+numpy.array(data['steals'])*2+numpy.array(data['turnovers'])*-1)
 
 		return FD_points
 
@@ -330,7 +330,7 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 	def sort_positions(self,sort_list):
 		return self.positions[sort_list['position']]
 	
-	def parse_event_data(self,event_data,event_date,odds_data): #Cole: How to generalize parsing event data for each sport?
+	def parse_event_data(self,event_data,event_date,odds_data): #Ian: needs to be updated for mongodb
 		event_data_dict = {}
 		if event_data:
 			event_data_dict['event_id'] = event_data['event_id']
@@ -372,7 +372,7 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 			dbo.insert_mysql('event_data',cols,data)
 		return event_data_dict
 
-	def batter_lineup_stats(self,date,lineup_data,player_arm):
+	def batter_lineup_stats(self,date,lineup_data,player_arm): #Ian: needs refactoring!!
 		lineup_stats_dict={}
 		hist_lineup_strikeout_rate,hist_lineup_ops,hist_lineup_slg,strikeout_PAs_list,ops_PAs_list,slg_PAs_list=([] for i in range(6))
 		team_map=Ugen.mlb_map(11,4)
@@ -447,164 +447,114 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 		lineup_stats_dict['slg']=numpy.sum(hist_lineup_slg)/numpy.sum(slg_PAs_list)
 		# print lineup_stats_dict
 		# os.system('pause')
-		return lineup_stats_dict
+		return lineup_stats_dict		
+	
+	def pitcher_season_averages(self,hist_data,home_away,year):
+		team_map=Ugen.mlb_map(11,4)
+		season_avg={}
+		if not home_away and stat=='innings_pitched':
+			try:
+				season_avg['K9']=numpy.mean([float(SO/IP*9) for SO,date,IP in zip(hist_data['strike_outs'],hist_data['Date'],hist_data['innings_pitched']) if str(date).split("-")[0]==year and IP>3])
+				season_avg['IP']=numpy.mean([IP for AT,HT,IP,date in zip(hist_data['away_starting_lineup'],hist_data['home_starting_lineup'], \
+							 		hist_data['innings_pitched'],hist_data['Date']) if str(date).split("-")[0]==year and (player in AT or player in HT)])
+			except:
+				season_avg['IP']=numpy.mean([IP for IP,date in zip(hist_data['innings_pitched'],hist_data['Date']) if str(date).split("-")[0]=='2015'and IP>3])	
+		elif home_away=='home':
+			try:
+				season_avg['K9']=numpy.mean([float(SO/IP*9) for SO,date,IP,team,home_team,away_team \
+					 		   		in zip(hist_data['strike_outs'],hist_data['Date'],hist_data['innings_pitched'],hist_data['Team'],hist_data['home_team'],hist_data['away_team']) \
+					 		   		if str(date).split("-")[0]==year and IP>3 and team==team_map[home_team]])
+				season_avg['IP']=numpy.mean([IP for AT,HT,IP,date,team,home_team,away_team in zip(hist_data['away_starting_lineup'],hist_data['home_starting_lineup'], \
+									hist_data['innings_pitched'],hist_data['Date'],hist_data['Team'],hist_data['home_team'],hist_data['away_team']) \
+									if str(date).split("-")[0]==year and (player in AT or player in HT) and team==team_map[home_team]])
+				season_avg['ER']=numpy.mean([ER for AT,HT,ER,date,team,home_team,away_team in zip(hist_data['away_starting_lineup'],hist_data['home_starting_lineup'], \
+							 		hist_data['earned_runs'],hist_data['Date'],hist_data['Team'],hist_data['home_team'],hist_data['away_team']) \
+							 		if str(date).split("-")[0]==year and (player in AT or player in HT) and team==team_map[home_team]])
+			except:
+				season_avg['IP']=numpy.mean([IP for team,home_team,away_team,IP,date in zip(hist_data['Team'],hist_data['home_team'],hist_data['away_team'],\
+									hist_data['innings_pitched'],hist_data['Date']) if str(date).split("-")[0]==year and IP>3 and team==team_map[home_team]])
+				season_avg['ER']=numpy.mean([ER for team,home_team,away_team,IP,date,ER in zip(hist_data['Team'],hist_data['home_team'],hist_data['away_team'],\
+								 	hist_data['innings_pitched'],hist_data['Date'],hist_data['earned_runs']) if str(date).split("-")[0]==year and IP>3 and team==team_map[home_team]])
+		elif home_away=='away':
+			try:
+				season_avg['K9']=numpy.mean([float(SO/IP*9) for SO,date,IP,team,home_team,away_team \
+					 		   		in zip(hist_data['strike_outs'],hist_data['Date'],hist_data['innings_pitched'],hist_data['Team'],hist_data['home_team'],hist_data['away_team']) \
+					 		   		if str(date).split("-")[0]==year and IP>3 and team==team_map[home_team]])
+				season_avg['IP']=numpy.mean([IP for AT,HT,IP,date,team,home_team,away_team in zip(hist_data['away_starting_lineup'],hist_data['home_starting_lineup'], \
+									hist_data['innings_pitched'],hist_data['Date'],hist_data['Team'],hist_data['home_team'],hist_data['away_team']) \
+									if str(date).split("-")[0]==year and (player in AT or player in HT) and team==team_map[away_team]])
+				season_avg['ER']=numpy.mean([ER for AT,HT,ER,date,team,home_team,away_team in zip(hist_data['away_starting_lineup'],hist_data['home_starting_lineup'], \
+							 		hist_data['earned_runs'],hist_data['Date'],hist_data['Team'],hist_data['home_team'],hist_data['away_team']) \
+							 		if str(date).split("-")[0]==year and (player in AT or player in HT) and team==team_map[away_team]])
+			except:
+				season_avg['IP']=numpy.mean([IP for team,home_team,away_team,IP,date in zip(hist_data['Team'],hist_data['home_team'],hist_data['away_team'],\
+									hist_data['innings_pitched'],hist_data['Date']) if str(date).split("-")[0]==year and IP>3 and team==team_map[away_team]])
+				season_avg['ER']=numpy.mean([ER for team,home_team,away_team,IP,date,ER in zip(hist_data['Team'],hist_data['home_team'],hist_data['away_team'],\
+								 	hist_data['innings_pitched'],hist_data['Date'],hist_data['earned_runs']) if str(date).split("-")[0]==year and IP>3 and team==team_map[away_team]])
 
-	def season_averages(self,hist_data,player): #put this in mlb class? Specific to pitcher strikeouts right now, can change to generalize based on demand.
-		team_map=Ugen.mlb_map(11,4) #Ian: make a function that does some of these things below
-		try:
-			s2015_pitcher_IP=numpy.mean([IP for AT,HT,IP,date in zip(hist_data['away_starting_lineup'],hist_data['home_starting_lineup'], \
-							 hist_data['innings_pitched'],hist_data['Date']) if str(date).split("-")[0]=='2015'and (player in AT or player in HT)])
-			s2015_pitcher_IP_home=numpy.mean([IP for AT,HT,IP,date,team,home_team,away_team in zip(hist_data['away_starting_lineup'],hist_data['home_starting_lineup'], \
-							 hist_data['innings_pitched'],hist_data['Date'],hist_data['Team'],hist_data['home_team'],hist_data['away_team']) \
-							 if str(date).split("-")[0]=='2015' and (player in AT or player in HT) and team==team_map[home_team]])
-			s2015_pitcher_IP_away=numpy.mean([IP for AT,HT,IP,date,team,home_team,away_team in zip(hist_data['away_starting_lineup'],hist_data['home_starting_lineup'], \
-							 hist_data['innings_pitched'],hist_data['Date'],hist_data['Team'],hist_data['home_team'],hist_data['away_team']) \
-							 if str(date).split("-")[0]=='2015' and (player in AT or player in HT) and team==team_map[away_team]])	
-			s2015_pitcher_ER_home=numpy.mean([ER for AT,HT,ER,date,team,home_team,away_team in zip(hist_data['away_starting_lineup'],hist_data['home_starting_lineup'], \
-							 hist_data['earned_runs'],hist_data['Date'],hist_data['Team'],hist_data['home_team'],hist_data['away_team']) \
-							 if str(date).split("-")[0]=='2015' and (player in AT or player in HT) and team==team_map[home_team]])
-			s2015_pitcher_ER_away=numpy.mean([ER for AT,HT,ER,date,team,home_team,away_team in zip(hist_data['away_starting_lineup'],hist_data['home_starting_lineup'], \
-							 hist_data['earned_runs'],hist_data['Date'],hist_data['Team'],hist_data['home_team'],hist_data['away_team']) \
-							 if str(date).split("-")[0]=='2015' and (player in AT or player in HT) and team==team_map[away_team]])			
-		except:
-			s2015_pitcher_IP=numpy.mean([IP for IP,date in zip(hist_data['innings_pitched'],hist_data['Date']) if str(date).split("-")[0]=='2015'and IP>3])	
-			s2015_pitcher_IP_home=numpy.mean([IP for team,home_team,away_team,IP,date in zip(hist_data['Team'],hist_data['home_team'],hist_data['away_team'],\
-								  hist_data['innings_pitched'],hist_data['Date']) if str(date).split("-")[0]=='2015' and IP>3 and team==team_map[home_team]])
-			s2015_pitcher_IP_away=numpy.mean([IP for team,home_team,away_team,IP,date in zip(hist_data['Team'],hist_data['home_team'],hist_data['away_team'],\
-								  hist_data['innings_pitched'],hist_data['Date']) if str(date).split("-")[0]=='2015' and IP>3 and team==team_map[away_team]])
-			s2015_pitcher_ER_home=numpy.mean([ER for team,home_team,away_team,IP,date,ER in zip(hist_data['Team'],hist_data['home_team'],hist_data['away_team'],\
-								  hist_data['innings_pitched'],hist_data['Date'],hist_data['earned_runs']) if str(date).split("-")[0]=='2015' and IP>3 and team==team_map[home_team]])
-			s2015_pitcher_ER_away=numpy.mean([ER for team,home_team,away_team,IP,date,ER in zip(hist_data['Team'],hist_data['home_team'],hist_data['away_team'],\
-								  hist_data['innings_pitched'],hist_data['Date'],hist_data['earned_runs']) if str(date).split("-")[0]=='2015' and IP>3 and team==team_map[away_team]])
-		try:
-			s2014_pitcher_IP=numpy.mean([IP for AT,HT,IP,date in zip(hist_data['away_starting_lineup'],hist_data['home_starting_lineup'], \
-							 hist_data['innings_pitched'],hist_data['Date']) if str(date).split("-")[0]=='2014'and (player in AT or player in HT)])
-			s2014_pitcher_IP_home=numpy.mean([IP for AT,HT,IP,date,team,home_team,away_team in zip(hist_data['away_starting_lineup'],hist_data['home_starting_lineup'], \
-							 hist_data['innings_pitched'],hist_data['Date'],hist_data['Team'],hist_data['home_team'],hist_data['away_team']) \
-							 if str(date).split("-")[0]=='2014' and (player in AT or player in HT) and team==team_map[home_team]])
-			s2014_pitcher_IP_away=numpy.mean([IP for AT,HT,IP,date,team,home_team,away_team in zip(hist_data['away_starting_lineup'],hist_data['home_starting_lineup'], \
-							 hist_data['innings_pitched'],hist_data['Date'],hist_data['Team'],hist_data['home_team'],hist_data['away_team']) \
-							 if str(date).split("-")[0]=='2014' and (player in AT or player in HT) and team==team_map[away_team]])
-			s2014_pitcher_ER_home=numpy.mean([ER for AT,HT,ER,date,team,home_team,away_team in zip(hist_data['away_starting_lineup'],hist_data['home_starting_lineup'], \
-							 hist_data['earned_runs'],hist_data['Date'],hist_data['Team'],hist_data['home_team'],hist_data['away_team']) \
-							 if str(date).split("-")[0]=='2014' and (player in AT or player in HT) and team==team_map[home_team]])
-			s2014_pitcher_ER_away=numpy.mean([ER for AT,HT,ER,date,team,home_team,away_team in zip(hist_data['away_starting_lineup'],hist_data['home_starting_lineup'], \
-							 hist_data['earned_runs'],hist_data['Date'],hist_data['Team'],hist_data['home_team'],hist_data['away_team']) \
-							 if str(date).split("-")[0]=='2014' and (player in AT or player in HT) and team==team_map[away_team]])				
-		except:
-			s2014_pitcher_IP=numpy.mean([IP for IP,date in zip(hist_data['innings_pitched'],hist_data['Date']) if str(date).split("-")[0]=='2014'and IP>3])	
-			s2014_pitcher_IP_home=numpy.mean([IP for team,home_team,away_team,IP,date in zip(hist_data['Team'],hist_data['home_team'],hist_data['away_team'],\
-								  hist_data['innings_pitched'],hist_data['Date']) if str(date).split("-")[0]=='2014' and IP>3 and team==team_map[home_team]])
-			s2014_pitcher_IP_away=numpy.mean([IP for team,home_team,away_team,IP,date in zip(hist_data['Team'],hist_data['home_team'],hist_data['away_team'],\
-								  hist_data['innings_pitched'],hist_data['Date']) if str(date).split("-")[0]=='2014' and IP>3 and team==team_map[away_team]])
-			s2014_pitcher_ER_home=numpy.mean([ER for team,home_team,away_team,IP,date,ER in zip(hist_data['Team'],hist_data['home_team'],hist_data['away_team'],\
-								  hist_data['innings_pitched'],hist_data['Date'],hist_data['earned_runs']) if str(date).split("-")[0]=='2014' and IP>3 and team==team_map[home_team]])
-			s2014_pitcher_ER_away=numpy.mean([ER for team,home_team,away_team,IP,date,ER in zip(hist_data['Team'],hist_data['home_team'],hist_data['away_team'],\
-								  hist_data['innings_pitched'],hist_data['Date'],hist_data['earned_runs']) if str(date).split("-")[0]=='2014' and IP>3 and team==team_map[away_team]])
-		try:
-			s2013_pitcher_IP=numpy.mean([IP for AT,HT,IP,date in zip(hist_data['away_starting_lineup'],hist_data['home_starting_lineup'], \
-							 hist_data['innings_pitched'],hist_data['Date']) if str(date).split("-")[0]=='2013'and (player in AT or player in HT)])
-			s2013_pitcher_IP_home=numpy.mean([IP for AT,HT,IP,date,team,home_team,away_team in zip(hist_data['away_starting_lineup'],hist_data['home_starting_lineup'], \
-							 hist_data['innings_pitched'],hist_data['Date'],hist_data['Team'],hist_data['home_team'],hist_data['away_team']) \
-							 if str(date).split("-")[0]=='2013' and (player in AT or player in HT) and team==team_map[home_team]])
-			s2013_pitcher_IP_away=numpy.mean([IP for AT,HT,IP,date,team,home_team,away_team in zip(hist_data['away_starting_lineup'],hist_data['home_starting_lineup'], \
-							 hist_data['innings_pitched'],hist_data['Date'],hist_data['Team'],hist_data['home_team'],hist_data['away_team']) \
-							 if str(date).split("-")[0]=='2013' and (player in AT or player in HT) and team==team_map[away_team]])			
-			s2013_pitcher_ER_home=numpy.mean([ER for AT,HT,ER,date,team,home_team,away_team in zip(hist_data['away_starting_lineup'],hist_data['home_starting_lineup'], \
-							 hist_data['earned_runs'],hist_data['Date'],hist_data['Team'],hist_data['home_team'],hist_data['away_team']) \
-							 if str(date).split("-")[0]=='2013' and (player in AT or player in HT) and team==team_map[home_team]])
-			s2013_pitcher_ER_away=numpy.mean([ER for AT,HT,ER,date,team,home_team,away_team in zip(hist_data['away_starting_lineup'],hist_data['home_starting_lineup'], \
-							 hist_data['earned_runs'],hist_data['Date'],hist_data['Team'],hist_data['home_team'],hist_data['away_team']) \
-							 if str(date).split("-")[0]=='2013' and (player in AT or player in HT) and team==team_map[away_team]])				
-		except:
-			s2013_pitcher_IP=numpy.mean([IP for IP,date in zip(hist_data['innings_pitched'],hist_data['Date']) if str(date).split("-")[0]=='2013'and IP>3])	
-			s2013_pitcher_IP_home=numpy.mean([IP for team,home_team,away_team,IP,date in zip(hist_data['Team'],hist_data['home_team'],hist_data['away_team'],\
-								  hist_data['innings_pitched'],hist_data['Date']) if str(date).split("-")[0]=='2013' and IP>3 and team==team_map[home_team]])
-			s2013_pitcher_IP_away=numpy.mean([IP for team,home_team,away_team,IP,date in zip(hist_data['Team'],hist_data['home_team'],hist_data['away_team'],\
-								  hist_data['innings_pitched'],hist_data['Date']) if str(date).split("-")[0]=='2013' and IP>3 and team==team_map[away_team]])
-			s2013_pitcher_ER_home=numpy.mean([ER for team,home_team,away_team,IP,date,ER in zip(hist_data['Team'],hist_data['home_team'],hist_data['away_team'],\
-								  hist_data['innings_pitched'],hist_data['Date'],hist_data['earned_runs']) if str(date).split("-")[0]=='2013' and IP>3 and team==team_map[home_team]])
-			s2013_pitcher_ER_away=numpy.mean([ER for team,home_team,away_team,IP,date,ER in zip(hist_data['Team'],hist_data['home_team'],hist_data['away_team'],\
-								  hist_data['innings_pitched'],hist_data['Date'],hist_data['earned_runs']) if str(date).split("-")[0]=='2013' and IP>3 and team==team_map[away_team]])		
+		return season_avg
 
-		season_averages={
-			"league_K%_avg": {
-						'2015':0.234,
-						'2014':0.204,
-						'2013':0.199,
-			},
-			'pitcher_K9_avg': {
-						'2015':numpy.mean([float(SO/IP*9) for SO,date,IP in zip(hist_data['strike_outs'],hist_data['Date'],hist_data['innings_pitched']) if str(date).split("-")[0]=='2015' and IP>3]),
-						'2014':numpy.mean([float(SO/IP*9) for SO,date,IP in zip(hist_data['strike_outs'],hist_data['Date'],hist_data['innings_pitched']) if str(date).split("-")[0]=='2014' and IP>3]),
-						'2013':numpy.mean([float(SO/IP*9) for SO,date,IP in zip(hist_data['strike_outs'],hist_data['Date'],hist_data['innings_pitched']) if str(date).split("-")[0]=='2013' and IP>3]),
-			},
-			'pitcher_K9_avg_ha': {
-						'2015_home':numpy.mean([float(SO/IP*9) for SO,date,IP,team,home_team,away_team \
-					 		   		in zip(hist_data['strike_outs'],hist_data['Date'],hist_data['innings_pitched'],hist_data['Team'],hist_data['home_team'],hist_data['away_team']) \
-					 		   		if str(date).split("-")[0]=='2015' and IP>3 and team==team_map[home_team]]),
-						'2015_away':numpy.mean([float(SO/IP*9) for SO,date,IP,team,home_team,away_team \
-					 		   		in zip(hist_data['strike_outs'],hist_data['Date'],hist_data['innings_pitched'],hist_data['Team'],hist_data['home_team'],hist_data['away_team']) \
-					 		   		if str(date).split("-")[0]=='2015' and IP>3 and team==team_map[away_team]]),
-						'2014_home':numpy.mean([float(SO/IP*9) for SO,date,IP,team,home_team,away_team \
-					 		   		in zip(hist_data['strike_outs'],hist_data['Date'],hist_data['innings_pitched'],hist_data['Team'],hist_data['home_team'],hist_data['away_team']) \
-					 		   		if str(date).split("-")[0]=='2014' and IP>3 and team==team_map[home_team]]),
-						'2014_away':numpy.mean([float(SO/IP*9) for SO,date,IP,team,home_team,away_team \
-					 		   		in zip(hist_data['strike_outs'],hist_data['Date'],hist_data['innings_pitched'],hist_data['Team'],hist_data['home_team'],hist_data['away_team']) \
-					 		   		if str(date).split("-")[0]=='2014' and IP>3 and team==team_map[away_team]]),
-						'2013_home':numpy.mean([float(SO/IP*9) for SO,date,IP,team,home_team,away_team \
-					 		   		in zip(hist_data['strike_outs'],hist_data['Date'],hist_data['innings_pitched'],hist_data['Team'],hist_data['home_team'],hist_data['away_team']) \
-					 		   		if str(date).split("-")[0]=='2013' and IP>3 and team==team_map[home_team]]),
-						'2013_away':numpy.mean([float(SO/IP*9) for SO,date,IP,team,home_team,away_team \
-					 		   		in zip(hist_data['strike_outs'],hist_data['Date'],hist_data['innings_pitched'],hist_data['Team'],hist_data['home_team'],hist_data['away_team']) \
-					 		   		if str(date).split("-")[0]=='2013' and IP>3 and team==team_map[away_team]]),
-			},
-			'pitcher_IP_avg': {
-						'2015':s2015_pitcher_IP,
-						'2014':s2014_pitcher_IP,
-						'2013':s2013_pitcher_IP,
-			},
-			'pitcher_IP_avg_ha': {
-						'2015_home':s2015_pitcher_IP_home,
-						'2015_away':s2015_pitcher_IP_away,
-						'2014_home':s2014_pitcher_IP_home,
-						'2014_away':s2014_pitcher_IP_away,
-						'2013_home':s2013_pitcher_IP_home,
-						'2013_away':s2013_pitcher_IP_away,
-			},
-			'pitcher_ER_avg_ha': {
-						'2015_home':s2015_pitcher_ER_home,
-						'2015_away':s2015_pitcher_ER_away,
-						'2014_home':s2014_pitcher_ER_home,
-						'2014_away':s2014_pitcher_ER_away,
-						'2013_home':s2013_pitcher_ER_home,
-						'2013_away':s2013_pitcher_ER_away,
+	def season_averages(self,hist_data,player): 	
+		if player.split('_')[1]=='pitcher':
+			season_averages={
+				"league_K%_avg": {'2015':0.234,'2014':0.204,'2013':0.199,},
+				'pitcher_K9_avg': {
+							'2015':pitcher_season_averages(hist_data,False,'2015')['K9'],
+							'2014':pitcher_season_averages(hist_data,False,'2014')['K9'],
+							'2013':pitcher_season_averages(hist_data,False,'2013')['K9']},
+				'pitcher_K9_avg_ha': {
+							'2015_home':pitcher_season_averages(hist_data,'home','2015')['K9'],
+							'2015_away':pitcher_season_averages(hist_data,'away','2015')['K9'],
+							'2014_home':pitcher_season_averages(hist_data,'home','2014')['K9'],
+							'2014_away':pitcher_season_averages(hist_data,'away','2014')['K9'],
+							'2013_home':pitcher_season_averages(hist_data,'home','2013')['K9'],
+							'2013_away':pitcher_season_averages(hist_data,'away','2013')['K9']},
+				'pitcher_IP_avg': {
+							'2015':pitcher_season_averages(hist_data,False,'2015')['IP'],
+							'2014':pitcher_season_averages(hist_data,False,'2014')['IP'],
+							'2013':pitcher_season_averages(hist_data,False,'2013')['IP']},
+				'pitcher_IP_avg_ha': {
+							'2015_home':pitcher_season_averages(hist_data,'home','2015')['IP'],
+							'2015_away':pitcher_season_averages(hist_data,'away','2015')['IP'],
+							'2014_home':pitcher_season_averages(hist_data,'home','2014')['IP'],
+							'2014_away':pitcher_season_averages(hist_data,'away','2014')['IP'],
+							'2013_home':pitcher_season_averages(hist_data,'home','2013')['IP'],
+							'2013_away':pitcher_season_averages(hist_data,'away','2013')['IP']},
+				'pitcher_ER_avg_ha': {
+							'2015_home':pitcher_season_averages(hist_data,'home','2015')['ER'],
+							'2015_away':pitcher_season_averages(hist_data,'away','2015')['ER'],
+							'2014_home':pitcher_season_averages(hist_data,'home','2014')['ER'],
+							'2014_away':pitcher_season_averages(hist_data,'away','2014')['ER'],
+							'2013_home':pitcher_season_averages(hist_data,'home','2013')['ER'],
+							'2013_away':pitcher_season_averages(hist_data,'away','2013')['ER']},
 			}
-		}
 
-		# # Ian: added this loop to replace nan values with previous year averages, otherwise give them a zero..
-		for outer_key,outer_val in season_averages.iteritems(): 
-			for inner_key,inner_val in outer_val.iteritems():
-				if numpy.isnan(inner_val) and "_" in inner_key:
-					# print 'nan found in %s for following key:val - %s:%s' %(outer_key,inner_key,inner_val)
-					split_key=inner_key.split("_")
-					if split_key[0]=='2013':
-						season_averages[outer_key][split_key[0]+'_away']=0
-						season_averages[outer_key][split_key[0]+'_home']=0
-						continue #otherwise we will error when we try prev_year_key of 2012
-					prev_year_key=str(int(split_key[0])-1)+'_'+split_key[1]
-					if not numpy.isnan(season_averages[outer_key][prev_year_key]):
-						season_averages[outer_key][inner_key]=season_averages[outer_key][prev_year_key]
-						if split_key[1]=='home': #If we're replacing one H/A avg with the previous year, replace the other too...
-							season_averages[outer_key][split_key[0]+'_away']=season_averages[outer_key][prev_year_key.split("_")[0]+'_away']														
-						else:	
-							season_averages[outer_key][split_key[0]+'_home']=season_averages[outer_key][prev_year_key.split("_")[0]+'_home']	
-					else: #If we don't have 2015 or 2014 data, put in a zero
-						season_averages[outer_key][split_key[0]+'_away']=0
-						season_averages[outer_key][split_key[0]+'_home']=0
-
+		season_averages=season_averages_check(season_averages)
 		return season_averages
 
-#Ian: reverse index is day before, check how this may affect your stuff
+		def season_averages_check(season_averages):
+			#Ian: added this loop to replace nan values with previous year averages, otherwise give them a zero..
+			for outer_key,outer_val in season_averages.iteritems(): 
+				for inner_key,inner_val in outer_val.iteritems():
+					if numpy.isnan(inner_val) and "_" in inner_key:
+						# print 'nan found in %s for following key:val - %s:%s' %(outer_key,inner_key,inner_val)
+						split_key=inner_key.split("_")
+						if split_key[0]=='2013':
+							season_averages[outer_key][split_key[0]+'_away']=0
+							season_averages[outer_key][split_key[0]+'_home']=0
+							continue #otherwise we will error when we try prev_year_key of 2012
+						prev_year_key=str(int(split_key[0])-1)+'_'+split_key[1]
+						if not numpy.isnan(season_averages[outer_key][prev_year_key]):
+							season_averages[outer_key][inner_key]=season_averages[outer_key][prev_year_key]
+							if split_key[1]=='home': #If we're replacing one H/A avg with the previous year, replace the other too...
+								season_averages[outer_key][split_key[0]+'_away']=season_averages[outer_key][prev_year_key.split("_")[0]+'_away']														
+							else:	
+								season_averages[outer_key][split_key[0]+'_home']=season_averages[outer_key][prev_year_key.split("_")[0]+'_home']	
+						else: #If we don't have 2015 or 2014 data, put in a zero
+							season_averages[outer_key][split_key[0]+'_away']=0
+							season_averages[outer_key][split_key[0]+'_home']=0
+		return season_averages
+
 	def build_model_dataset(self,hist_data,starting_lineups,player):#Cole: How do we generalize this method. Some out-of-box method likely exists. Defs need to refactor
 		print 'now building dataset for %s' % player
 		player_arm=starting_lineups[player]['arm']
@@ -1114,8 +1064,8 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 
 # nba=NBA()
 
-# dbo.delete_by_date(nba.sport,'hist_event_data','2014-12-15','2014-12-15')
-# dbo.delete_by_date(nba.sport,'hist_player_data','2014-12-15','2014-12-15')
+# dbo.delete_by_date(nba.sport,'hist_event_data','2015-02-26','2015-02-26')
+# dbo.delete_by_date(nba.sport,'hist_player_data','2015-02-26','2015-02-26')
 
 # events=nba.get_daily_game_data('2014-10-28','2015-04-15',True) #2014 regular season
 
