@@ -92,8 +92,7 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 					# self.parse_event_data(day_events[indx],event_date,odds_dict) 
 					game_data = XMLStats.main(self,'boxscore',None)
 					if game_data != None:
-						if self.sport=='NBA':
-							self.parse_nba_event_data(game_data)
+						self.parse_event_data(game_data)
 					 	parsed_data = self.parse_boxscore_data(game_data)
 					print game_id + " succesfully loaded"
 				else:
@@ -131,83 +130,6 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 					dbo.write_to_db('hist_player_data',player_data,False)
 		return self
 
-	def parse_event_data(self,event_data,event_date,odds_data): #Cole: How to generalize parsing event data for each sport?
-		event_data_dict = {}
-		if event_data:
-			event_data_dict['event_id'] = event_data['event_id']
-			event_data_dict['sport'] = event_data['sport']
-			event_data_dict['start_date_time'] = event_data['start_date_time']
-			event_data_dict['season_type'] = event_data['season_type']
-			event_data_dict['away_team'] = event_data['away_team']['team_id']
-			event_data_dict['home_team'] = event_data['home_team']['team_id']
-			home_team = event_data['home_team']['abbreviation']
-			away_team = event_data['away_team']['abbreviation']
-			event_data_dict['vegas_odds']={}
-			try:
-				event_data_dict['vegas_odds'][home_team]=odds_data[home_team]
-				event_data_dict['vegas_odds'][away_team]=odds_data[away_team]
-			except KeyError:
-				print 'no vegas odds for event: %s' % event_data['event_id']
-			event_data_dict['stadium'] = event_data['home_team']['site_name']
-			event_date = event_date[0:4] + "-" + event_date[4:6] + "-" + event_date[6:8]
-			team_dict,player_dict = ds.mlb_starting_lineups(event_date)
-			if home_team in team_dict and away_team in team_dict:
-				if 'PPD' not in team_dict[home_team]['start_time']:
-					wunderground_dict=weather.weather_hist(home_team,event_date,team_dict[home_team]['start_time'])
-				try:			
-					event_data_dict['wunderground_forecast']=wunderground_dict
-					event_data_dict['wind']=str(wunderground_dict['wind']['wind_dir'])+'_'+str(wunderground_dict['wind']['wind_speed'])
-				except:
-					print 'no weather data for %s' % event_data_dict['event_id']
-				event_data_dict['home_starting_lineup'] = team_dict[home_team]['lineup']
-				event_data_dict['away_starting_lineup'] = team_dict[away_team]['lineup']
-				event_data_dict['forecast'] = team_dict[home_team]['weather_forecast']
-				if team_dict[home_team]['start_time'] == 'PPD':
-					event_data_dict['PPD'] = True
-				else:
-					event_data_dict['PPD'] = False
-			else:
-				print 'no data from baseball lineups website for this event'
-			cols = ", ".join(event_data_dict.keys())
-			data = ", ".join(['"' + unicode(v) + '"' for v in event_data_dict.values()])
-			dbo.insert_mysql('event_data',cols,data)
-		return event_data_dict
-
-	def get_db_gamedata_old(self,player,start_date="",end_date="",GameID=""): #Updated to get by GameID or by Dates
-		if start_date:
-			sql = ("SELECT hist_player_data.*, event_data.* FROM hist_player_data "
-					 "INNER JOIN event_data ON hist_player_data.GameID=event_data.event_id "
-					   "WHERE hist_player_data.Sport = '"+ self.sport +"' AND Player = '"+ player.replace("'","''") +"' AND Date BETWEEN '" + start_date +"' AND "
-					    "'" + end_date + "' ORDER BY Date ASC") #Ian: modified SQL statement so it can read names like "Travis D'Arnaud" from DB
-		else:
-			sql = ("SELECT hist_player_data.* FROM hist_player_data "
-					"WHERE Player = '"+ player.replace("'","''") +"' AND "
-					"GameID = '"+ GameID.replace("'","''") +"'")
-		db_data = dbo.read_from_db(sql,["Player","GameID","Player_Type"],True)
-		player_data_dict = {}
-		for key,player_game in db_data.iteritems():
-			player_type = player_game['Player_Type']
-			player_data_map = self.inv_db_data_model[player_type]
-			data_map = {key:player_data_map[key] if 'Stat' in key else key for key in player_data_map} #Cole: updated so only Stat columns change
-			player_key = player_game['Player'] + '_' + player_game['Player_Type']
-			if player_key in player_data_dict.keys():
-				player_data_dict[player_key]['name'].append(player_key) #Cole: adding the field 'name' is required for openopts results output
-				for db_key,player_data in player_game.iteritems():
-					stat_key = data_map[db_key] if db_key in data_map.keys() else db_key
-					try:
-						player_data_dict[player_key][stat_key].append(float(player_data))#Cole: Attempt to convert data to float, else keep as string
-					except:
-						player_data_dict[player_key][stat_key].append(player_data)
-			else:
-				player_data_dict[player_key] = {}
-				player_data_dict[player_key]['name'] = [player_key]
-				for db_key,player_data in player_game.iteritems():
-					stat_key = data_map[db_key] if db_key in data_map.keys() else db_key
-					try:
-						player_data_dict[player_key][stat_key] = [float(player_data)]
-					except:
-						player_data_dict[player_key][stat_key] = [player_data]
-		return player_data_dict
 
 	def get_db_gamedata(self,player,start_date,end_date,GameID=False): #Ian: query by date or GameID
 		if GameID:
@@ -341,7 +263,7 @@ class NBA(Sport): #Cole: data modelling may need to be refactored, might be more
 		return FD_points
 
 
-	def parse_nba_event_data(self,boxscore_data): 
+	def parse_event_data(self,boxscore_data): 
 		event_data={}
 		if boxscore_data:
 			event_data['gameID']=self.gameid
@@ -408,6 +330,48 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 	def sort_positions(self,sort_list):
 		return self.positions[sort_list['position']]
 	
+	def parse_event_data(self,event_data,event_date,odds_data): #Cole: How to generalize parsing event data for each sport?
+		event_data_dict = {}
+		if event_data:
+			event_data_dict['event_id'] = event_data['event_id']
+			event_data_dict['sport'] = event_data['sport']
+			event_data_dict['start_date_time'] = event_data['start_date_time']
+			event_data_dict['season_type'] = event_data['season_type']
+			event_data_dict['away_team'] = event_data['away_team']['team_id']
+			event_data_dict['home_team'] = event_data['home_team']['team_id']
+			home_team = event_data['home_team']['abbreviation']
+			away_team = event_data['away_team']['abbreviation']
+			event_data_dict['vegas_odds']={}
+			try:
+				event_data_dict['vegas_odds'][home_team]=odds_data[home_team]
+				event_data_dict['vegas_odds'][away_team]=odds_data[away_team]
+			except KeyError:
+				print 'no vegas odds for event: %s' % event_data['event_id']
+			event_data_dict['stadium'] = event_data['home_team']['site_name']
+			event_date = event_date[0:4] + "-" + event_date[4:6] + "-" + event_date[6:8]
+			team_dict,player_dict = ds.mlb_starting_lineups(event_date)
+			if home_team in team_dict and away_team in team_dict:
+				if 'PPD' not in team_dict[home_team]['start_time']:
+					wunderground_dict=weather.weather_hist(home_team,event_date,team_dict[home_team]['start_time'])
+				try:			
+					event_data_dict['wunderground_forecast']=wunderground_dict
+					event_data_dict['wind']=str(wunderground_dict['wind']['wind_dir'])+'_'+str(wunderground_dict['wind']['wind_speed'])
+				except:
+					print 'no weather data for %s' % event_data_dict['event_id']
+				event_data_dict['home_starting_lineup'] = team_dict[home_team]['lineup']
+				event_data_dict['away_starting_lineup'] = team_dict[away_team]['lineup']
+				event_data_dict['forecast'] = team_dict[home_team]['weather_forecast']
+				if team_dict[home_team]['start_time'] == 'PPD':
+					event_data_dict['PPD'] = True
+				else:
+					event_data_dict['PPD'] = False
+			else:
+				print 'no data from baseball lineups website for this event'
+			cols = ", ".join(event_data_dict.keys())
+			data = ", ".join(['"' + unicode(v) + '"' for v in event_data_dict.values()])
+			dbo.insert_mysql('event_data',cols,data)
+		return event_data_dict
+
 	def batter_lineup_stats(self,date,lineup_data,player_arm):
 		lineup_stats_dict={}
 		hist_lineup_strikeout_rate,hist_lineup_ops,hist_lineup_slg,strikeout_PAs_list,ops_PAs_list,slg_PAs_list=([] for i in range(6))
@@ -639,6 +603,7 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 						season_averages[outer_key][split_key[0]+'_home']=0
 
 		return season_averages
+
 #Ian: reverse index is day before, check how this may affect your stuff
 	def build_model_dataset(self,hist_data,starting_lineups,player):#Cole: How do we generalize this method. Some out-of-box method likely exists. Defs need to refactor
 		print 'now building dataset for %s' % player
