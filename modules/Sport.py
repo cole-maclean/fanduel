@@ -331,11 +331,15 @@ class NBA(Sport): #Cole: data modelling may need to be refactored, might be more
 		self.data_model = ({'away_stats':self.db_data_model['bplayer'],'home_stats':self.db_data_model['bplayer']})		
 
 	def FD_points(self, data):
-		FD_points = (numpy.array(data['singles'])*1+numpy.array(data['doubles'])*2+numpy.array(data['triples'])*3+
-						numpy.array(data['home_runs'])*4+numpy.array(data['rbi'])*1+numpy.array(data['runs'])*1+
-							numpy.array(data['walks'])*1+numpy.array(data['stolen_bases'])*1+numpy.array(data['hit_by_pitch'])*1+
-							numpy.subtract(numpy.array(data['at_bats']),numpy.array(data['hits']))*-.25)
+
+		FGM2=numpy.subtract(numpy.array(data['FGM']),numpy.array(data['3FGM']))
+		FGM2[FGM2<0]=0
+
+		FD_points=numpy.array(data['3FGM'])*3+numpy.array(FGM2)*2+numpy.array(data['FTM'])*1+numpy.array(data['rebounds'])*1.2+
+					numpy.array(data['assists'])*1.5+numpy.array(data['blocks'])*2+numpy.array(data['steals'])*2+numpy.array(data['turnovers'])*-1
+
 		return FD_points
+
 
 	def parse_nba_event_data(self,boxscore_data): 
 		event_data={}
@@ -1142,35 +1146,36 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 					print player_key + ' not in db_player_data'
 			return player_universe
 
-# mlb=MLB()
 
-nba=NBA()
+# nba=NBA()
 
-# events=nba.get_daily_game_data('2011-12-25','2015-11-15',True) #2011 regular season?
-# events=nba.get_daily_game_data('2012-02-15','2012-03-31',True)
+# dbo.delete_by_date(nba.sport,'hist_event_data','2014-12-15','2014-12-15')
+# dbo.delete_by_date(nba.sport,'hist_player_data','2014-12-15','2014-12-15')
 
+# events=nba.get_daily_game_data('2014-10-28','2015-04-15',True) #2014 regular season
 
-# dbo.delete_by_date(nba.sport,'hist_event_data','2012-11-01','2015-11-10')
-# dbo.delete_by_date(nba.sport,'hist_player_data','2012-11-01','2015-11-10')
-
-
-# events=nba.get_daily_game_data('2015-11-06','2015-11-08',True)
-# events=nba.get_daily_game_data('2012-11-03','2012-11-04',True)
-# events=nba.get_daily_game_data('2014-10-29','2014-11-02',True)
+# events=nba.get_daily_game_data('2014-12-15','2015-04-15',True) #2014 regular season
+# events=nba.get_daily_game_data('2015-10-27','2015-11-17',True) #2015 regular sesaon to do
 
 
-dataset=nba.get_db_gamedata('DeMar DeRozan','2011-12-31','2015-12-10')
+# dataset=nba.get_db_gamedata('DeMar DeRozan','2011-12-31','2015-12-10')
 
-pp = pprint.PrettyPrinter(indent=4)
-pp.pprint(dataset)
+# pp = pprint.PrettyPrinter(indent=4)
+# pp.pprint(dataset)
 
 
 
-# date_s='20151109'
-# new_date=dt.datetime.strptime(date_s,'%Y%m%d')
-# print new_date
+##IAN TO DO:
+#1: Player Maps
+#2: build_player_universe function
 
 
-#data=mlb.hist_build_player_universe('2015-08-06','12748')
+
+
+
+
+
+
+
 
 
