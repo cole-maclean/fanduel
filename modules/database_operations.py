@@ -1,7 +1,6 @@
 import general_utils as Ugen
 import time
 import os
-<<<<<<< HEAD
 from Tkinter import Tk
 from pymongo import MongoClient
 import datetime as dt

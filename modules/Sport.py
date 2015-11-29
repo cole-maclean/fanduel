@@ -128,19 +128,20 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 		return self
 
 
-	def get_db_gamedata(self,player,start_date,end_date,GameID=False): #Ian: query by date or GameID
+	def get_db_gamedata(self,player,start_date="2010-01-01",end_date="2100-01-01",GameID=False): #Ian: query by date or GameID
 		if GameID:
 			query={'sport':self.sport,'player':player,'gameID':GameID}
 		else:
 			query={'sport':self.sport,'player':player,'date':{"$gte":dt.datetime.strptime(start_date,'%Y-%m-%d'),"$lte":dt.datetime.strptime(end_date,'%Y-%m-%d')}}
-		
-		player_data=dbo.read_from_db('hist_player_data',query,{'_id':0,'sport':0,'player':0})
+		player_data=dbo.read_from_db('hist_player_data',query,{'_id':0,'sport':0})
 		player_data.sort(key=lambda e: e['date'], reverse=False)
 		player_data_dict={key:[doc[key] for doc in player_data] for key in player_data[0].keys()}
 		event_data=[dbo.read_from_db('hist_event_data',{'sport':self.sport,'gameID':gameID},{'_id':0,'date':0,'sport':0,'gameID':0})[0] for gameID in player_data_dict['gameID']]
 		event_data_dict={key:[doc[key] for doc in event_data] for key in event_data[0].keys()}
 		player_data_dict.update(event_data_dict)
-		return player_data_dict
+		df=pandas.DataFrame(player_data_dict)
+		#Ian: add some check for data??
+		return df
 
 	def get_db_gamedata_old(self,player,player_type,start_date="20100101",end_date="21000101",GameID=None): #Updated to get by GameID or by Dates
 		if GameID:
@@ -252,6 +253,38 @@ class NBA(Sport): #Cole: data modelling may need to be refactored, might be more
 			event_data['officials']=[official['first_name']+' '+official['last_name'] for official in boxscore_data['officials']]
 			dbo.write_to_db('hist_event_data',event_data,False)
 		return
+
+	def build_player_universe(self,FDSession,contest_url,date=False,contestID = ""): 
+		if date:
+			query={'sport':self.sport,'date':dt.datetime.strptime(date,'%Y-%m-%d'),'contest_ID':contestID}
+			FD_player_data=dbo.read_from_db('hist_fanduel_data',query)[0]['contest_dict']
+			# teams,starting_lineups = 0 #Ian: create starting lineups function, ensure they get mapped to FD names
+			starting_players =[]#[player.split("_")[0] for player in starting_lineups.keys() if starting_lineups[player]['teamid'] not in omitted_teams and 'PPD' not in starting_lineups[player]['start_time']] 
+			FD_starting_player_data = {player:player_data for player,player_data in FD_player_data.iteritems() if player not in starting_players} #Ian: change to "in starting_players" once lineups function is added
+		else:
+			FD_player_data = FDSession.fanduel_api_data(contest_url)['players']
+			#Ian: create FD_starting_player_data variable to create dict like the one from backtests
+		for FD_playerid,data in FD_starting_player_data.iteritems():
+			db_df = self.get_db_gamedata(FD_playerid,'2015-10-01',end_date=Ugen.previous_day(date))
+ 			player_key = FD_playerid
+ 			player_universe={}
+			if player_key == db_df['player'][0]:
+				player_universe[player_key] = {}
+				projected_FD_points = self.FD_points_model(db_df)
+				player_universe[player_key]['projected_FD_points'] = projected_FD_points.projected_points
+				player_universe[player_key]['confidence'] = projected_FD_points.confidence
+				player_universe[player_key]['Player_Type'] = player_type
+				player_universe[player_key]['name'] = player_key
+				
+				#Ian: add this back in once projected_FD_points is working
+				# for key,player_data in data.iteritems():
+				# 	player_universe[player_key][key] = player_data
+				# position_map = {key:1 if key == player_universe[player_key]['position'] else 0 for key in self.positions.keys()}
+				# tmp_dict = position_map.copy()
+				# player_universe[player_key].update(tmp_dict)
+			else:
+				print player_key + ' not in db_player_data'
+		return player_universe
 
 
 
@@ -662,21 +695,29 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 			return player_universe
 
 
-# nba=NBA()
+
+nba=NBA()
 
 # dbo.delete_by_date(nba.sport,'hist_event_data','2015-02-26','2015-02-26')
 # dbo.delete_by_date(nba.sport,'hist_player_data','2015-02-26','2015-02-26')
 
 # events=nba.get_daily_game_data('2014-10-28','2015-04-15',True) #2014 regular season
+# events=nba.get_daily_game_data('2015-11-18','2015-11-28',True) #2015 - last historize
 
-# events=nba.get_daily_game_data('2014-12-15','2015-04-15',True) #2014 regular season
-# events=nba.get_daily_game_data('2015-10-27','2015-11-17',True) #2015 regular sesaon to do
+date='2015-11-27'
+def get_contests(sport,date): #Ian: Move to backtest module
+	query={'sport':sport,'date':dt.datetime.strptime(date,'%Y-%m-%d')}
+	resultset=dbo.read_from_db('hist_fanduel_data',query)
+	return [contest['contest_ID'] for contest in resultset]
 
+contest_list=get_contests('NBA',date)
+
+player_universe=nba.build_player_universe(0,0,date,contest_list[0])
 
 # dataset=nba.get_db_gamedata('DeMar DeRozan','2011-12-31','2015-12-10')
 
-# pp = pprint.PrettyPrinter(indent=4)
-# pp.pprint(dataset)
+pp = pprint.PrettyPrinter(indent=4)
+pp.pprint(player_universe)
 
 
 
