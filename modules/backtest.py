@@ -14,10 +14,10 @@ import TeamOdds
 import json
 import string
 import pandas
-# import Sport
+import Sport
 import numpy as np
 import pprint
-import ssl
+import features
 
 def hist_FD_contest_salaries():
     todays_date=dt.datetime.strptime(time.strftime("%Y-%m-%d"),"%Y-%m-%d")
@@ -35,10 +35,49 @@ def hist_FD_contest_salaries():
             print 'contest: %s historized successfully' % sport
     return
 
+def get_contests(sport,date): 
+    query={'sport':sport,'date':dt.datetime.strptime(date,'%Y-%m-%d')}
+    resultset=dbo.read_from_db('hist_fanduel_data',query)
+    return [contest['contest_ID'] for contest in resultset]
 
-def hist_model_lineups(start_date,end_date): #date format in 'YYYY-MM-DD'
+def hist_model_lineups(sport,start_date,end_date): #date format in 'YYYY-MM-DD'
     date_list = [d.strftime('%Y-%m-%d') for d in pandas.date_range(start_date,end_date)]
-    MLB=Sport.MLB()
+    if sport=='MLB':
+        sport=Sport.MLB()
+    elif sport=='NBA':
+        sport=Sport.NBA()
+    else:
+        print 'sport: %s not configured'
+        return
+    for date in date_list:
+        contest_list=get_contests(sport.sport,date)
+        for contest in contest_list:    
+            output=sport.optimal_roster(0,0,-100,date,contest)
+            player_list=[player_dict['player'] for player_dict in output['roster']['entries'][0]['roster']['lineup']]
+            roster_points=hist_lineup_points(sport,player_list,date)
+            print roster_points
     return
 
+def hist_lineup_points(sport,lineup,date):
+    lineup_points=0
+    for player in lineup:
+        db_df = sport.get_db_gamedata(player,date,date)
+        if db_df.empty:
+                continue
+        player_points=features.FD_points(db_df,sport.sport)
+        lineup_points+=player_points
+    return lineup_points.iloc[-1]
+
 # hist_FD_contest_salaries()
+
+# hist_model_lineups('NBA', '2015-11-18','2015-12-27')
+hist_model_lineups('NBA', '2015-11-27','2015-11-27')
+
+
+
+##BENCHMARK TO BEAT FOR SCORING
+#https://www.fanduel.com/insider/2015/11/10/fanduel-nba-benchmarks-points-to-target-in-each-contest-type/
+
+
+
+

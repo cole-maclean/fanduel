@@ -204,10 +204,10 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 				lineup = [{'position':player_universe[player]['position'],'player':player} for player in r.xf] #Ian: no player id in historized fandeul data
 			else:
 				lineup = [{'position':player_universe[player]['position'],'player':{'id':player_universe[player]['id']}} for player in r.xf]
-			
 			sorted_roster = sorted(lineup, key=self.sort_positions)
-			print sorted_roster
+			
 			entry_dict = {"entries":[{"entry_fee":{"currency":"usd"},"roster":{"lineup":sorted_roster}}]}
+			
 			with open(DB_parameters['rostertext'],"w") as myfile: #Ian: replaced hard-coded folder path with reference to config file
 					myfile.write(str(entry_dict).replace(' ',''))
 			return {'confidence':sum_confidence,'roster':entry_dict,'optimizer':r}
@@ -236,7 +236,7 @@ class NBA(Sport): #Cole: data modelling may need to be refactored, might be more
 		self.event_info_data_model=['attendance','duration','season_type']
 		self.features=({'bplayer':[[ff.FD_median,ff.param_FD_median],[ff.FD_median_5,ff.param_FD_median_5]]})
 		self.data_model = ({'away_stats':self.db_data_model['bplayer'],'home_stats':self.db_data_model['bplayer']})	
-		self.backtest_date=None
+		self.backtest_date=None #dt.date.today().strftime('%Y-%m-%d')
 		self.backtest_contestID=None	
 
 	def get_constraints(self,confidence=-100):
@@ -275,8 +275,10 @@ class NBA(Sport): #Cole: data modelling may need to be refactored, might be more
 			# teams,starting_lineups = 0 #Ian: create starting lineups function, ensure they get mapped to FD names
 			starting_players =[]#[player.split("_")[0] for player in starting_lineups.keys() if starting_lineups[player]['teamid'] not in omitted_teams and 'PPD' not in starting_lineups[player]['start_time']] 
 			FD_starting_player_data = {player:player_data for player,player_data in FD_player_data.iteritems() if player not in starting_players} #Ian: change to "in starting_players" once lineups function is added
+			date=self.backtest_date
 		else:
 			FD_player_data = FDSession.fanduel_api_data(contest_url)['players']
+			date='2018-01-01'
 			#Ian: create FD_starting_player_data variable to create dict like the one from backtests
 		player_universe={}
 		for FD_playerid,data in FD_starting_player_data.iteritems():
@@ -309,7 +311,6 @@ class NBA(Sport): #Cole: data modelling may need to be refactored, might be more
 			feature_df[feature[0].__name__] = feature[0](df)#Index 0 is the feature function of each feature, index 1 is the corresponding parameter function
 			parameter_array.append(feature[1](df))
 		return feature_df,parameter_array
-
 
 class MLB(Sport): #Cole: data modelling may need to be refactored, might be more elegant solution
 	def __init__(self):
@@ -718,7 +719,7 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 			return player_universe
 
 
-nba=NBA()
+# nba=NBA()
 
 # dbo.delete_by_date(nba.sport,'hist_event_data','2015-02-26','2015-02-26')
 # dbo.delete_by_date(nba.sport,'hist_player_data','2015-02-26','2015-02-26')
@@ -726,15 +727,6 @@ nba=NBA()
 # events=nba.get_daily_game_data('2014-10-28','2015-04-15',True) #2014 regular season
 # events=nba.get_daily_game_data('2015-11-18','2015-11-28',True) #2015 - last historize
 
-date='2015-11-27'
-def get_contests(sport,date): #Ian: Move to backtest module
-	query={'sport':sport,'date':dt.datetime.strptime(date,'%Y-%m-%d')}
-	resultset=dbo.read_from_db('hist_fanduel_data',query)
-	return [contest['contest_ID'] for contest in resultset]
-
-contest_list=get_contests('NBA',date)
-roster=nba.optimal_roster(0,0,-100,date,contest_list[0])
-print roster['roster']['entries'][0]['roster']['lineup']
 
 # dataset=nba.get_db_gamedata('DeMar DeRozan','2011-12-31','2015-12-10')
 
