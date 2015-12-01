@@ -184,10 +184,8 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 		if date:
 			self.backtest_date=date
 			self.backtest_contestID=contestID
-			player_universe=self.build_player_universe(FDSession,contest_url)
-		else:
-			player_universe = self.build_player_universe(FDSession,contest_url)
-		
+
+		player_universe = self.build_player_universe(FDSession,contest_url)		
 		items = ([{key:value for key,value in stats_data.iteritems() if key in self.optimizer_items}
 					 for player_key,stats_data in player_universe.iteritems()
 					 if 'salary' in stats_data.keys()])
@@ -197,15 +195,18 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 			p = KSP(objective, items, goal = 'max', constraints=self.get_constraints(confidence))
 			r = p.solve('glpk',iprint = 0)
 			roster_data = []
-			rw = 2
-			sum_confidence = 0
+			sum_confidence = sum(player_universe[player]['confidence'] for player in r.xf)
 			
 			if date:
-				lineup = [{'position':player_universe[player]['position'],'player':player} for player in r.xf] #Ian: no player id in historized fandeul data
+				roster_dict={player:{'position':player_universe[player]['position'],'projected_FD_points':player_universe[player]['projected_FD_points'],
+								'confidence':player_universe[player]['confidence'],'salary':player_universe[player]['salary']} for player in r.xf}
+				contest_dict={'roster':roster_dict,'player_pool_size':len(player_universe)} #Ian: update to reflect number of games in contest??
+				return contest_dict
+
 			else:
 				lineup = [{'position':player_universe[player]['position'],'player':{'id':player_universe[player]['id']}} for player in r.xf]
-			sorted_roster = sorted(lineup, key=self.sort_positions)
 			
+			sorted_roster = sorted(lineup, key=self.sort_positions)
 			entry_dict = {"entries":[{"entry_fee":{"currency":"usd"},"roster":{"lineup":sorted_roster}}]}
 			
 			with open(DB_parameters['rostertext'],"w") as myfile: #Ian: replaced hard-coded folder path with reference to config file

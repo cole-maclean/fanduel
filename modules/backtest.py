@@ -53,7 +53,7 @@ def hist_model_lineups(sport,start_date,end_date): #date format in 'YYYY-MM-DD'
         contest_list=get_contests(sport.sport,date)
         for contest in contest_list:    
             output=sport.optimal_roster(0,0,-100,date,contest)
-            player_list=[player_dict['player'] for player_dict in output['roster']['entries'][0]['roster']['lineup']]
+            player_list=[player for player in output['roster'].keys()]
             roster_points=hist_lineup_points(sport,player_list,date)
             print roster_points
     return
