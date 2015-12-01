@@ -19,6 +19,8 @@ import TeamOdds
 import pprint
 import features as ff
 
+
+
 class Sport(): #Cole: Class has functions that should be stripped out and place into more appropriate module/class
 	def __init__(self,sport):
 		self.sport = sport
@@ -28,10 +30,12 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 		FD_projection= collections.namedtuple("FD_projection", ["projected_points", "confidence"])
 		player_model_data,parameter_array = self.build_model_dataset(df)
 		print parameter_array
-		player_model = Model.Model(player_model_data,df['name'][0])
+		# print player_model_data
+		# raw_input("Press Enter to continue...")
+		player_model = Model.Model(player_model_data,df['player'][0])
 		player_model.FD_points_model(visualize)
 		if player_model.modelled:	#Cole: need to develop parameters for each player
-			print '%s modelled' % df['name'][0]
+			print '%s modelled' % df['player'][0]
 			if len(player_model.test_feature_matrix) > 1: #Test dataset needs to contain at least 2 datapoints to compute score
 				projected_FD_points = (FD_projection(player_model.model.predict(parameter_array)[-1],
 												player_model.model.score(player_model.test_feature_matrix,player_model.test_target_matrix)))
@@ -39,7 +43,7 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 			else:
 				projected_FD_points = FD_projection(player_model.model.predict(parameter_array)[-1],0)
 		else:
-			print '%s not modelled' % df['name'][0]
+			print '%s not modelled' % df['player'][0]
 			try:
 				default_projection = self.player_model_data['FD_median'][-1]
 				projected_FD_points = FD_projection(0,0) #Cole: this is the default model prediction and confidence if player cannot be modelled
@@ -134,13 +138,16 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 		else:
 			query={'sport':self.sport,'player':player,'date':{"$gte":dt.datetime.strptime(start_date,'%Y-%m-%d'),"$lte":dt.datetime.strptime(end_date,'%Y-%m-%d')}}
 		player_data=dbo.read_from_db('hist_player_data',query,{'_id':0,'sport':0})
-		player_data.sort(key=lambda e: e['date'], reverse=False)
-		player_data_dict={key:[doc[key] for doc in player_data] for key in player_data[0].keys()}
-		event_data=[dbo.read_from_db('hist_event_data',{'sport':self.sport,'gameID':gameID},{'_id':0,'date':0,'sport':0,'gameID':0})[0] for gameID in player_data_dict['gameID']]
-		event_data_dict={key:[doc[key] for doc in event_data] for key in event_data[0].keys()}
-		player_data_dict.update(event_data_dict)
-		df=pandas.DataFrame(player_data_dict)
-		#Ian: add some check for data??
+		if player_data:
+			player_data.sort(key=lambda e: e['date'], reverse=False)
+			player_data_dict={key:[doc[key] for doc in player_data] for key in player_data[0].keys()}
+			event_data=[dbo.read_from_db('hist_event_data',{'sport':self.sport,'gameID':gameID},{'_id':0,'date':0,'sport':0,'gameID':0})[0] for gameID in player_data_dict['gameID']]
+			event_data_dict={key:[doc[key] for doc in event_data] for key in event_data[0].keys()}
+			player_data_dict.update(event_data_dict)
+			df=pandas.DataFrame(player_data_dict)
+			#Ian: add some check for data??
+		else:
+			return pandas.DataFrame()
 		return df
 
 	def get_db_gamedata_old(self,player,player_type,start_date="20100101",end_date="21000101",GameID=None): #Updated to get by GameID or by Dates
@@ -172,15 +179,19 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 		sql = "SELECT * FROM stadium_data"
 		return dbo.read_from_db(sql,[prime_key],True)
 
-	def optimal_roster(self,FDSession,contest_url,confidence = -100,date=False,contestID=False): #Ian: added optional date for backtesting
+	def optimal_roster(self,FDSession,contest_url,confidence = -100,date=False,contestID=False): #Ian: added optional date,contest_ID for backtesting
 		DB_parameters=Ugen.ConfigSectionMap('local text')
 		if date:
-			player_universe=self.build_player_universe(FDSession,contest_url,date,contestID)
+			self.backtest_date=date
+			self.backtest_contestID=contestID
+			player_universe=self.build_player_universe(FDSession,contest_url)
 		else:
 			player_universe = self.build_player_universe(FDSession,contest_url)
+		
 		items = ([{key:value for key,value in stats_data.iteritems() if key in self.optimizer_items}
 					 for player_key,stats_data in player_universe.iteritems()
 					 if 'salary' in stats_data.keys()])
+
 		objective = 'projected_FD_points'
 		if items:
 			p = KSP(objective, items, goal = 'max', constraints=self.get_constraints(confidence))
@@ -188,19 +199,14 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 			roster_data = []
 			rw = 2
 			sum_confidence = 0
-			for player in r.xf:
-				Cell("Roster",rw,1).value = player
-				Cell("Roster",rw,2).value = player_universe[player]['team']
-				Cell("Roster",rw,3).value = player_universe[player]['position']
-				Cell("Roster",rw,4).value = player_universe[player]['projected_FD_points']
-				Cell("Roster",rw,5).value = player_universe[player]['confidence']
-				Cell("Roster",rw,6).value = player_universe[player]['salary']
-				sum_confidence = sum_confidence + player_universe[player]['confidence']
-				rw = rw + 1
-			lineup = [{'position':player_universe[player]['position'],'player':{'id':player_universe[player]['id']}} for player in r.xf]
+			
+			if date:
+				lineup = [{'position':player_universe[player]['position'],'player':player} for player in r.xf] #Ian: no player id in historized fandeul data
+			else:
+				lineup = [{'position':player_universe[player]['position'],'player':{'id':player_universe[player]['id']}} for player in r.xf]
+			
 			sorted_roster = sorted(lineup, key=self.sort_positions)
 			print sorted_roster
-			os.system('pause')
 			entry_dict = {"entries":[{"entry_fee":{"currency":"usd"},"roster":{"lineup":sorted_roster}}]}
 			with open(DB_parameters['rostertext'],"w") as myfile: #Ian: replaced hard-coded folder path with reference to config file
 					myfile.write(str(entry_dict).replace(' ',''))
@@ -220,7 +226,7 @@ class NBA(Sport): #Cole: data modelling may need to be refactored, might be more
 								'free_throws_attempted':'FTA','three_point_field_goals_made':'3FGM','personal_fouls':'fouls',
 										'three_point_field_goals_attempted':'3FGA','steals':'steals','rebounds':'rebounds','minutes':'minutes'}}
 		
-		self.optimizer_items = ['name','Player_Type','salary','P','C','1B','2B','3B','SS','OF','projected_FD_points','confidence'] #Ian: we need to change Player_Type to position???
+		self.optimizer_items = ['name','salary','PG','SG','SF','PF','C','projected_FD_points','confidence']
 		
 		self.totals_data_model={'assists':'assists','blocks':'blocks','field_goals_attempted':'FGA','field_goals_made':'FGM',
 								'free_throws_made':'FTM','free_throws_attempted':'FTA','three_point_field_goals_attempted':'3FGA',
@@ -228,15 +234,23 @@ class NBA(Sport): #Cole: data modelling may need to be refactored, might be more
 								'rebounds':'rebounds','steals':'steals','turnovers':'turnovers'}
 		
 		self.event_info_data_model=['attendance','duration','season_type']
-		self.data_model = ({'away_stats':self.db_data_model['bplayer'],'home_stats':self.db_data_model['bplayer']})		
+		self.features=({'bplayer':[[ff.FD_median,ff.param_FD_median],[ff.FD_median_5,ff.param_FD_median_5]]})
+		self.data_model = ({'away_stats':self.db_data_model['bplayer'],'home_stats':self.db_data_model['bplayer']})	
+		self.backtest_date=None
+		self.backtest_contestID=None	
 
-	def FD_points(self, data):
-		FGM2=numpy.subtract(numpy.array(data['FGM']),numpy.array(data['3FGM']))
-		FGM2[FGM2<0]=0 #Ian: replace negative values (i.e. only three pointers made) with 0
-		FD_points=(numpy.array(data['3FGM'])*3+numpy.array(FGM2)*2+numpy.array(data['FTM'])*1+numpy.array(data['rebounds'])*1.2+
-					numpy.array(data['assists'])*1.5+numpy.array(data['blocks'])*2+numpy.array(data['steals'])*2+numpy.array(data['turnovers'])*-1)
-		return FD_points
-
+	def get_constraints(self,confidence=-100):
+		return lambda values : (
+								values['salary'] <= 60000,
+							    values['PG'] == 2,
+							    values['SG'] == 2,
+							    values['SF'] == 2,
+							    values['PF'] == 2,
+							    values['C'] == 1,
+							    values['confidence'] >=confidence)
+	def sort_positions(self,sort_list):
+		return self.positions[sort_list['position']]
+			
 	def parse_event_data(self,boxscore_data): 
 		event_data={}
 		if boxscore_data:
@@ -254,9 +268,9 @@ class NBA(Sport): #Cole: data modelling may need to be refactored, might be more
 			dbo.write_to_db('hist_event_data',event_data,False)
 		return
 
-	def build_player_universe(self,FDSession,contest_url,date=False,contestID = ""): 
-		if date:
-			query={'sport':self.sport,'date':dt.datetime.strptime(date,'%Y-%m-%d'),'contest_ID':contestID}
+	def build_player_universe(self,FDSession,contest_url): 
+		if self.backtest_date:
+			query={'sport':self.sport,'date':dt.datetime.strptime(self.backtest_date,'%Y-%m-%d'),'contest_ID':self.backtest_contestID}
 			FD_player_data=dbo.read_from_db('hist_fanduel_data',query)[0]['contest_dict']
 			# teams,starting_lineups = 0 #Ian: create starting lineups function, ensure they get mapped to FD names
 			starting_players =[]#[player.split("_")[0] for player in starting_lineups.keys() if starting_lineups[player]['teamid'] not in omitted_teams and 'PPD' not in starting_lineups[player]['start_time']] 
@@ -264,28 +278,37 @@ class NBA(Sport): #Cole: data modelling may need to be refactored, might be more
 		else:
 			FD_player_data = FDSession.fanduel_api_data(contest_url)['players']
 			#Ian: create FD_starting_player_data variable to create dict like the one from backtests
+		player_universe={}
 		for FD_playerid,data in FD_starting_player_data.iteritems():
-			db_df = self.get_db_gamedata(FD_playerid,'2015-10-01',end_date=Ugen.previous_day(date))
+			print 'building player_universe for: %s' % FD_playerid
+			db_df = self.get_db_gamedata(FD_playerid,'2014-10-01',end_date=Ugen.previous_day(date))
+ 			if db_df.empty:
+ 				continue
  			player_key = FD_playerid
- 			player_universe={}
+
 			if player_key == db_df['player'][0]:
 				player_universe[player_key] = {}
 				projected_FD_points = self.FD_points_model(db_df)
 				player_universe[player_key]['projected_FD_points'] = projected_FD_points.projected_points
 				player_universe[player_key]['confidence'] = projected_FD_points.confidence
-				player_universe[player_key]['Player_Type'] = player_type
 				player_universe[player_key]['name'] = player_key
-				
-				#Ian: add this back in once projected_FD_points is working
-				# for key,player_data in data.iteritems():
-				# 	player_universe[player_key][key] = player_data
-				# position_map = {key:1 if key == player_universe[player_key]['position'] else 0 for key in self.positions.keys()}
-				# tmp_dict = position_map.copy()
-				# player_universe[player_key].update(tmp_dict)
+				for key,player_data in data.iteritems():
+					player_universe[player_key][key] = player_data
+				position_map = {key:1 if key == player_universe[player_key]['position'] else 0 for key in self.positions.keys()}
+				tmp_dict = position_map.copy()
+				player_universe[player_key].update(tmp_dict)
 			else:
 				print player_key + ' not in db_player_data'
 		return player_universe
 
+	def build_model_dataset(self,df):
+		print 'now building dataset for %s' % df['player'][0]
+		feature_df= pandas.DataFrame(ff.FD_points(df,self.sport))
+		parameter_array = []
+		for feature in self.features[df['player_type'][0]]:
+			feature_df[feature[0].__name__] = feature[0](df)#Index 0 is the feature function of each feature, index 1 is the corresponding parameter function
+			parameter_array.append(feature[1](df))
+		return feature_df,parameter_array
 
 
 class MLB(Sport): #Cole: data modelling may need to be refactored, might be more elegant solution
@@ -574,7 +597,7 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 								numpy.array(data['strike_outs'])*1+numpy.array(data['innings_pitched'])*1)
 		return FD_points
 
-	def build_model_dataset(self,df):#Cole: How do we generalize this method. Some out-of-box method likely exists. Defs need to refactor
+	def build_model_dataset(self,df):
 		print 'now building dataset for %s' % df['name'][0]
 		feature_df= pandas.DataFrame(ff.FD_points(df))
 		parameter_array = []
@@ -695,7 +718,6 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 			return player_universe
 
 
-
 nba=NBA()
 
 # dbo.delete_by_date(nba.sport,'hist_event_data','2015-02-26','2015-02-26')
@@ -711,13 +733,13 @@ def get_contests(sport,date): #Ian: Move to backtest module
 	return [contest['contest_ID'] for contest in resultset]
 
 contest_list=get_contests('NBA',date)
-
-player_universe=nba.build_player_universe(0,0,date,contest_list[0])
+roster=nba.optimal_roster(0,0,-100,date,contest_list[0])
+print roster['roster']['entries'][0]['roster']['lineup']
 
 # dataset=nba.get_db_gamedata('DeMar DeRozan','2011-12-31','2015-12-10')
 
-pp = pprint.PrettyPrinter(indent=4)
-pp.pprint(player_universe)
+# pp = pprint.PrettyPrinter(indent=4)
+# pp.pprint(roster['roster']['lineup'])
 
 
 
