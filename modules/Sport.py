@@ -18,6 +18,7 @@ import datetime as dt
 import TeamOdds
 import pprint
 import features as ff
+import random
 
 
 
@@ -273,13 +274,14 @@ class NBA(Sport): #Cole: data modelling may need to be refactored, might be more
 		if self.backtest_date:
 			query={'sport':self.sport,'date':dt.datetime.strptime(self.backtest_date,'%Y-%m-%d'),'contest_ID':self.backtest_contestID}
 			FD_player_data=dbo.read_from_db('hist_fanduel_data',query)[0]['contest_dict']
-			# teams,starting_lineups = 0 #Ian: create starting lineups function, ensure they get mapped to FD names
-			starting_players =[]#[player.split("_")[0] for player in starting_lineups.keys() if starting_lineups[player]['teamid'] not in omitted_teams and 'PPD' not in starting_lineups[player]['start_time']] 
-			FD_starting_player_data = {player:player_data for player,player_data in FD_player_data.iteritems() if player not in starting_players} #Ian: change to "in starting_players" once lineups function is added
+			starting_players =self.hist_starting_lineups([player for player in FD_player_data.keys()])
+			FD_starting_player_data = {player:player_data for player,player_data in FD_player_data.iteritems() if player in starting_players} 
 			date=self.backtest_date
 		else:
 			FD_player_data = FDSession.fanduel_api_data(contest_url)['players']
 			date='2018-01-01'
+			# teams,starting_lineups = 0 #Ian: create starting lineups function, ensure they get mapped to FD names
+			#[player.split("_")[0] for player in starting_lineups.keys() if starting_lineups[player]['teamid'] not in omitted_teams and 'PPD' not in starting_lineups[player]['start_time']] 
 			#Ian: create FD_starting_player_data variable to create dict like the one from backtests
 		player_universe={}
 		for FD_playerid,data in FD_starting_player_data.iteritems():
@@ -291,9 +293,9 @@ class NBA(Sport): #Cole: data modelling may need to be refactored, might be more
 
 			if player_key == db_df['player'][0]:
 				player_universe[player_key] = {}
-				projected_FD_points = self.FD_points_model(db_df)
-				player_universe[player_key]['projected_FD_points'] = projected_FD_points.projected_points
-				player_universe[player_key]['confidence'] = projected_FD_points.confidence
+				# projected_FD_points = self.FD_points_model(db_df)
+				player_universe[player_key]['projected_FD_points'] = random.randrange(0,200)#projected_FD_points.projected_points
+				player_universe[player_key]['confidence'] = 5#projected_FD_points.confidence
 				player_universe[player_key]['name'] = player_key
 				for key,player_data in data.iteritems():
 					player_universe[player_key][key] = player_data
@@ -303,6 +305,18 @@ class NBA(Sport): #Cole: data modelling may need to be refactored, might be more
 			else:
 				print player_key + ' not in db_player_data'
 		return player_universe
+
+	def hist_starting_lineups(self,lineup): #historical starting lineups for backtesting
+		starting_players=[]
+		# starting_players=[player for player in lineup if self.get_db_gamedata(player,self.backtest_date,self.backtest_date)['starter'].iloc[-1]==1]
+		for player in lineup:
+			db_df = self.get_db_gamedata(player,self.backtest_date,self.backtest_date)
+			if db_df.empty:
+ 				continue
+ 			elif db_df['starter'].iloc[-1]==1:
+				starting_players.append(player)
+		return starting_players
+
 
 	def build_model_dataset(self,df):
 		print 'now building dataset for %s' % df['player'][0]
@@ -726,7 +740,7 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 # dbo.delete_by_date(nba.sport,'hist_player_data','2015-02-26','2015-02-26')
 
 # events=nba.get_daily_game_data('2014-10-28','2015-04-15',True) #2014 regular season
-# events=nba.get_daily_game_data('2015-11-18','2015-11-28',True) #2015 - last historize
+# events=nba.get_daily_game_data('2015-11-29','2015-11-30',True) #2015 - last historize
 
 
 # dataset=nba.get_db_gamedata('DeMar DeRozan','2011-12-31','2015-12-10')
