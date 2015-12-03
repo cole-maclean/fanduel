@@ -19,7 +19,6 @@ import TeamOdds
 import pprint
 import features
 import random
-import backtest
 
 
 class Sport(): #Cole: Class has functions that should be stripped out and place into more appropriate module/class
@@ -236,10 +235,14 @@ class NBA(Sport): #Cole: data modelling may need to be refactored, might be more
 								'rebounds':'rebounds','steals':'steals','turnovers':'turnovers'}
 		
 		self.event_info_data_model=['attendance','duration','season_type']
-		self.features=({'bplayer':[['FD_median','param_FD_median'],['FD_median_5',"param_FD_median_5"],["opposing_defense_PA","param_opposing_defense_PA"]]})
+		self.features=[['FD_median','param_FD_median'],['FD_median_5',"param_FD_median_5"],["opposing_defense_PA","param_opposing_defense_PA"]]
 		self.data_model = ({'away_stats':self.db_data_model['bplayer'],'home_stats':self.db_data_model['bplayer']})	
 		self.backtest_date=None #dt.date.today().strftime('%Y-%m-%d')
-		self.backtest_contestID=None	
+		self.backtest_contestID=None
+		self.teams=['TOR']
+		# self.teams=['MIL', 'MIN', 'TOR', 'ATL', 'BOS', 'DET', 'DEN', 'NO', 'DAL', 'BKN', 'POR', 'ORL', 'MIA', 'CHI', 
+		# 			'NY', 'CHA', 'UTA', 'GS', 'CLE', 'HOU', 'WAS', 'LAL', 'PHI', 'PHO', 'MEM', 'LAC', 'SAC', 'OKC', 'IND', 'SA']
+		self.ff=features.FD_features(self.sport,self.features,self.teams) #create feature class here, feature class does heavy lifting for season averages once..
 
 	def get_constraints(self,confidence=-100):
 		return lambda values : (
@@ -320,15 +323,11 @@ class NBA(Sport): #Cole: data modelling may need to be refactored, might be more
 
 	def build_model_dataset(self,df):
 		print 'now building dataset for %s' % df['player'][0]
-		ff=features.FD_features(self.sport,self.features[df['player_type'][0]],df)
-		# print df
-		# df['FD_points']=ff.FD_points(df)
-		# print df
 		feature_df= pandas.DataFrame(ff.FD_points(df))
 		parameter_array = []
-		for feature in self.features[df['player_type'][0]]:
-			feature_df[feature[0]] = getattr(ff,feature[0])(df)#Index 0 is the feature function of each feature, index 1 is the corresponding parameter function
-			parameter_array.append(getattr(ff,feature[1])(df))
+		for feature in self.features:
+			feature_df[feature[0]] = getattr(self.ff,feature[0])(df)#Index 0 is the feature function of each feature, index 1 is the corresponding parameter function
+			parameter_array.append(getattr(self.ff,feature[1])(df))
 		return feature_df,parameter_array
 
 class MLB(Sport): #Cole: data modelling may need to be refactored, might be more elegant solution
@@ -738,7 +737,7 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 			return player_universe
 
 
-nba=NBA()
+# nba=NBA()
 
 # dbo.delete_by_date(nba.sport,'hist_event_data','2015-02-26','2015-02-26')
 # dbo.delete_by_date(nba.sport,'hist_player_data','2015-02-26','2015-02-26')
@@ -748,11 +747,9 @@ nba=NBA()
 
 
 
-df=nba.get_db_gamedata('DeMar DeRozan','2011-12-31','2015-12-10')
-a,b=nba.build_model_dataset(df)
+# df=nba.get_db_gamedata('DeMar DeRozan','2011-12-31','2015-12-10')
+# a,b=nba.build_model_dataset(df)
 
-print a
-# print ff.opposing_defense_points_allowed(df)
 
 # pp = pprint.PrettyPrinter(indent=4)
 # pp.pprint(roster['roster']['lineup'])
@@ -761,4 +758,3 @@ print a
 
 ##IAN TO DO:
 #1: Player Maps
-#2: build_player_universe function

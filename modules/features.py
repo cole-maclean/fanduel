@@ -5,14 +5,18 @@ import datetime as dt
 import database_operations as dbo
 
 
-class FD_features(): #Ian: features are going to be unique to each sport, maybe split into different classes
-	def __init__(self, sport, features,df):
+# dict_Structure={'2015':{'TOR':{'PG':65,'SG':60}},'2014':{'TOR':,...}}
+
+class FD_features(): #Ian: some features are going to be unique to each sport, maybe split into different classes
+	def __init__(self, sport, features, teams):
 		self.sport=sport
-		if 'opposing_defense_PA' in [feature[0] for feature in features]:
-			print 'here'
-			self.defense_season_avgs=0
-
-
+		if self.sport=='NBA':
+			self.seasons={'2014':['2014-10-28','2015-04-15'],'2015':['2015-10-27','2016-04-13']} #could split this up into 4 quarters for each season for more representative averages
+			self.positions=['PG','SG','SF','PF','C']
+			if 'opposing_defense_PA' in [feature[0] for feature in features]:
+				self.defense_season_avgs={season:{team:self.opposing_defense_stats(team,season) for team in teams} for season in self.seasons.keys()}
+		elif self.sport=='MLB':
+			pass
 
 	def FD_points(self,df):
 		if self.sport=='MLB':
@@ -66,27 +70,33 @@ class FD_features(): #Ian: features are going to be unique to each sport, maybe 
 		else:
 			return df['home_team']
 
-#CONFIGURE THIS SO IT calculates season averages once!!
-	def opposing_defense_stats(self,df): #Ian: this needs to get the average for the season
-		#modify dateframe below
-		dateframe={"$gte":dt.datetime.strptime('2015-09-01','%Y-%m-%d'),"$lte":dt.datetime.strptime('2016-05-01','%Y-%m-%d')} #2015 NBA season - will need to move this to generalize for all spots, multiple seasons
-		db_df=pd.DataFrame(dbo.read_from_db('hist_event_data',{'sport':df['sport'],'date':dateframe, "$or":[{'home_team':df['opponent']}, 
-									{'away_team':df['opponent']}]},{'gameID':1,'home_team':1,'away_team':1,'sport':1,'_id':0}))
-		db_df['team']=df['opponent'] #team is defensive team, determined as 'opponent' in previous function
+	def opposing_defense_stats(self,team,season):
+		# print 'season: %s team: %s position: %s' % (season,team,position)
+		dateframe={"$gte":dt.datetime.strptime(self.seasons[season][0],'%Y-%m-%d'),
+					"$lte":dt.datetime.strptime(self.seasons[season][1],'%Y-%m-%d')}
+		db_df=pd.DataFrame(dbo.read_from_db('hist_event_data',{'sport':self.sport,'date':dateframe, "$or":[{'home_team':team}, 
+									{'away_team':team}]},{'gameID':1,'home_team':1,'away_team':1,'sport':1,'_id':0}))
+		db_df['team']=team #team is defensive team
 		db_df['off_team']=db_df.apply(self.determine_opponent,axis=1)
-		db_df['position']=df['position']
+
 		points_allowed_df=db_df.apply(self.position_FD_points,axis=1)
-		return points_allowed_df.mean()
+				
+		return {'PG':points_allowed_df[0].mean(),'SG':points_allowed_df[1].mean(),
+					'SF':points_allowed_df[2].mean(),'PF':points_allowed_df[3].mean(),
+						'C':points_allowed_df[4].mean()}
 
 	def position_FD_points(self,df):
-		db_data=dbo.read_from_db('hist_player_data',{'gameID':df['gameID'],'sport':df['sport'],'position':df['position'],
-									'team':df['off_team']},{'_id':0})
-		points_allowed=0
-		for player in db_data:
-			for key,value in player.iteritems():
-				player[key]=[value]
-			points_allowed+=self.FD_points(pd.DataFrame(player),'NBA').iloc[-1]
-		return points_allowed
+		db_data=dbo.read_from_db('hist_player_data',{'gameID':df['gameID'],'sport':df['sport'],'team':df['off_team']},{'_id':0})
+		db_data=[{key:[value] for key,value in player.iteritems()} for player in db_data] #pandas cannot convert scalars to a dataframe
+		points_allowed=[sum([self.FD_points(pd.DataFrame(player)).iloc[-1] for player in db_data if player['position'][0]==position]) for position in self.positions]
+		return pd.Series(points_allowed)
+
+
+
+
+
+
+
 
 
 
