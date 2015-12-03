@@ -17,9 +17,9 @@ import weather
 import datetime as dt
 import TeamOdds
 import pprint
-import features as ff
+import features
 import random
-
+import backtest
 
 
 class Sport(): #Cole: Class has functions that should be stripped out and place into more appropriate module/class
@@ -138,7 +138,7 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 			query={'sport':self.sport,'player':player,'gameID':GameID}
 		else:
 			query={'sport':self.sport,'player':player,'date':{"$gte":dt.datetime.strptime(start_date,'%Y-%m-%d'),"$lte":dt.datetime.strptime(end_date,'%Y-%m-%d')}}
-		player_data=dbo.read_from_db('hist_player_data',query,{'_id':0,'sport':0})
+		player_data=dbo.read_from_db('hist_player_data',query,{'_id':0})
 		if player_data:
 			player_data.sort(key=lambda e: e['date'], reverse=False)
 			player_data_dict={key:[doc[key] for doc in player_data] for key in player_data[0].keys()}
@@ -236,7 +236,7 @@ class NBA(Sport): #Cole: data modelling may need to be refactored, might be more
 								'rebounds':'rebounds','steals':'steals','turnovers':'turnovers'}
 		
 		self.event_info_data_model=['attendance','duration','season_type']
-		self.features=({'bplayer':[[ff.FD_median,ff.param_FD_median],[ff.FD_median_5,ff.param_FD_median_5]]})
+		self.features=({'bplayer':[['FD_median','param_FD_median'],['FD_median_5',"param_FD_median_5"],["opposing_defense_PA","param_opposing_defense_PA"]]})
 		self.data_model = ({'away_stats':self.db_data_model['bplayer'],'home_stats':self.db_data_model['bplayer']})	
 		self.backtest_date=None #dt.date.today().strftime('%Y-%m-%d')
 		self.backtest_contestID=None	
@@ -293,9 +293,9 @@ class NBA(Sport): #Cole: data modelling may need to be refactored, might be more
 
 			if player_key == db_df['player'][0]:
 				player_universe[player_key] = {}
-				# projected_FD_points = self.FD_points_model(db_df)
-				player_universe[player_key]['projected_FD_points'] = random.randrange(0,200)#projected_FD_points.projected_points
-				player_universe[player_key]['confidence'] = 5#projected_FD_points.confidence
+				projected_FD_points = self.FD_points_model(db_df)
+				player_universe[player_key]['projected_FD_points'] = projected_FD_points.projected_points#random.randrange(0,200)
+				player_universe[player_key]['confidence'] = projected_FD_points.confidence #5
 				player_universe[player_key]['name'] = player_key
 				for key,player_data in data.iteritems():
 					player_universe[player_key][key] = player_data
@@ -320,11 +320,15 @@ class NBA(Sport): #Cole: data modelling may need to be refactored, might be more
 
 	def build_model_dataset(self,df):
 		print 'now building dataset for %s' % df['player'][0]
-		feature_df= pandas.DataFrame(ff.FD_points(df,self.sport))
+		ff=features.FD_features(self.sport,self.features[df['player_type'][0]],df)
+		# print df
+		# df['FD_points']=ff.FD_points(df)
+		# print df
+		feature_df= pandas.DataFrame(ff.FD_points(df))
 		parameter_array = []
 		for feature in self.features[df['player_type'][0]]:
-			feature_df[feature[0].__name__] = feature[0](df)#Index 0 is the feature function of each feature, index 1 is the corresponding parameter function
-			parameter_array.append(feature[1](df))
+			feature_df[feature[0]] = getattr(ff,feature[0])(df)#Index 0 is the feature function of each feature, index 1 is the corresponding parameter function
+			parameter_array.append(getattr(ff,feature[1])(df))
 		return feature_df,parameter_array
 
 class MLB(Sport): #Cole: data modelling may need to be refactored, might be more elegant solution
@@ -734,7 +738,7 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 			return player_universe
 
 
-# nba=NBA()
+nba=NBA()
 
 # dbo.delete_by_date(nba.sport,'hist_event_data','2015-02-26','2015-02-26')
 # dbo.delete_by_date(nba.sport,'hist_player_data','2015-02-26','2015-02-26')
@@ -743,7 +747,12 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 # events=nba.get_daily_game_data('2015-11-29','2015-11-30',True) #2015 - last historize
 
 
-# dataset=nba.get_db_gamedata('DeMar DeRozan','2011-12-31','2015-12-10')
+
+df=nba.get_db_gamedata('DeMar DeRozan','2011-12-31','2015-12-10')
+a,b=nba.build_model_dataset(df)
+
+print a
+# print ff.opposing_defense_points_allowed(df)
 
 # pp = pprint.PrettyPrinter(indent=4)
 # pp.pprint(roster['roster']['lineup'])
