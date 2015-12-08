@@ -216,9 +216,8 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 			return {'confidence':0,'roster':[],'optimizer':None}
 
 class NBA(Sport): #Cole: data modelling may need to be refactored, might be more elegant solution
-	def __init__(self):
+	def __init__(self,historize=False):
 		Sport.__init__(self,"NBA")
-		#enter constraints: 2 PGs, 2 SGs, 2 SFs, 2 PFs, 1 C
 		self.positions = {'PG':1,'SG':2,'SF':3,'PF':4,'C':5}
 		self.player_type_map = {'away_stats':'bplayer','home_stats':'bplayer'} #Ian: all players are the same for stats in NBA, therefore give random name bplayer (basketbll player) not to be confused with player
 		self.db_data_model = {'bplayer':{'display_name':'player','position':'position',	#Ian: no meta required for NBA, only one player type. Cole: prefix with $ to denote a hard coded value
@@ -235,14 +234,14 @@ class NBA(Sport): #Cole: data modelling may need to be refactored, might be more
 								'rebounds':'rebounds','steals':'steals','turnovers':'turnovers'}
 		
 		self.event_info_data_model=['attendance','duration','season_type']
-		self.features=[['FD_median','param_FD_median'],['FD_median_5',"param_FD_median_5"],["opposing_defense_PA","param_opposing_defense_PA"]]
+		# self.features=[['FD_medn','param_FD_medn'],['FD_medn_5',"param_FD_medn_5"],["opposing_defense_PA","param_opposing_defense_PA"],
+		# 				['minutes_medn','param_minutes_medn'],['minutes_medn_5','param_minutes_medn_5']]
+		self.features=[['FD_medn','param_FD_medn'],['FD_medn_5',"param_FD_medn_5"]]#,['days_rest','param_days_rest']]
 		self.data_model = ({'away_stats':self.db_data_model['bplayer'],'home_stats':self.db_data_model['bplayer']})	
 		self.backtest_date=None #dt.date.today().strftime('%Y-%m-%d')
 		self.backtest_contestID=None
-		self.teams=['TOR']
-		# self.teams=['MIL', 'MIN', 'TOR', 'ATL', 'BOS', 'DET', 'DEN', 'NO', 'DAL', 'BKN', 'POR', 'ORL', 'MIA', 'CHI', 
-		# 			'NY', 'CHA', 'UTA', 'GS', 'CLE', 'HOU', 'WAS', 'LAL', 'PHI', 'PHO', 'MEM', 'LAC', 'SAC', 'OKC', 'IND', 'SA']
-		self.ff=features.FD_features(self.sport,self.features,self.teams) #create feature class here, feature class does heavy lifting for season averages once..
+		if not historize:
+			self.ff=features.FD_features(self.sport,self.features) #create feature class here, feature class does heavy lifting for season averages once..
 
 	def get_constraints(self,confidence=-100):
 		return lambda values : (
@@ -253,6 +252,7 @@ class NBA(Sport): #Cole: data modelling may need to be refactored, might be more
 							    values['PF'] == 2,
 							    values['C'] == 1,
 							    values['confidence'] >=confidence)
+	
 	def sort_positions(self,sort_list):
 		return self.positions[sort_list['position']]
 			
@@ -282,18 +282,16 @@ class NBA(Sport): #Cole: data modelling may need to be refactored, might be more
 			date=self.backtest_date
 		else:
 			FD_player_data = FDSession.fanduel_api_data(contest_url)['players']
-			date='2018-01-01'
-			# teams,starting_lineups = 0 #Ian: create starting lineups function, ensure they get mapped to FD names
-			#[player.split("_")[0] for player in starting_lineups.keys() if starting_lineups[player]['teamid'] not in omitted_teams and 'PPD' not in starting_lineups[player]['start_time']] 
+			date='2020-01-01'
 			#Ian: create FD_starting_player_data variable to create dict like the one from backtests
+		
 		player_universe={}
 		for FD_playerid,data in FD_starting_player_data.iteritems():
 			print 'building player_universe for: %s' % FD_playerid
 			db_df = self.get_db_gamedata(FD_playerid,'2014-10-01',end_date=Ugen.previous_day(date))
- 			if db_df.empty:
+ 			if db_df.empty: #Ian: need player maps!
  				continue
  			player_key = FD_playerid
-
 			if player_key == db_df['player'][0]:
 				player_universe[player_key] = {}
 				projected_FD_points = self.FD_points_model(db_df)
@@ -309,21 +307,17 @@ class NBA(Sport): #Cole: data modelling may need to be refactored, might be more
 				print player_key + ' not in db_player_data'
 		return player_universe
 
-	def hist_starting_lineups(self,lineup): #historical starting lineups for backtesting
-		starting_players=[]
-		# starting_players=[player for player in lineup if self.get_db_gamedata(player,self.backtest_date,self.backtest_date)['starter'].iloc[-1]==1]
-		for player in lineup:
-			db_df = self.get_db_gamedata(player,self.backtest_date,self.backtest_date)
-			if db_df.empty:
- 				continue
- 			elif db_df['starter'].iloc[-1]==1:
-				starting_players.append(player)
-		return starting_players
+	def hist_starting_lineups(self,player_universe): #historical starting lineups for backtesting
+		db_data=[self.get_db_gamedata(player,self.backtest_date,self.backtest_date) for player in player_universe]
+		return [df['player'][0] for df in db_data if (not df.empty and df['starter'][0]==1)]
 
 
 	def build_model_dataset(self,df):
 		print 'now building dataset for %s' % df['player'][0]
-		feature_df= pandas.DataFrame(ff.FD_points(df))
+		if self.backtest_date: #Ian: may be a better way to integrate this?
+			db_df=self.get_db_gamedata(df['player'][0],self.backtest_date,self.backtest_date)
+			df['matchup']=(db_df['away_team'][0] if db_df['team'][0]==db_df['home_team'][0] else db_df['away_team'][0])
+		feature_df= pandas.DataFrame(self.ff.FD_points(df))
 		parameter_array = []
 		for feature in self.features:
 			feature_df[feature[0]] = getattr(self.ff,feature[0])(df)#Index 0 is the feature function of each feature, index 1 is the corresponding parameter function
@@ -737,24 +731,12 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 			return player_universe
 
 
-# nba=NBA()
+# nba=NBA(historize=True)
 
 # dbo.delete_by_date(nba.sport,'hist_event_data','2015-02-26','2015-02-26')
 # dbo.delete_by_date(nba.sport,'hist_player_data','2015-02-26','2015-02-26')
 
 # events=nba.get_daily_game_data('2014-10-28','2015-04-15',True) #2014 regular season
-# events=nba.get_daily_game_data('2015-11-29','2015-11-30',True) #2015 - last historize
+# events=nba.get_daily_game_data('2015-12-03','2015-12-06',True) #2015 - last historize
 
 
-
-# df=nba.get_db_gamedata('DeMar DeRozan','2011-12-31','2015-12-10')
-# a,b=nba.build_model_dataset(df)
-
-
-# pp = pprint.PrettyPrinter(indent=4)
-# pp.pprint(roster['roster']['lineup'])
-
-
-
-##IAN TO DO:
-#1: Player Maps

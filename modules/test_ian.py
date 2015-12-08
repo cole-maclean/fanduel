@@ -10,161 +10,106 @@ from selenium import webdriver
 import string
 import pandas
 import Sport
+import Model
 import numpy as np
-import backtest
-import TeamOdds
+import random
 import datetime as dt
-
-#backtest.hist_model_points()
-#backtest.run_hist_lineups()
-
-# backtest.hist_model_lineups('2015-04-17','2015-04-21')
-# backtest.hist_model_lineups('2015-08-01','2015-08-05')
-
-# MLB=Sport.MLB()
-# MLB.get_daily_game_data('20150420','20150524',True)
+# import matplotlib.pyplot as plt
+# from mpl_toolkits.mplot3d.axes3d import Axes3D
 
 
+###MODEL EXPLORATION - turn this into a class
+
+def hist_starting_lineups(sport,date,player_universe): #historical starting lineups for backtesting
+		db_data=[sport.get_db_gamedata(player,date,date) for player in player_universe]
+		return [df['player'][0] for df in db_data if (not df.empty and df['starter'][0]==1)]
+
+def build_model_dataset(sport,df):
+	print 'now building dataset for %s' % df['player'][0]
+	feature_df= pandas.DataFrame(sport.ff.FD_points(df))
+	for feature in sport.features:
+		feature_df[feature[0]] = getattr(sport.ff,feature[0])(df)#Index 0 is the feature function of each feature, index 1 is the corresponding parameter function
+	return feature_df
+
+def model_exploration(): #Ian: temporary,split up
+	sport=Sport.NBA()
+	date='2015-12-02'
+	query={'sport':sport.sport,'date':dt.datetime.strptime(date,'%Y-%m-%d'),'contest_ID':'13834'}
+	FD_player_data=dbo.read_from_db('hist_fanduel_data',query)[0]['contest_dict']
+	starting_players =hist_starting_lineups(sport,date,[player for player in FD_player_data.keys()])
+	FD_starting_player_data = {player:player_data for player,player_data in FD_player_data.iteritems() if player in starting_players} 
+
+	feature_df=[]
+	for FD_playerid,data in FD_starting_player_data.iteritems():
+		print 'building player_universe for: %s' % FD_playerid
+		db_df = sport.get_db_gamedata(FD_playerid,'2014-10-01',end_date=date)
+		feature_df.append(build_model_dataset(sport,db_df))
+
+	player_model_data=pandas.concat(feature_df)
 
 
-# points,not_starting=rotowire_lineup_points()
-#print fanduel_lineup_points('Madison Bumgarner, Marcell Ozuna, Marcus Semien, Giancarlo Stanton, Coco Crisp, Robinson Cano, Albert Pujols, Josh Phegley, Kyle Seager','20150509')[0]
+	# plt.figure()
+	# player_model_data.plot(x='FD_median', y='FD_points')
+	# plt.show()
 
-# i=1
-# for e in not_starting:
-# 	Cell('Output',i,1).value=e
-# 	i=i+1
-# os.system('pause')
+	# fig = plt.figure()
+	# ax = fig.add_subplot(1,1,1)
+	# ax.plot()
+	# ax.set_xlabel('FD_median')
+	# ax.set_ylabel('FD_points')
+	x1=np.array(player_model_data['FD_median'])
+	x2=np.array(player_model_data['FD_median_5'])
+	x3=np.array(player_model_data['opposing_defense_PA'])
+	y=np.array(player_model_data['FD_points'])
+	# z = np.polyfit(x,y,1)
+	# p = np.poly1d(z)
+	# ax.plot(x, y,'bo',x,p(x),'r--')
+	# plt.show()
 
-# sql = "SELECT * FROM hist_fanduel_data Where Date='2015-05-09' And Sport='MLB'"
-# db_data= dbo.read_from_db(sql,['Player','Position','contestID'],True)
+	# plt.figure(1)
+	# plt.subplot(211)
+	# plt.plot(x1,y, 'bo')
 
-# for player_key,data in db_data.iteritems():
-# 	print player_key,data['FD_Salary']
-
-# time.sleep(20)
-
-
-
-#PLAYER MAPPING
-
-
-
-# player_map1 = Ugen.excel_mapping("Player Map",6,5) #XML to FD
-# player_map2 = Ugen.excel_mapping("Player Map",7,5) #MLB Lineups to FD
-
-# sql = "SELECT * FROM hist_lineup_optimizers"
-# db_data= dbo.read_from_db(sql,["Date"],True)
-
-# rw_player_list=[]
-# for date,lineup in db_data.iteritems():
-# 	player_names=lineup['RW_MLB'].split(', ')
-# 	for e in player_names:
-# 		if e not in rw_player_list:
-# 			rw_player_list.append(e)
-
-#XML STATs Player names
-# sql = "SELECT * FROM hist_player_data WHERE Sport = 'MLB' LIMIT 0,18446744073709551615"
-# db_data= dbo.read_from_db(sql,["Player","GameID","Player_Type"],True)
-# xml_team_list=[]
-# for player,stat_dict in db_data.iteritems():
-#     Player=stat_dict['Player']
-#     if Player not in xml_team_list:
-#         xml_team_list.append(Player)
-
-# xml_team_list=[]
-
-# MLB=Sport.MLB()
-# xml_team_list=MLB.get_daily_game_data('20150502','20150820',True) 
-
-# i=2
-# for e in rw_player_list:
-# 	if e not in xml_team_list:
-# 		Cell('Output',i,1).value=e
-# 		i=i+1
-
-# i=2
-# for e in xml_team_list:
-# 	if e not in rw_player_list:
-# 		Cell('Output',i,3).value=e
-# 		i=i+1
-
-# sql = "SELECT * FROM hist_fanduel_data WHERE Sport = 'MLB' LIMIT 0,18446744073709551615"
-# db_data = dbo.read_from_db(sql,["Date","Player","Position","contestID"],True)
-
-# fanduel_team_list=[]
-# for player,stat_dict in db_data.iteritems():
-#     Player=stat_dict['Player']
-#     if Player not in fanduel_team_list:
-#         fanduel_team_list.append(Player)
-
-
-# start_date='2015-05-02'
-# end_date='2015-08-20'
-# event_dates = [d.strftime('%Y-%m-%d') for d in pandas.date_range(start_date,end_date)]
-# lineups_name_list=[]
-# for event_date in event_dates:
-# 	print 'now loading %s' % event_date
-# 	team_dict,player_dict=ds.mlb_starting_lineups(event_date)
-# 	for player in player_dict:
-# 		player_name=player.split("_")[0]
-# 		if player_name not in lineups_name_list:
-# 			lineups_name_list.append(player_name)
-
-# # player_map=Ugen.excel_mapping("Player Map",6,5)
-
-# print lineups_name_list
-
-# i=2
-# for e in lineups_name_list:
-# 	if e not in fanduel_team_list and e not in player_map2:
-# 		Cell('Output',i,1).value=e
-# 		i=i+1
-# i=2
-# for e in fanduel_team_list:
-# 	if e not in lineups_name_list and e not in player_map2.itervalues():
-# 		Cell('Output',i,2).value=e
-# 		i=i+1
-
-
-# i=2
-# for e in xml_team_list:
-# 	if e not in fanduel_team_list and e not in player_map1:
-# 		# if "Colom" in e:
-# 		# 	print e
-# 		# 	print str(e)
-# 		# 	#print e.decode("latin-1")
-# 		# 	os.system('pause')
-# 		# print i
-# 		Cell('Output',i,3).value=e
-# 		i=i+1
-# i=2
-# for e in fanduel_team_list:
-# 	if e not in xml_team_list and e not in player_map1.itervalues():
-# 		Cell('Output',i,4).value=e
-# 		i=i+1
+	# plt.subplot(212)
+	# plt.plot(x2,y, 'ro')
+	# plt.show()
 
 
 
-#Remove duplicate rows SQL statement
-#ALTER IGNORE TABLE hist_backtest_data ADD UNIQUE KEY idx1(date);
-#Append column to table
-#ALTER TABLE hist_fanduel_data ADD contestID TEXT 
-#Delete single row by ID
-#DELETE FROM hist_lineup_optimizers WHERE DataID=8 LIMIT 1
+	# x = range(1, 101)
+	# y1 = [random.randint(1, 100) for _ in xrange(len(x))]
+	# y2 = [random.randint(1, 100) for _ in xrange(len(x))]
+	fig = plt.figure()
+	# ax = fig.add_subplot(111)    # The big subplot
+	ax1 = fig.add_subplot(211)
+	ax2 = fig.add_subplot(212)
 
-#LOAD CSV FILE INTO DB
-# LOAD DATA LOCAL INFILE 'C:/Users/Ian Whitestone/Documents/Python Projects/Fanduel-master/fanduel/stadium_data.csv' 
-# INTO TABLE stadium_data
-# FIELDS TERMINATED BY ',' 
-# ENCLOSED BY '"'
-# LINES TERMINATED BY '\n'
-# IGNORE 1 ROWS;
+	# Turn off axis lines and ticks of the big subplot
+	# ax.spines['top'].set_color('none')
+	# ax.spines['bottom'].set_color('none')
+	# ax.spines['left'].set_color('none')
+	# ax.spines['right'].set_color('none')
+	# ax.tick_params(labelcolor='w', top='off', bottom='off', left='off', right='off')
+
+	ax1.plot(x1, y,'bo')
+	ax2.plot(x3, y,'ro')
+
+	# Set common labels
+	# ax.set_xlabel('common xlabel')
+	# ax.set_ylabel('common ylabel')
+
+	ax1.set_title('ax1 title')
+	ax2.set_title('ax2 title')
+	plt.show()
+
+	###PLOTTING
+	#http://stackoverflow.com/questions/6963035/pyplot-axes-labels-for-subplots
+	return
 
 
-# Delete FROM autotrader.hist_player_data WHERE Date='2015-07-11';
-# Delete FROM autotrader.event_data WHERE event_id LIKE '%20150711%';
-
-# Delete FROM autotrader.event_data WHERE event_id='20140414-washington-nationals-at-miami-marlins';
-# Delete FROM autotrader.event_data WHERE event_id='20140414-tampa-bay-rays-at-baltimore-orioles';
-# Delete FROM autotrader.event_data WHERE event_id='20140414-atlanta-braves-at-philadelphia-phillies';
+def test_nba_feature():
+	nba=Sport.NBA()
+	df=nba.get_db_gamedata('Andrew Wiggins','2011-12-31','2015-11-17')
+	feature_df,param_array=nba.build_model_dataset(df)
+	print feature_df
+	return

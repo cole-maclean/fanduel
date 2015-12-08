@@ -5,16 +5,31 @@ import datetime as dt
 import database_operations as dbo
 
 
-# dict_Structure={'2015':{'TOR':{'PG':65,'SG':60}},'2014':{'TOR':,...}}
+###FEATURES IDEAS
+##---------------------------------------
+##Days Rest
+##Vegas projected points scored
+##Usage rate ("percentage of a teams possesions a player 'uses' while in game")
+##Player efficiency rating ("The overall rating of a players per minute statistical production")
+##Pace ("the number of possesions a team uses per game")
+##Defensive efficiency "the number of points a team allows per 100 possesions"
+##DVP "average points given up by a defense against a position vs the league average"
+##FGA: L2, L5, S (avg)
+##Minutes: L2,L5,S (avg)
+##FP: L2, L5, S, Floor, Ceiling
+
 
 class FD_features(): #Ian: some features are going to be unique to each sport, maybe split into different classes
-	def __init__(self, sport, features, teams):
+	def __init__(self, sport, features=[]):
 		self.sport=sport
 		if self.sport=='NBA':
-			self.seasons={'2014':['2014-10-28','2015-04-15'],'2015':['2015-10-27','2016-04-13']} #could split this up into 4 quarters for each season for more representative averages
+			self.seasons={'2014':['2014-10-28','2015-04-15'],'2015':['2015-10-27','2015-12-02']} #'2016-04-13' #could split this up into 4 quarters for each season for more representative averages
 			self.positions=['PG','SG','SF','PF','C']
-			if 'opposing_defense_PA' in [feature[0] for feature in features]:
-				self.defense_season_avgs={season:{team:self.opposing_defense_stats(team,season) for team in teams} for season in self.seasons.keys()}
+			self.teams=['MIL', 'MIN', 'TOR', 'ATL', 'BOS', 'DET', 'DEN', 'NO', 'DAL', 'BKN', 'POR', 'ORL', 'MIA', 'CHI', 
+						'NY', 'CHA', 'UTA', 'GS', 'CLE', 'HOU', 'WAS', 'LAL', 'PHI', 'PHO', 'MEM', 'LAC', 'SAC', 'OKC', 'IND', 'SA']
+			if 'opposing_defense_PA' in [feature[0] for feature in features]: #Ian: could put 2014 averages in database? probably cut time in half
+				self.defense_season_avgs={season:{team:self.opposing_defense_stats(team,season) for team in self.teams} for season in self.seasons.keys()} #takes 8 min to execute for all 30 teams
+				# self.defense_season_avgs={season:{team:{'PG':2,'G':2,'F':2,'SG':2,'SF':2,'PF':2,'C':2} for team in self.teams} for season in self.seasons.keys()} #use this when testing other features for speed
 		elif self.sport=='MLB':
 			pass
 
@@ -35,40 +50,84 @@ class FD_features(): #Ian: some features are going to be unique to each sport, m
 								df['blocks']*2+df['steals']*2+df['turnovers']*-1)
 		return df['FD_points']
 
-	def FD_median(self,df):
+	def FD_medn(self,df):
 		median_df =pd.rolling_median(df['FD_points'],window=12)
 		return median_df.fillna(median_df.mean())
 
-	def param_FD_median(self,df):
+	def param_FD_medn(self,df):
 		medn =df['FD_points'].tail(12).median()
 		if math.isnan(medn):
 			return 0
 		else:
 			return medn
 
-	def FD_median_5(self,df):
+	def FD_medn_5(self,df):
 		median_df =pd.rolling_median(df['FD_points'],window=5)
 		return median_df.fillna(median_df.mean())
 
-	def param_FD_median_5(self,df):
+	def param_FD_medn_5(self,df):
 		medn =df['FD_points'].tail(5).median()
 		if math.isnan(medn):
 			return 0
 		else:
 			return medn
 
-	def opposing_defense_PA(self,df):
-		df['opponent']=df.apply(self.determine_opponent,axis=1)##identify opposing team
-		return df.apply(self.opposing_defense_stats,axis=1)
-	
-	def param_opposing_defense_PA(self,df):
+	def days_rest(self,df):
+		days_rest=(df['date']-df['date'].shift()).fillna(0)
 		return
 
-	def determine_opponent(self,df):
-		if df['team']==df['home_team']:
-			return df['away_team']
+	def param_days_rest(self,df):
+
+		return
+
+
+	def minutes_medn(self,df): #Ian: median the best indicator? mean? Why 12?
+		median_df =pd.rolling_median(df['minutes'],window=12)
+		return median_df.fillna(median_df.mean())
+
+	def param_minutes_medn(self,df):
+		medn =df['minutes'].tail(12).median()
+		if math.isnan(medn):
+			return 0
 		else:
-			return df['home_team']
+			return medn
+
+	def minutes_medn_5(self,df): #Ian: median the best indicator? mean?
+		median_df =pd.rolling_median(df['minutes'],window=5)
+		return median_df.fillna(median_df.mean())
+
+	def param_minutes_medn_5(self,df):
+		medn =df['minutes'].tail(5).median()
+		if math.isnan(medn):
+			return 0
+		else:
+			return medn
+
+
+	def opposing_defense_PA(self,df): #Ian: points allowed by opposing defense to a certain position
+		df['opponent']=df.apply(self.determine_opponent,axis=1)##identify opposing team
+		df['season']=df.apply(self.determine_season,axis=1)
+		return df.apply(self.defense_season_avg,axis=1)
+	
+	def defense_season_avg(self,df):
+		return self.defense_season_avgs[df['season']][df['opponent']][df['position']]
+
+	def determine_season(self,df): #Ian: modify this once you get quarterly averages, etc.
+		year=df['date'].strftime('%Y-%m-%d').split("-")[0]
+		if year=='2014':
+			season=year
+		elif year=='2015' and df['date']<dt.datetime.strptime(self.seasons['2014'][1],'%Y-%m-%d'):
+			season='2014'
+		else:
+			season='2015'
+		return season
+
+	def param_opposing_defense_PA(self,df):
+		df['season']=df.apply(self.determine_season,axis=1)
+		return self.defense_season_avgs[df['season'].iloc[-1]][df['matchup'].iloc[-1]][df['position'].iloc[-1]]
+
+	def determine_opponent(self,df):
+		return (df['away_team'] if df['team']==df['home_team'] else df['home_team'])
 
 	def opposing_defense_stats(self,team,season):
 		# print 'season: %s team: %s position: %s' % (season,team,position)
@@ -78,12 +137,13 @@ class FD_features(): #Ian: some features are going to be unique to each sport, m
 									{'away_team':team}]},{'gameID':1,'home_team':1,'away_team':1,'sport':1,'_id':0}))
 		db_df['team']=team #team is defensive team
 		db_df['off_team']=db_df.apply(self.determine_opponent,axis=1)
-
 		points_allowed_df=db_df.apply(self.position_FD_points,axis=1)
-				
-		return {'PG':points_allowed_df[0].mean(),'SG':points_allowed_df[1].mean(),
-					'SF':points_allowed_df[2].mean(),'PF':points_allowed_df[3].mean(),
+		points_allowed={'PG':points_allowed_df[0].mean(),'SG':points_allowed_df[1].mean(),
+						'SF':points_allowed_df[2].mean(),'PF':points_allowed_df[3].mean(),
 						'C':points_allowed_df[4].mean()}
+		points_allowed['G']=(points_allowed['SG']+points_allowed['SF'])/2
+		points_allowed['F']=(points_allowed['SF']+points_allowed['C'])/2
+		return points_allowed
 
 	def position_FD_points(self,df):
 		db_data=dbo.read_from_db('hist_player_data',{'gameID':df['gameID'],'sport':df['sport'],'team':df['off_team']},{'_id':0})

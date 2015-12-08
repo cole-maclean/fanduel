@@ -37,8 +37,8 @@ class Model():
 				param_grid = dict(features__pca__n_components=[1],
 				                  features__univ_select__k=[1])
 			else:
-				param_grid = dict(features__pca__n_components=[1],
-				                  features__univ_select__k=[1])
+				param_grid = dict(features__pca__n_components=[2],
+				                  features__univ_select__k=[2])
 
 			grid_search = GridSearchCV(pipeline, param_grid=param_grid, verbose=100)
 			grid_search.fit(X, y)
