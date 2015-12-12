@@ -61,18 +61,16 @@ def hist_model_lineups(sport,start_date,end_date): #date format in 'YYYY-MM-DD'
         # raw_input('test')
         hist_lineups_dict[date]={}
         for contest in contest_list:    
-            try:
-                output=sport.optimal_roster(0,0,-100,date,contest)
-                player_list=[player for player in output['roster'].keys()]
-                roster_points,count=hist_lineup_points(sport,player_list,date)
-                print {'points':roster_points,'missing_players':count,'date':date,'contest':contest}
-                hist_lineups_dict[date][contest]={}
-                hist_lineups_dict[date][contest]['points']=roster_points
-                hist_lineups_dict[date][contest]['missing_players']=count
-                hist_lineups_dict[date][contest]['player_universe_size']=output['player_pool_size']
-                hist_lineups_dict[date][contest]['roster_dict']=output['roster']
-            except:
-                print 'ERROR OCCURED!!!@ contest: %s date: %s sport: %s' % (contest,date,sport.sport)
+            print 'contest: %s date: %s sport: %s' % (contest,date,sport.sport)
+            output=sport.optimal_roster(0,0,-100,date,contest)
+            player_list=[player for player in output['roster'].keys()]
+            roster_points,count=hist_lineup_points(sport,player_list,date)
+            print {'points':roster_points,'missing_players':count,'date':date,'contest':contest}
+            hist_lineups_dict[date][contest]={}
+            hist_lineups_dict[date][contest]['points']=roster_points
+            hist_lineups_dict[date][contest]['missing_players']=count
+            hist_lineups_dict[date][contest]['player_universe_size']=output['player_pool_size']
+            hist_lineups_dict[date][contest]['roster_dict']=output['roster']
     return hist_lineups_dict
 
 def hist_lineup_points(sport,lineup,date):
@@ -86,18 +84,20 @@ def hist_lineup_points(sport,lineup,date):
 def average_lineup_points(hist_lineups_dict):
     full_lineup_points=[contest_dict['points'] for date in hist_lineups_dict.keys() for contest,contest_dict in hist_lineups_dict[date].iteritems() 
                         if contest_dict['points']>0 and contest_dict['missing_players']==0]
-    return np.mean(full_lineup_points),np.amax(full_lineup_points),np.std(full_lineup_points)
+    return np.mean(full_lineup_points),np.amax(full_lineup_points),np.std(full_lineup_points),np.median(full_lineup_points)
 
 
 def run_backtest(length):
     if length=='full':
-        hist_lineups_dict=hist_model_lineups('NBA', '2015-11-18','2015-11-30')
+        hist_lineups_dict=hist_model_lineups('NBA', '2015-11-18','2015-12-10')
     else:
         hist_lineups_dict=hist_model_lineups('NBA', '2015-12-02','2015-12-02')
     pp = pprint.PrettyPrinter(indent=4)
     pp.pprint(hist_lineups_dict)
-    mean_points,max_points,stdev=average_lineup_points(hist_lineups_dict)
-    print 'average lineup points: %s maximum lineup points: %s standard deviation: %s' % (mean_points,max_points,stdev)
+    if hist_lineups_dict:
+        mean_points,max_points,stdev,medn_points=average_lineup_points(hist_lineups_dict)
+        print 'average lineup points: %s \nmaximum lineup points: %s' % (mean_points,max_points)
+        print 'standard deviation: %s \nmedian lineup points: %s' % (stdev,medn_points)
     return
 
 # minutes_feature_list=[261.5,258.2,258.2,281.2,249.4,244.9,254.8,292.9,280.1,278.7,280.4,243.2,226.7,270.8,272.2,271.7,248.7,277,267.5,249.2,256.4
@@ -105,13 +105,14 @@ def run_backtest(length):
 
 
 
-######TO DO:
+###                TO DO
 ##---------------------------------------
 ##0: feature engineering
 ##1: refactor backtest into class
 ##2: refactor test_ian into class
 ##3: add a write to CSV function to track backtests or start using juptyer
 ##4: player maps!
+##4.5: historical player universe - only starters?? or only people who are not innjured!
 ##5: fix sport class so you dont have to uncomment the ff.FD_feature class call. perhaps take features in as argument?? 
 ##6: re-assign FD positions if they are a F or G - optimizer won't accept those
 ##7: add db check if event has already been historized

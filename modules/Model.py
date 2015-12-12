@@ -1,5 +1,5 @@
-# import matplotlib.pyplot as plt
-# from mpl_toolkits.mplot3d.axes3d import Axes3D
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d.axes3d import Axes3D
 import numpy
 from sklearn.feature_selection import f_regression
 from sklearn.preprocessing import MinMaxScaler
@@ -64,25 +64,20 @@ class Model():
 		self.model = self.best_estimator(self.training_feature_matrix,self.training_target_matrix)
 		if self.modelled:
 			if visualize:
-					for indx,feature in enumerate(self.feature_labels):
-						fig = plt.figure()
-						ax = fig.add_subplot(1,1,1)
-						ax.plot()
-						ax.set_title(self.player)
-						ax.set_xlabel(self.feature_labels[indx])
-						ax.set_ylabel(self.target)
-						x=self.training_feature_matrix[:,indx]
-						y=self.training_target_matrix
-						z = numpy.polyfit(x,y,1)
-						p = numpy.poly1d(z)
-						ax.plot(x, y,'bo',x,p(x),'r--')
-						r2=r2_score(y,p(x))
-						# rw=3
-						# while Cell("Pred_Strikeouts History",rw,1).value != None:
-						# 	rw=rw+1
-						# Cell("Pred_Strikeouts History",rw-1,2).value=z
-						# Cell("Pred_Strikeouts History",rw-1,3).value=r2
-						plt.show()	
+				num_plots=len(self.feature_labels)
+				fig = plt.figure(figsize=(16, 8.65))
+				for indx,feature in enumerate(self.feature_labels):
+					ax = fig.add_subplot(num_plots,1,indx+1)
+					x=self.training_feature_matrix[:,indx]
+					y=self.training_target_matrix
+					z = numpy.polyfit(x,y,1)
+					p = numpy.poly1d(z)
+					if indx==0: ax.set_title(self.player) 
+					ax.plot(x, y,'bo',x,p(x),'r--')
+					ax.set_xlabel(self.feature_labels[indx])
+					ax.set_ylabel(self.target)
+				plt.show()	
+				# raw_input("enter to continue")
 		else:
 			print self.player + " not modelled"
 		return self

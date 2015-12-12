@@ -235,8 +235,9 @@ class NBA(Sport): #Cole: data modelling may need to be refactored, might be more
 		
 		self.event_info_data_model=['attendance','duration','season_type']
 		# self.features=[['FD_medn','param_FD_medn'],['FD_medn_5',"param_FD_medn_5"],["opposing_defense_PA","param_opposing_defense_PA"],
-		# 				['minutes_medn','param_minutes_medn'],['minutes_medn_5','param_minutes_medn_5']]
-		self.features=[['FD_medn','param_FD_medn'],['FD_medn_5',"param_FD_medn_5"]]#,['days_rest','param_days_rest']]
+		# 				['minutes_medn','param_minutes_medn'],['minutes_medn_5','param_minutes_medn_5'],['days_rest','param_days_rest']] ##ALL FEATURES
+		# self.features=[['FD_medn','param_FD_medn'],['FD_medn_5',"param_FD_medn_5"],['days_rest','param_days_rest']]
+		self.features=[['FD_medn','param_FD_medn'],['FD_medn_5',"param_FD_medn_5"]] ##baseline features test
 		self.data_model = ({'away_stats':self.db_data_model['bplayer'],'home_stats':self.db_data_model['bplayer']})	
 		self.backtest_date=None #dt.date.today().strftime('%Y-%m-%d')
 		self.backtest_contestID=None
@@ -278,6 +279,7 @@ class NBA(Sport): #Cole: data modelling may need to be refactored, might be more
 			query={'sport':self.sport,'date':dt.datetime.strptime(self.backtest_date,'%Y-%m-%d'),'contest_ID':self.backtest_contestID}
 			FD_player_data=dbo.read_from_db('hist_fanduel_data',query)[0]['contest_dict']
 			starting_players =self.hist_starting_lineups([player for player in FD_player_data.keys()])
+			print len(starting_players)
 			FD_starting_player_data = {player:player_data for player,player_data in FD_player_data.iteritems() if player in starting_players} 
 			date=self.backtest_date
 		else:
@@ -294,7 +296,7 @@ class NBA(Sport): #Cole: data modelling may need to be refactored, might be more
  			player_key = FD_playerid
 			if player_key == db_df['player'][0]:
 				player_universe[player_key] = {}
-				projected_FD_points = self.FD_points_model(db_df)
+				projected_FD_points = self.FD_points_model(db_df,False)
 				player_universe[player_key]['projected_FD_points'] = projected_FD_points.projected_points#random.randrange(0,200)
 				player_universe[player_key]['confidence'] = projected_FD_points.confidence #5
 				player_universe[player_key]['name'] = player_key
@@ -309,7 +311,8 @@ class NBA(Sport): #Cole: data modelling may need to be refactored, might be more
 
 	def hist_starting_lineups(self,player_universe): #historical starting lineups for backtesting
 		db_data=[self.get_db_gamedata(player,self.backtest_date,self.backtest_date) for player in player_universe]
-		return [df['player'][0] for df in db_data if (not df.empty and df['starter'][0]==1)]
+		# return [df['player'][0] for df in db_data if (not df.empty and df['starter'][0]==1)]
+		return [df['player'][0] for df in db_data if (not df.empty and df['minutes'][0]>10)]
 
 
 	def build_model_dataset(self,df):
@@ -317,6 +320,7 @@ class NBA(Sport): #Cole: data modelling may need to be refactored, might be more
 		if self.backtest_date: #Ian: may be a better way to integrate this?
 			db_df=self.get_db_gamedata(df['player'][0],self.backtest_date,self.backtest_date)
 			df['matchup']=(db_df['away_team'][0] if db_df['team'][0]==db_df['home_team'][0] else db_df['away_team'][0])
+			df['today']=dt.datetime.strptime(self.backtest_date,'%Y-%m-%d')
 		feature_df= pandas.DataFrame(self.ff.FD_points(df))
 		parameter_array = []
 		for feature in self.features:
@@ -737,6 +741,6 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 # dbo.delete_by_date(nba.sport,'hist_player_data','2015-02-26','2015-02-26')
 
 # events=nba.get_daily_game_data('2014-10-28','2015-04-15',True) #2014 regular season
-# events=nba.get_daily_game_data('2015-12-03','2015-12-06',True) #2015 - last historize
+# events=nba.get_daily_game_data('2015-12-06','2015-12-10',True) #2015 - last historize
 
 

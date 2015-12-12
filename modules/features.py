@@ -5,7 +5,7 @@ import datetime as dt
 import database_operations as dbo
 
 
-###FEATURES IDEAS
+###             FEATURES IDEAS
 ##---------------------------------------
 ##Days Rest
 ##Vegas projected points scored
@@ -17,6 +17,9 @@ import database_operations as dbo
 ##FGA: L2, L5, S (avg)
 ##Minutes: L2,L5,S (avg)
 ##FP: L2, L5, S, Floor, Ceiling
+##last 3,5,10,15 for multiple features (minutes, FD_points,FGA etc.) --> refactor so the functions take number of days as an input to avoid redunancy
+##^^^^^we have to be careful with these when we cross over between seasons...
+###(contd) (for example, last 15 games may have 5 from 2015 season and 10 from 2014 season...how to avoid this??
 
 
 class FD_features(): #Ian: some features are going to be unique to each sport, maybe split into different classes
@@ -73,13 +76,17 @@ class FD_features(): #Ian: some features are going to be unique to each sport, m
 			return medn
 
 	def days_rest(self,df):
-		days_rest=(df['date']-df['date'].shift()).fillna(0)
-		return
+		df['days_rest']=(df['date']-df['date'].shift()).fillna(0)
+		return df.apply(self.convert_days_to_int,axis=1)
+
+	def convert_days_to_int(self,df):
+		days_rest=df['days_rest']
+		days_int=(days_rest/numpy.timedelta64(1, 'D')).astype(int)
+		return (days_int if days_int<10 else 2) #Ian: we get values like 196 between seasons, or what if they were injured? will throw off modelling..
 
 	def param_days_rest(self,df):
-
-		return
-
+		df['days_rest']=(df['today']-df['date'].shift()).fillna(0)
+		return df.apply(self.convert_days_to_int,axis=1).iloc[-1]
 
 	def minutes_medn(self,df): #Ian: median the best indicator? mean? Why 12?
 		median_df =pd.rolling_median(df['minutes'],window=12)
@@ -103,7 +110,6 @@ class FD_features(): #Ian: some features are going to be unique to each sport, m
 		else:
 			return medn
 
-
 	def opposing_defense_PA(self,df): #Ian: points allowed by opposing defense to a certain position
 		df['opponent']=df.apply(self.determine_opponent,axis=1)##identify opposing team
 		df['season']=df.apply(self.determine_season,axis=1)
@@ -125,6 +131,7 @@ class FD_features(): #Ian: some features are going to be unique to each sport, m
 	def param_opposing_defense_PA(self,df):
 		df['season']=df.apply(self.determine_season,axis=1)
 		return self.defense_season_avgs[df['season'].iloc[-1]][df['matchup'].iloc[-1]][df['position'].iloc[-1]]
+		# return df.apply(self.defense_season_avg,axis=1).iloc[-1] #Ian: old, incorrect way
 
 	def determine_opponent(self,df):
 		return (df['away_team'] if df['team']==df['home_team'] else df['home_team'])
