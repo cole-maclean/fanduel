@@ -27,7 +27,7 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 		self.gameid = None
 
 	def FD_points_model(self,df,visualize = False):
-		FD_projection= collections.namedtuple("FD_projection", ["projected_points", "confidence"])
+		FD_projection= collections.namedtuple("FD_projection", ["projected_points", "confidence","R2"])
 		player_model_data,parameter_array = self.build_model_dataset(df)
 		print parameter_array
 		# print player_model_data
@@ -38,7 +38,7 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 			print '%s modelled' % df['player'][0]
 			if len(player_model.test_feature_matrix) > 1: #Test dataset needs to contain at least 2 datapoints to compute score
 				projected_FD_points = (FD_projection(player_model.model.predict(parameter_array)[-1],
-												player_model.model.score(player_model.test_feature_matrix,player_model.test_target_matrix)))
+												player_model.model.score(player_model.test_feature_matrix,player_model.test_target_matrix),player_model.R2))
 				print projected_FD_points
 			else:
 				projected_FD_points = FD_projection(player_model.model.predict(parameter_array)[-1],0)
@@ -46,9 +46,9 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 			print '%s not modelled' % df['player'][0]
 			try:
 				default_projection = self.player_model_data['FD_median'][-1]
-				projected_FD_points = FD_projection(0,0) #Cole: this is the default model prediction and confidence if player cannot be modelled
+				projected_FD_points = FD_projection(0,0,0) #Cole: this is the default model prediction and confidence if player cannot be modelled
 			except:
-				projected_FD_points = FD_projection(0,0)
+				projected_FD_points = FD_projection(0,0,0)
 		player_model = None
 		return projected_FD_points
 
@@ -179,7 +179,7 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 		sql = "SELECT * FROM stadium_data"
 		return dbo.read_from_db(sql,[prime_key],True)
 
-	def optimal_roster(self,FDSession,contest_url,confidence = -100,date=False,contestID=False): #Ian: added optional date,contest_ID for backtesting
+	def optimal_roster(self,FDSession,contest_url,confidence = -100,date=False,contestID=False): #Ian: added optional date,contest_ID for backtesting. Move to sport initialization?
 		DB_parameters=Ugen.ConfigSectionMap('local text')
 		if date:
 			self.backtest_date=date
@@ -234,10 +234,11 @@ class NBA(Sport): #Cole: data modelling may need to be refactored, might be more
 								'rebounds':'rebounds','steals':'steals','turnovers':'turnovers'}
 		
 		self.event_info_data_model=['attendance','duration','season_type']
-		# self.features=[['FD_medn','param_FD_medn'],['FD_medn_5',"param_FD_medn_5"],["opposing_defense_PA","param_opposing_defense_PA"],
-		# 				['minutes_medn','param_minutes_medn'],['minutes_medn_5','param_minutes_medn_5'],['days_rest','param_days_rest']] ##ALL FEATURES
-		# self.features=[['FD_medn','param_FD_medn'],['FD_medn_5',"param_FD_medn_5"],['days_rest','param_days_rest']]
-		self.features=[['FD_medn','param_FD_medn'],['FD_medn_5',"param_FD_medn_5"]] ##baseline features test
+	 	##ALL FEATURES
+		# self.features=[['days_rest','param_days_rest'],["opposing_defense_PA","param_opposing_defense_PA"]]
+		self.median_features={'FD_points':[2,5,10,15],'minutes':[2,5,10,15],'FGA':[2,5,10,15],'points':[2,5,10,15]}
+		# self.median_features={'FD_points':[5,12]}
+		self.features=[]
 		self.data_model = ({'away_stats':self.db_data_model['bplayer'],'home_stats':self.db_data_model['bplayer']})	
 		self.backtest_date=None #dt.date.today().strftime('%Y-%m-%d')
 		self.backtest_contestID=None
@@ -279,7 +280,6 @@ class NBA(Sport): #Cole: data modelling may need to be refactored, might be more
 			query={'sport':self.sport,'date':dt.datetime.strptime(self.backtest_date,'%Y-%m-%d'),'contest_ID':self.backtest_contestID}
 			FD_player_data=dbo.read_from_db('hist_fanduel_data',query)[0]['contest_dict']
 			starting_players =self.hist_starting_lineups([player for player in FD_player_data.keys()])
-			print len(starting_players)
 			FD_starting_player_data = {player:player_data for player,player_data in FD_player_data.iteritems() if player in starting_players} 
 			date=self.backtest_date
 		else:
@@ -289,7 +289,7 @@ class NBA(Sport): #Cole: data modelling may need to be refactored, might be more
 		
 		player_universe={}
 		for FD_playerid,data in FD_starting_player_data.iteritems():
-			print 'building player_universe for: %s' % FD_playerid
+			print 'building player_universe for: %s on %s' % (FD_playerid,self.backtest_date)
 			db_df = self.get_db_gamedata(FD_playerid,'2014-10-01',end_date=Ugen.previous_day(date))
  			if db_df.empty: #Ian: need player maps!
  				continue
@@ -299,6 +299,7 @@ class NBA(Sport): #Cole: data modelling may need to be refactored, might be more
 				projected_FD_points = self.FD_points_model(db_df,False)
 				player_universe[player_key]['projected_FD_points'] = projected_FD_points.projected_points#random.randrange(0,200)
 				player_universe[player_key]['confidence'] = projected_FD_points.confidence #5
+				player_universe[player_key]['R2']= projected_FD_points.R2
 				player_universe[player_key]['name'] = player_key
 				for key,player_data in data.iteritems():
 					player_universe[player_key][key] = player_data
@@ -326,6 +327,10 @@ class NBA(Sport): #Cole: data modelling may need to be refactored, might be more
 		for feature in self.features:
 			feature_df[feature[0]] = getattr(self.ff,feature[0])(df)#Index 0 is the feature function of each feature, index 1 is the corresponding parameter function
 			parameter_array.append(getattr(self.ff,feature[1])(df))
+		for feature,num_events in self.median_features.iteritems():
+			for num in num_events: #i.e. if we want 2 games back, 5 games back etc.
+				feature_df[feature+'_medn_'+str(num)]=self.ff.median(df,feature,num)
+				parameter_array.append(self.ff.param_median(df,feature,num))
 		return feature_df,parameter_array
 
 class MLB(Sport): #Cole: data modelling may need to be refactored, might be more elegant solution

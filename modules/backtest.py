@@ -84,24 +84,35 @@ def hist_lineup_points(sport,lineup,date):
 def average_lineup_points(hist_lineups_dict):
     full_lineup_points=[contest_dict['points'] for date in hist_lineups_dict.keys() for contest,contest_dict in hist_lineups_dict[date].iteritems() 
                         if contest_dict['points']>0 and contest_dict['missing_players']==0]
+    print full_lineup_points
     return np.mean(full_lineup_points),np.amax(full_lineup_points),np.std(full_lineup_points),np.median(full_lineup_points)
 
 
-def run_backtest(length):
+def run_backtest(length,sport):
     if length=='full':
-        hist_lineups_dict=hist_model_lineups('NBA', '2015-11-18','2015-12-10')
+        hist_lineups_dict=hist_model_lineups(sport, '2015-11-18','2015-12-10')
     else:
-        hist_lineups_dict=hist_model_lineups('NBA', '2015-12-02','2015-12-02')
-    pp = pprint.PrettyPrinter(indent=4)
-    pp.pprint(hist_lineups_dict)
+        hist_lineups_dict=hist_model_lineups(sport, '2015-12-02','2015-12-02')
+    # pp = pprint.PrettyPrinter(indent=4)
+    # pp.pprint(hist_lineups_dict)
     if hist_lineups_dict:
         mean_points,max_points,stdev,medn_points=average_lineup_points(hist_lineups_dict)
         print 'average lineup points: %s \nmaximum lineup points: %s' % (mean_points,max_points)
         print 'standard deviation: %s \nmedian lineup points: %s' % (stdev,medn_points)
     return
 
-# minutes_feature_list=[261.5,258.2,258.2,281.2,249.4,244.9,254.8,292.9,280.1,278.7,280.4,243.2,226.7,270.8,272.2,271.7,248.7,277,267.5,249.2,256.4
-#                         ,244.7,285.5,263.5,305.2,306.3]
+def hist_model_score(sport,date):
+    if sport=='MLB':
+        sport=Sport.MLB()
+    elif sport=='NBA':
+        sport=Sport.NBA()
+    sport.backtest_date=date
+    contest_list=get_contests(sport.sport,date)
+    sport.backtest_contestID=contest_list[0] #for now, pick one contest
+    player_universe = sport.build_player_universe('','')
+    pp = pprint.PrettyPrinter(indent=4)
+    pp.pprint(player_universe)
+    return
 
 
 
@@ -112,10 +123,10 @@ def run_backtest(length):
 ##2: refactor test_ian into class
 ##3: add a write to CSV function to track backtests or start using juptyer
 ##4: player maps!
-##4.5: historical player universe - only starters?? or only people who are not innjured!
-##5: fix sport class so you dont have to uncomment the ff.FD_feature class call. perhaps take features in as argument?? 
+
 ##6: re-assign FD positions if they are a F or G - optimizer won't accept those
 ##7: add db check if event has already been historized
+##8: study more information from hist_lineups_dict --> do we do better in certain contest sizes??
 
 
 ##BENCHMARK TO BEAT FOR SCORING

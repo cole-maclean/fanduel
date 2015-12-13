@@ -14,9 +14,8 @@ import database_operations as dbo
 ##Pace ("the number of possesions a team uses per game")
 ##Defensive efficiency "the number of points a team allows per 100 possesions"
 ##DVP "average points given up by a defense against a position vs the league average"
-##FGA: L2, L5, S (avg)
-##Minutes: L2,L5,S (avg)
-##FP: L2, L5, S, Floor, Ceiling
+
+
 ##last 3,5,10,15 for multiple features (minutes, FD_points,FGA etc.) --> refactor so the functions take number of days as an input to avoid redunancy
 ##^^^^^we have to be careful with these when we cross over between seasons...
 ###(contd) (for example, last 15 games may have 5 from 2015 season and 10 from 2014 season...how to avoid this??
@@ -53,23 +52,13 @@ class FD_features(): #Ian: some features are going to be unique to each sport, m
 								df['blocks']*2+df['steals']*2+df['turnovers']*-1)
 		return df['FD_points']
 
-	def FD_medn(self,df):
-		median_df =pd.rolling_median(df['FD_points'],window=12)
+
+	def median(self,df,feature,num_events):
+		median_df =pd.rolling_median(df[feature],window=num_events)
 		return median_df.fillna(median_df.mean())
 
-	def param_FD_medn(self,df):
-		medn =df['FD_points'].tail(12).median()
-		if math.isnan(medn):
-			return 0
-		else:
-			return medn
-
-	def FD_medn_5(self,df):
-		median_df =pd.rolling_median(df['FD_points'],window=5)
-		return median_df.fillna(median_df.mean())
-
-	def param_FD_medn_5(self,df):
-		medn =df['FD_points'].tail(5).median()
+	def param_median(self,df,feature,num_events):
+		medn =df[feature].tail(num_events).median()
 		if math.isnan(medn):
 			return 0
 		else:
@@ -88,27 +77,7 @@ class FD_features(): #Ian: some features are going to be unique to each sport, m
 		df['days_rest']=(df['today']-df['date'].shift()).fillna(0)
 		return df.apply(self.convert_days_to_int,axis=1).iloc[-1]
 
-	def minutes_medn(self,df): #Ian: median the best indicator? mean? Why 12?
-		median_df =pd.rolling_median(df['minutes'],window=12)
-		return median_df.fillna(median_df.mean())
-
-	def param_minutes_medn(self,df):
-		medn =df['minutes'].tail(12).median()
-		if math.isnan(medn):
-			return 0
-		else:
-			return medn
-
-	def minutes_medn_5(self,df): #Ian: median the best indicator? mean?
-		median_df =pd.rolling_median(df['minutes'],window=5)
-		return median_df.fillna(median_df.mean())
-
-	def param_minutes_medn_5(self,df):
-		medn =df['minutes'].tail(5).median()
-		if math.isnan(medn):
-			return 0
-		else:
-			return medn
+	
 
 	def opposing_defense_PA(self,df): #Ian: points allowed by opposing defense to a certain position
 		df['opponent']=df.apply(self.determine_opponent,axis=1)##identify opposing team
