@@ -7,7 +7,7 @@ import database_operations as dbo
 
 ###             FEATURES IDEAS
 ##---------------------------------------
-##Days Rest
+
 ##Vegas projected points scored
 ##Usage rate ("percentage of a teams possesions a player 'uses' while in game")
 ##Player efficiency rating ("The overall rating of a players per minute statistical production")
@@ -16,8 +16,7 @@ import database_operations as dbo
 ##DVP "average points given up by a defense against a position vs the league average"
 
 
-##last 3,5,10,15 for multiple features (minutes, FD_points,FGA etc.) --> refactor so the functions take number of days as an input to avoid redunancy
-##^^^^^we have to be careful with these when we cross over between seasons...
+##we have to be careful with these when we cross over between seasons...
 ###(contd) (for example, last 15 games may have 5 from 2015 season and 10 from 2014 season...how to avoid this??
 
 
@@ -54,15 +53,26 @@ class FD_features(): #Ian: some features are going to be unique to each sport, m
 
 
 	def median(self,df,feature,num_events):
-		median_df =pd.rolling_median(df[feature],window=num_events)
+		median_df =pd.rolling_median(df[feature.replace('_medn','')],window=num_events)
 		return median_df.fillna(median_df.mean())
 
 	def param_median(self,df,feature,num_events):
-		medn =df[feature].tail(num_events).median()
+		medn =df[feature.replace('_medn','')].tail(num_events).median() #Ian: Cole, isn't this the same as just taking the last index of df[feature]? it will already be equal to the median of last X events
 		if math.isnan(medn):
 			return 0
 		else:
 			return medn
+
+	def mean(self,df,feature,num_events):
+		mean_df =pd.rolling_mean(df[feature.replace('_mean','')],window=num_events)
+		return mean_df.fillna(mean_df.mean())
+
+	def param_mean(self,df,feature,num_events):
+		mean =df[feature.replace('_mean','')].tail(num_events).mean() #Ian: Cole, isn't this the same as just taking the last index of df[feature]? it will already be equal to the median of last X events
+		if math.isnan(mean):
+			return 0
+		else:
+			return mean
 
 	def days_rest(self,df):
 		df['days_rest']=(df['date']-df['date'].shift()).fillna(0)
@@ -100,7 +110,7 @@ class FD_features(): #Ian: some features are going to be unique to each sport, m
 	def param_opposing_defense_PA(self,df):
 		df['season']=df.apply(self.determine_season,axis=1)
 		return self.defense_season_avgs[df['season'].iloc[-1]][df['matchup'].iloc[-1]][df['position'].iloc[-1]]
-		# return df.apply(self.defense_season_avg,axis=1).iloc[-1] #Ian: old, incorrect way
+
 
 	def determine_opponent(self,df):
 		return (df['away_team'] if df['team']==df['home_team'] else df['home_team'])
@@ -121,7 +131,7 @@ class FD_features(): #Ian: some features are going to be unique to each sport, m
 		points_allowed['F']=(points_allowed['SF']+points_allowed['C'])/2
 		return points_allowed
 
-	def position_FD_points(self,df):
+	def position_FD_points(self,df): #Ian: could modify this so it returns points allowed to starters? bench players?? depending on which player you are modelling
 		db_data=dbo.read_from_db('hist_player_data',{'gameID':df['gameID'],'sport':df['sport'],'team':df['off_team']},{'_id':0})
 		db_data=[{key:[value] for key,value in player.iteritems()} for player in db_data] #pandas cannot convert scalars to a dataframe
 		points_allowed=[sum([self.FD_points(pd.DataFrame(player)).iloc[-1] for player in db_data if player['position'][0]==position]) for position in self.positions]

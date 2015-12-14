@@ -154,6 +154,8 @@ def ConfigSectionMap(section):
 	        dict1[option] = None
 	return dict1
 
+
+
 def previous_day(todays_date): #YYYY-MM-DD
 	t=time.strptime(todays_date.replace("-",''),'%Y%m%d')
 	previous_day=date(t.tm_year,t.tm_mon,t.tm_mday)-timedelta(1)
