@@ -30,7 +30,7 @@ def remove_from_db(collection,query=False,max_docs=False):
             print 'collection not removed'
     else:
         db[collection].remove(query)
-        print 'record successfully removed'
+        print 'record: %s successfully removed' % query
     client.close()
 
 def read_from_db(collection,query,projection=False):

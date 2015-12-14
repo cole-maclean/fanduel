@@ -29,13 +29,12 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 	def FD_points_model(self,df,visualize = False):
 		FD_projection= collections.namedtuple("FD_projection", ["projected_points", "confidence","R2"])
 		player_model_data,parameter_array = self.build_model_dataset(df)
-		print parameter_array
+		print '%s parameter array: %s' % (df['player'][0],parameter_array)
 		player_model = Model.Model(player_model_data,df['player'][0])
 		player_model.FD_points_model(visualize)
 		if player_model.modelled:	#Cole: need to develop parameters for each player
 			print '%s modelled' % df['player'][0]
 			if len(player_model.test_target_matrix) > 1: #Test dataset needs to contain at least 2 datapoints to compute score
-				project=player_model.model.predict(parameter_array)
 				projected_FD_points = (FD_projection(player_model.model.predict(parameter_array)[-1],
 											player_model.model.score(player_model.test_feature_matrix,player_model.test_target_matrix),player_model.R2))
 				print projected_FD_points
@@ -233,10 +232,11 @@ class NBA(Sport): #Cole: data modelling may need to be refactored, might be more
 								'rebounds':'rebounds','steals':'steals','turnovers':'turnovers'}
 		
 		self.event_info_data_model=['attendance','duration','season_type']
-	 	##ALL FEATURES
 		self.features=[]#[['days_rest','param_days_rest'],["opposing_defense_PA","param_opposing_defense_PA"]]
-		self.days_back_features={'FD_points_mean':[3,5,10,15],'minutes_mean':[3,5,10,15],'FGA_mean':[3,5,10,15],'points_mean':[3,5,10,15],
-									'FD_points_medn':[3,5,10,15],'minutes_medn':[3,5,10,15],'FGA_medn':[3,5,10,15],'points_medn':[3,5,10,15]}
+
+		# self.days_back_features={'FD_points_mean':[2,3,5,10,15],'minutes_mean':[2,3,5,10,15],'FGA_mean':[2,3,5,10,15],'points_mean':[2,3,5,10,15],
+		# 							'FD_points_medn':[3,5,10,15],'minutes_medn':[3,5,10,15],'FGA_medn':[3,5,10,15],'points_medn':[3,5,10,15]}
+		self.days_back_features={'FD_points_medn':[2,3,5,10,15]}
 		self.data_model = ({'away_stats':self.db_data_model['bplayer'],'home_stats':self.db_data_model['bplayer']})	
 		self.backtest_date=None #dt.date.today().strftime('%Y-%m-%d')
 		self.backtest_contestID=None
@@ -745,8 +745,8 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 
 # nba=NBA(historize=True)
 
-# dbo.delete_by_date(nba.sport,'hist_event_data','2015-02-26','2015-02-26')
-# dbo.delete_by_date(nba.sport,'hist_player_data','2015-02-26','2015-02-26')
+# dbo.delete_by_date(nba.sport,'hist_event_data','2013-10-29','2014-04-16')
+# dbo.delete_by_date(nba.sport,'hist_player_data','2013-10-29','2014-04-16')
 
 # events=nba.get_daily_game_data('2013-10-29','2014-04-16',True) #2013 regular season
 # events=nba.get_daily_game_data('2014-10-28','2015-04-15',True) #2014 regular season

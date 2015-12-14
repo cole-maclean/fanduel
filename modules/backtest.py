@@ -133,7 +133,7 @@ def hist_model_score(sport,date):
 ##---------------------------------------
 ##0: feature engineering
 ##1: refactor backtest into class
-##2: refactor test_ian into class
+
 ##3: add a write to CSV function to track backtests or start using juptyer
 ##4: player maps!
 

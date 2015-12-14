@@ -37,8 +37,8 @@ class Model():
 				param_grid = dict(features__pca__n_components=[1],
 				                  features__univ_select__k=[1])
 			else:
-				param_grid = dict(features__pca__n_components=[1,2,3,4,5,6],
-				                  features__univ_select__k=[1,2,3,4,4,5,6])
+				param_grid = dict(features__pca__n_components=[1,2,3,4],
+				                  features__univ_select__k=[1,2,3,4])
 
 			grid_search = GridSearchCV(pipeline, param_grid=param_grid, verbose=0)
 			grid_search.fit(X, y)
@@ -50,9 +50,21 @@ class Model():
 			print e
 			self.modelled = False
 			return None
-		
+
+	def lin_regression(self, X, y): #Ian: test
+		try:
+			regr = linear_model.LassoCV()
+			regr.fit(X,y)
+			self.modelled = True
+			self.R2=r2_score(self.target_matrix,regr.predict(self.feature_matrix))
+			return regr
+		except ValueError,e:
+			print e
+			self.modelled = False
+			return None
+
 	def split_training_test_data(self,test_frac):
-		self.training_feature_matrix,self.test_feature_matrix, self.training_target_matrix,self.test_target_matrix= train_test_split(self.feature_matrix,self.target_matrix,test_size=test_frac,random_state=42)
+		self.training_feature_matrix,self.test_feature_matrix,self.training_target_matrix,self.test_target_matrix= train_test_split(self.feature_matrix,self.target_matrix,test_size=test_frac,random_state=42)
 		return self
 
 	def min_max_scaling(self,feature_data): #SVM's and K-means clustering are affected by feature scaling
@@ -62,7 +74,8 @@ class Model():
 
 	def FD_points_model(self,visualize = False): #Cole: need to indentify minimum dataset required to model, flag if player unmodelled
 		self.split_training_test_data(0.1)
-		self.model = self.best_estimator(self.training_feature_matrix,self.training_target_matrix)
+		# self.model = self.best_estimator(self.training_feature_matrix,self.training_target_matrix)
+		self.model = self.lin_regression(self.training_feature_matrix,self.training_target_matrix)
 		if self.modelled:
 			if visualize:
 				num_plots=len(self.feature_labels)
