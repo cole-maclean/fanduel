@@ -232,7 +232,7 @@ class NBA(Sport): #Cole: data modelling may need to be refactored, might be more
 								'rebounds':'rebounds','steals':'steals','turnovers':'turnovers'}
 		
 		self.event_info_data_model=['attendance','duration','season_type']
-		self.features=[]#[['days_rest','param_days_rest'],["opposing_defense_PA","param_opposing_defense_PA"]]
+		self.features=[['days_rest','param_days_rest'],["opposing_defense_PA","param_opposing_defense_PA"]]
 
 		# self.days_back_features={'FD_points_mean':[2,3,5,10,15],'minutes_mean':[2,3,5,10,15],'FGA_mean':[2,3,5,10,15],'points_mean':[2,3,5,10,15],
 		# 							'FD_points_medn':[3,5,10,15],'minutes_medn':[3,5,10,15],'FGA_medn':[3,5,10,15],'points_medn':[3,5,10,15]}
@@ -288,7 +288,7 @@ class NBA(Sport): #Cole: data modelling may need to be refactored, might be more
 		player_universe={}
 		for FD_playerid,data in FD_starting_player_data.iteritems():
 			print 'building player_universe for: %s on %s' % (FD_playerid,self.backtest_date)
-			db_df = self.get_db_gamedata(FD_playerid,'2014-10-01',end_date=Ugen.previous_day(date))
+			db_df = self.get_db_gamedata(FD_playerid,'2012-10-01',end_date=Ugen.previous_day(date)) #2012/2013/2014/2015 seasons
  			if db_df.empty: #Ian: need player maps!
  				continue
  			player_key = FD_playerid
@@ -743,10 +743,17 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 			return player_universe
 
 
+# loading 20140207-oklahoma-city-thunder-at-orlando-magic
+# Error retrieving file: [Errno 60] Operation timed out
+
 # nba=NBA(historize=True)
 
-# dbo.delete_by_date(nba.sport,'hist_event_data','2013-10-29','2014-04-16')
-# dbo.delete_by_date(nba.sport,'hist_player_data','2013-10-29','2014-04-16')
+
+# dbo.delete_by_date(nba.sport,'hist_event_data','2014-03-19','2014-03-19')
+# dbo.delete_by_date(nba.sport,'hist_player_data','2014-03-19','2014-03-19')
+
+
+# events=nba.get_daily_game_data('2012-10-30','2013-04-17',True) #2012 regular season
 
 # events=nba.get_daily_game_data('2013-10-29','2014-04-16',True) #2013 regular season
 # events=nba.get_daily_game_data('2014-10-28','2015-04-15',True) #2014 regular season

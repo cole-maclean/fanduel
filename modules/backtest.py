@@ -127,8 +127,6 @@ def hist_model_score(sport,date):
     plt.show()  
     return
 
-
-
 ###                TO DO
 ##---------------------------------------
 ##0: feature engineering
@@ -136,8 +134,6 @@ def hist_model_score(sport,date):
 
 ##3: add a write to CSV function to track backtests or start using juptyer
 ##4: player maps!
-
-##6: re-assign FD positions if they are a F or G - optimizer won't accept those
 ##7: add db check if event has already been historized
 ##8: study more information from hist_lineups_dict --> do we do better in certain contest sizes??
 
