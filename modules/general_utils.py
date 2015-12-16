@@ -9,6 +9,31 @@ import csv
 import unicodedata
 import os
 
+def split_datetime_range(start, end, split):
+    """Splits a range of dates into a list of equal ranges
+    with remaining time allocated to the last of the series.
+    This function doesn't overlap dates, so seconds are lost
+    inbetween each range
+
+    Parameters:
+      start - The start of the range
+      end - The end of the range
+      split - How many ranges to produce
+
+    Returns:
+      List of individual ranges, where each range is also a list containing two dates
+    """
+
+    start = datetime.strptime(start,"%Y-%m-%d")
+    end = datetime.strptime(end,"%Y-%m-%d")
+    total_seconds = int((end - start).total_seconds())
+    delta = total_seconds / split
+    starts = [start + timedelta(seconds=delta * i) for i in range(split)]
+    ends = [s + timedelta(seconds=delta - 1) for s in starts]
+    ends[len(ends) - 1] = end
+    date_tuples=zip(starts, ends)
+    return[list(date_tuple) for date_tuple in date_tuples]
+
 def convert_proj_total(total):
 	if len(total)==2:
 		if unicodedata.numeric(total[1])==0.5:
