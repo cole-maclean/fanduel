@@ -29,19 +29,19 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 	def FD_points_model(self,df,visualize = False):
 		FD_projection= collections.namedtuple("FD_projection", ["projected_points", "confidence","R2"])
 		player_model_data,parameter_array = self.build_model_dataset(df)
-		print '%s parameter array: %s' % (df['player'][0],parameter_array)
+		print ('%s parameter array: %s' % (df['player'][0],parameter_array))
 		player_model = Model.Model(player_model_data,df['player'][0],'FD_points')
 		player_model.FD_points_model(visualize)
 		if player_model.modelled:	#Cole: need to develop parameters for each player
-			print '%s modelled' % df['player'][0]
+			print ('%s modelled' % df['player'][0])
 			if len(player_model.test_target_matrix) > 1: #Test dataset needs to contain at least 2 datapoints to compute score
 				projected_FD_points = (FD_projection(player_model.model.predict(parameter_array)[-1],
 											player_model.model.score(player_model.test_feature_matrix,player_model.test_target_matrix),player_model.R2))
-				print projected_FD_points
+				print (projected_FD_points)
 			else:
 				projected_FD_points = FD_projection(player_model.model.predict(parameter_array)[-1],0)
 		else:
-			print '%s not modelled' % df['player'][0]
+			print ('%s not modelled' % df['player'][0])
 			try:
 				default_projection = self.player_model_data['FD_median'][-1]
 				projected_FD_points = FD_projection(0,0,0) #Cole: this is the default model prediction and confidence if player cannot be modelled
@@ -87,13 +87,13 @@ class Sport(): #Cole: Class has functions that should be stripped out and place 
 				if store == False:
 					game_data = XMLStats.main(self,'boxscore',None)
 				elif store == True: #and self.gameid not in self.gameids().all_gameids: 
-					print "loading " + game_id
+					print ("loading " + game_id)
 					# self.parse_event_data(day_events[indx],event_date,odds_dict) 
 					game_data = XMLStats.main(self,'boxscore',None)
 					if game_data != None:
 						self.parse_event_data(game_data)
-					 	parsed_data = self.parse_boxscore_data(game_data)
-					print game_id + " succesfully loaded"
+						parsed_data = self.parse_boxscore_data(game_data)
+					print (game_id + " succesfully loaded")
 				else:
 					game_data = None
 				if game_data:
@@ -297,12 +297,12 @@ class NBA(Sport): #Cole: data modelling may need to be refactored, might be more
 		
 		player_universe={}
 		for FD_playerid,data in FD_starting_player_data.iteritems():#FD_starting_player_data.iteritems():
-			print 'building player_universe for: %s on %s' % (FD_playerid,self.backtest_date)
+			print ('building player_universe for: %s on %s' % (FD_playerid,self.backtest_date))
 			db_df = self.get_db_gamedata(FD_playerid,'2012-10-01',end_date=Ugen.previous_day(date)) #2012/2013/2014/2015 seasons
- 			if db_df.empty: #Ian: need player maps!
- 				continue
- 			player_key = FD_playerid
-			if player_key == db_df['player'][0]:
+			player_key = FD_playerid
+			if db_df.empty: #Ian: need player maps!
+				continue
+ 			if player_key == db_df['player'][0]:
 				projected_FD_points = self.FD_points_model(db_df,False)
 				if projected_FD_points.confidence<0.1:
 					continue #don't add player to player_universe
@@ -317,7 +317,7 @@ class NBA(Sport): #Cole: data modelling may need to be refactored, might be more
 				tmp_dict = position_map.copy()
 				player_universe[player_key].update(tmp_dict)
 			else:
-				print player_key + ' not in db_player_data'
+				print (player_key + ' not in db_player_data')
 		return player_universe
 
 	def hist_starting_lineups(self,player_universe): #historical starting lineups for backtesting
@@ -326,7 +326,7 @@ class NBA(Sport): #Cole: data modelling may need to be refactored, might be more
 		return [df['player'][0] for df in db_data if (not df.empty and df['minutes'][0]>10)]
 
 	def build_model_dataset(self,df):
-		print 'now building dataset for %s' % df['player'][0]
+		print ('now building dataset for %s' % df['player'][0])
 		if self.backtest_date: #Ian: may be a better way to integrate this?
 			db_df=self.get_db_gamedata(df['player'][0],self.backtest_date,self.backtest_date)
 			df['matchup']=(db_df['away_team'][0] if db_df['team'][0]==db_df['home_team'][0] else db_df['away_team'][0])
@@ -421,7 +421,7 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 				event_data_dict['vegas_odds'][home_team]=odds_data[home_team]
 				event_data_dict['vegas_odds'][away_team]=odds_data[away_team]
 			except KeyError:
-				print 'no vegas odds for event: %s' % event_data['event_id']
+				print ('no vegas odds for event: %s' % event_data['event_id'])
 			event_data_dict['stadium'] = event_data['home_team']['site_name']
 			event_date = event_date[0:4] + "-" + event_date[4:6] + "-" + event_date[6:8]
 			team_dict,player_dict = ds.mlb_starting_lineups(event_date)
@@ -432,7 +432,7 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 					event_data_dict['wunderground_forecast']=wunderground_dict
 					event_data_dict['wind']=str(wunderground_dict['wind']['wind_dir'])+'_'+str(wunderground_dict['wind']['wind_speed'])
 				except:
-					print 'no weather data for %s' % event_data_dict['event_id']
+					print ('no weather data for %s' % event_data_dict['event_id'])
 				event_data_dict['home_starting_lineup'] = team_dict[home_team]['lineup']
 				event_data_dict['away_starting_lineup'] = team_dict[away_team]['lineup']
 				event_data_dict['forecast'] = team_dict[home_team]['weather_forecast']
@@ -441,7 +441,7 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 				else:
 					event_data_dict['PPD'] = False
 			else:
-				print 'no data from baseball lineups website for this event'
+				print ('no data from baseball lineups website for this event')
 			cols = ", ".join(event_data_dict.keys())
 			data = ", ".join(['"' + unicode(v) + '"' for v in event_data_dict.values()])
 			dbo.insert_mysql('event_data',cols,data)
@@ -458,7 +458,7 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 				try:
 					player_data=player_data[player] 
 				except KeyError:
-					print 'player %s not in db, needs new player map' % player
+					print ('player %s not in db, needs new player map' % player)
 					rw=2
 					map_list=[]
 					while Cell("Output",rw,7).value:
@@ -488,7 +488,7 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 								if plate_appearances>0:
 									strikeout_rate=float(strike_outs/plate_appearances)
 									if numpy.isnan(strikeout_rate):
-										print "isnan error for calculated strikeout rate %s,%s" % (player,player_data['GameID'][reverse_index])
+										print ("isnan error for calculated strikeout rate %s,%s" % (player,player_data['GameID'][reverse_index]))
 										player_strikeout_rate_splits.append(0.200)
 									else:
 										player_strikeout_rate_splits.append(strikeout_rate)
@@ -501,10 +501,10 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 									else:
 										player_slg_splits.append(0)
 						except ValueError: #This is when there is no starting lineups data (usually)
-							#print 'Value error %s %s' %(player_data["Date"][reverse_index],player)
+							#print ('Value error %s %s' %(player_data["Date"][reverse_index],player))
 							pass
 					except IndexError:
-						print 'index error'
+						print ('index error')
 						break
 				batting_order=lineup_data[0][player]['batting_order']
 				if len(player_strikeout_rate_splits)>2: #say we need 3 min values to incorporate the players strikeout rate into feature
@@ -520,7 +520,7 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 		lineup_stats_dict['strikeout_rate']=numpy.sum(hist_lineup_strikeout_rate)/numpy.sum(strikeout_PAs_list)
 		lineup_stats_dict['ops']=numpy.sum(hist_lineup_ops)/numpy.sum(ops_PAs_list)
 		lineup_stats_dict['slg']=numpy.sum(hist_lineup_slg)/numpy.sum(slg_PAs_list)
-		# print lineup_stats_dict
+		# print (lineup_stats_dict)
 		# os.system('pause')
 		return lineup_stats_dict		
 	
@@ -612,7 +612,7 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 		for outer_key,outer_val in season_averages.iteritems(): 
 			for inner_key,inner_val in outer_val.iteritems():
 				if numpy.isnan(inner_val) and "_" in inner_key:
-					# print 'nan found in %s for following key:val - %s:%s' %(outer_key,inner_key,inner_val)
+					# print ('nan found in %s for following key:val - %s:%s' %(outer_key,inner_key,inner_val))
 					split_key=inner_key.split("_")
 					if split_key[0]=='2013':
 						season_averages[outer_key][split_key[0]+'_away']=0
@@ -644,7 +644,7 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 		return FD_points
 
 	def build_model_dataset(self,df):
-		print 'now building dataset for %s' % df['name'][0]
+		print ('now building dataset for %s' % df['name'][0])
 		feature_df= pandas.DataFrame(ff.FD_points(df))
 		parameter_array = []
 		for feature in self.features[df['Player_Type'][0]]:
@@ -658,7 +658,7 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 		forecast_data =[{'forecast':data['forecast'].split("-")[1],'PoP':float(data['forecast'].split("-")[-1].replace("%",""))} for data in event_data.values()]
 		vec = DictVectorizer()
 		transformed_forecast_data = vec.fit_transform(forecast_data).toarray()
-		print transformed_forecast_data
+		print (transformed_forecast_data)
 		PPD_data = numpy.array([0.0 if data['PPD'] == 'False' else 1.0 for data in event_data.values()])
 		clf = DecisionTreeClassifier(min_samples_split=1).fit(transformed_forecast_data, PPD_data)
 		PPD_pred =clf.predict(vec.transform(forecast))
@@ -677,7 +677,7 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 			teams,starting_lineups = ds.mlb_starting_lineups() #Cole: need to write verification that all required teams have lineups
 		omitted_teams = []
 		missing_lineups = [team for team in teams.keys() if len(teams[team]['lineup'])<8 and team not in omitted_teams] #Cole: this whole method needs to be split out into more reasonable functions
-		print missing_lineups
+		print (missing_lineups)
 		starting_players = [player.split("_")[0] for player in starting_lineups.keys() if starting_lineups[player]['teamid'] not in omitted_teams and 'PPD' not in starting_lineups[player]['start_time']] #Cole: is the PPD working?
 		FD_starting_player_data = {player['first_name'] + " " + player['last_name']:player for player in FD_player_data if player['first_name'] + " " + player['last_name'] in starting_players} #data[1] is FD_player_name
 		player_universe = {}
@@ -702,7 +702,7 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 				tmp_dict = position_map.copy()
 				player_universe[player_key].update(tmp_dict)
 			else:
-				print player_key + ' not in db_player_data'
+				print (player_key + ' not in db_player_data')
 		return player_universe
 
 	def hist_build_player_universe(self,date,contestID): #Ian: Decided to build separate from original, thought it would get too big..consider refactoring both.. 'yyyy-mm-dd'
@@ -716,11 +716,11 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 
 			#Ian: if you add this back in add weather var back into FD_points_model function call
 			#weather_forecast={team:weather.weather_hist(team,date,start_time) for team,start_time in team_dict.iteritems()}
-			# print 'getting weather'
+			# print ('getting weather')
 			# for team,start_time in team_dict.iteritems():
 			# 	weather_forecast[team]=weather.weather_hist(team,date,start_time)
 			# 	time.sleep(6.1)
-			#print 'weather retrieved'
+			#print ('weather retrieved')
 
 			omitted_teams = []
 			for FD_playerid,data in FD_db_data.iteritems(): #Ian: could this be turned into generator??
@@ -760,7 +760,7 @@ class MLB(Sport): #Cole: data modelling may need to be refactored, might be more
 					tmp_dict = position_map.copy()
 					player_universe[player_key].update(tmp_dict)
 				else:
-					print player_key + ' not in db_player_data'
+					print (player_key + ' not in db_player_data')
 			return player_universe
 
 
