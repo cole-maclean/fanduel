@@ -1,6 +1,5 @@
 import json
 import urllib2
-import os
 import time
 import datetime
 import ast
@@ -16,7 +15,6 @@ import FD_operations as fdo
 import general_utils as Ugen
 import subprocess
 import string
-import weather
 from selenium import webdriver
 from selenium.webdriver.support.ui import Select
 import os
@@ -305,7 +303,7 @@ def roster_nerds(sport):
 	driver = webdriver.Chrome()
 	driver.get(url)
 	time.sleep(5)
-	html=driver.page_sourceB
+	html=driver.page_source
 	driver.close() 
 	# html= urllib2.urlopen(url).read()
 	soup = BeautifulSoup(html)
@@ -320,7 +318,35 @@ def roster_nerds(sport):
 		lineup_string=lineup_string+e+', '
 	return lineup_string.rsplit(', ',1)[0]
 
+def get_soup(url):
+	content=urllib2.urlopen(url).read()
+	return BeautifulSoup(content,"html.parser")
 
+def nba_starting_lineups(date=time.strftime("%Y-%m-%d")):
+	print date
+	player_dict={}
+	soup=get_soup('https://rotogrinders.com/lineups/nba?date='+date+'&site=fanduel')
+	for matchup in soup.findAll('li',{"data-role":"lineup-card"}): #Ian: turn into generator!!
+		for player in matchup.find("div",{"class":"blk away-team"}).findAll('li',{"class":"player"}): 
+			player_dict.update(nba_build_player_dict(player,matchup,'away'))
+		for player in matchup.find("div",{"class":"blk home-team"}).findAll('li',{"class":"player"}): 
+			player_dict.update(nba_build_player_dict(player,matchup,'away'))
+	return
+
+def nba_build_player_dict(player,matchup,home_away,rank):
+	player_dict={}
+	player_name=player.find('a',{"class":"player-popup"})['title']
+	if home_away=='home':
+		player_dict[player_name]={'team':matchup['data-home'],'opponent':matchup['data-away'],'home_away':home_away}
+	else:
+		player_dict[player_name]={'team':matchup['data-away'],'opponent':matchup['data-home'],'home_away':home_away}
+	try:
+		player_dict['status']=player.findAll('span',{"class":"stats"})[1].get_text().strip()
+	except:
+		player_dict['status']='O'
+	return player_dict
+
+# nba_starting_lineups('2015-12-25')
 
 # a,b=mlb_starting_lineups('2015-10-04')
 # print a

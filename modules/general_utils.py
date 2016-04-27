@@ -8,6 +8,27 @@ import sys
 import csv
 import unicodedata
 import os
+from pandas.tools.plotting import scatter_matrix
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d.axes3d import Axes3D
+import seaborn as sns
+import matplotlib as mpl
+from scipy import stats
+
+def explore_list(list_name,num_iter): #Change so it selects random X entries then prints those, rather than first X
+	for entry,i in zip(list_name,range(num_iter)):
+		print (entry)
+
+def seaborn_plot(df,plot_type='pairplot',columns=False):
+	sns.set()
+	mpl.rc("figure", figsize=(16, 8.65))
+	plotting_df=(df[columns] if columns else df)
+	if plot_type=='pairplot':
+		sns.pairplot(plotting_df)
+	elif plot_type=='corr_plot':
+		sns.corrplot(plotting_df)
+	sns.plt.show()
+	return
 
 def split_datetime_range(start, end, split):
     """Splits a range of dates into a list of equal ranges

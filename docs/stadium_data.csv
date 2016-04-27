@@ -1,0 +1,31 @@
+stadium,home_team,LHB,RHB,HR
+"Angel Stadium of Anaheim",LAA,0.984,1.064,0.915
+"AT&T Park",SF,0.993,0.952,0.739
+"Busch Stadium",STL,0.997,0.943,0.869
+"Chase Field",ARI,0.986,1.047,0.962
+"Citi Field",NYM,0.903,0.95,1.061
+"Citizens Bank Park",PHI,1.032,1.017,1.48
+"Comerica Park",DET,1.006,1.089,1.061
+"Coors Field",COL,1.075,1.155,1.223
+"Dodger Stadium",LAD,0.966,0.961,1.053
+"Fenway Park",BOS,1.041,1.062,0.799
+"Globe Life Park in Arlington",TEX,0.994,1.015,0.89
+"Great American Ball Park",CIN,1.044,0.953,1.49
+"Kauffman Stadium",KC,0.996,0.977,0.868
+"Marlins Park",MIA,0.937,0.954,0.67
+"Miller Park",MIL,1.023,1.003,1.171
+"Minute Maid Park",HOU,1.039,1.025,1.164
+"Nationals Park",WAS,0.964,0.992,0.737
+"O.co Coliseum",OAK,0.947,0.983,0.847
+"Oriole Park at Camden Yards",BAL,1.069,1.02,1.172
+"PETCO Park",SD,0.968,0.912,0.983
+"PNC Park",PIT,0.928,0.941,0.675
+"Progressive Field",CLE,1,0.99,1.036
+"Rogers Centre",TOR,1.076,1.088,1.387
+"Safeco Field",SEA,0.944,0.985,0.933
+"Target Field",MIN,0.998,1.024,0.831
+"Tropicana Field",TB,1.002,0.974,1.015
+"Turner Field",ATL,1.009,0.922,0.921
+"U.S. Cellular Field",CHW,1.018,0.979,1.162
+"Wrigley Field",CHC,1.024,1.008,1.138
+"Yankee Stadium",NYY,1.036,1.015,1.181

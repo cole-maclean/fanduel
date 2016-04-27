@@ -38,22 +38,26 @@ def run_program(sport_list,update_model_interval,max_bet):
 						if FDSession.enter_contest(contest['entries']['_url'],roster['roster'],entered_contest) == True:
 							current_bet = current_bet + contest['entry_fee']
 							print 'current bet=' + str(current_bet)
-		print 'loop'
-		os.system('pause')
+		raw_input('Loop: Enter to continue')
 
 def build_contest_rosters(FDSession,sport_list):
 	contest_rosters = {}
+	model_roster={}
 	for sport in sport_list:
 		if sport == 'MLB':
 			Sport_Class = Sport.MLB()
-		daily_contests = FDSession.get_daily_contests(sport,[19])
-		print daily_contests
+		elif sport=='NBA':
+			Sport_Class=Sport.NBA()
+		daily_contests = FDSession.get_daily_contests(sport)
+		print 'daily contests: %s' % daily_contests
 		for contest_id,url in daily_contests.iteritems():
-			model_roster = Sport_Class.optimal_roster(FDSession,url,-100,False,False)
+			sport_output=Sport_Class.optimal_roster(FDSession,url,-100,False,False)
+			model_roster={'confidence':sport_output['confidence'],'roster':sport_output['roster'],
+							'optimizer':sport_output['optimizer']}
 			model_roster['slate_player_count'] = len(FDSession.fanduel_api_data(url)['players'])
 			model_roster['class'] = Sport_Class
-		if model_roster['roster'] != []:
-			contest_rosters[contest_id] = model_roster
+			if model_roster['roster'] != []:
+				contest_rosters[contest_id] = model_roster
 	return contest_rosters
 
 def contest_entry_decider(FDSession,contest,roster):
@@ -71,4 +75,4 @@ def contest_entry_decider(FDSession,contest,roster):
 
 # MLB=Sport.MLB()
 # MLB.get_daily_game_data('20150831','20150901',True)
-print run_program(["MLB"],10,20)
+# print run_program(["NBA"],10,1)

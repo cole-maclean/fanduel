@@ -1,24 +1,17 @@
-import os
-import time
+# coding=utf-8
+import time,ast
 import datetime as dt
-import ast
+import main
 import database_operations as dbo
 import data_scrapping as ds
 import data_scrapping_utils as Uds
-import re
-import requests
 import FD_operations as fdo
 import general_utils as Ugen
-import sys
-import TeamOdds
-import json
-import string
 import pandas
 import Sport
 import numpy as np
 import pprint
 import features
-import random
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d.axes3d import Axes3D
 
@@ -43,28 +36,24 @@ def get_contests(sport,date):
     resultset=dbo.read_from_db('hist_fanduel_data',query)
     return [contest['contest_ID'] for contest in resultset]
 
-def hist_model_lineups(sport,start_date,end_date): #date format in 'YYYY-MM-DD'
+def hist_model_lineups(sport,start_date,end_date): #date format in 'YYYY-MM-DD' #Ian: Refactor whole module into class
     date_list = [d.strftime('%Y-%m-%d') for d in pandas.date_range(start_date,end_date)]
     hist_lineups_dict={}
     if sport=='MLB':
         sport=Sport.MLB()
     elif sport=='NBA':
-        print 'initializing NBA class'
         sport=Sport.NBA()
-        print 'nba class initialized'
-    else:
-        print 'sport: %s not configured'
-        return
     for date in date_list:
         if date==dt.date.today().strftime('%Y-%m-%d'): #Ian: need to change this so it checks if date is in db...
             break
         contest_list=get_contests(sport.sport,date)
-        # print contest_list
-        # raw_input('test')
         hist_lineups_dict[date]={}
-        for contest in contest_list:    
+        for contest in contest_list: 
             print 'contest: %s date: %s sport: %s' % (contest,date,sport.sport)
+            start = time.time()
             output=sport.optimal_roster(0,0,-100,date,contest)
+            end = time.time()
+            print 'time elapsed: %s' % (end - start)
             player_list=[player for player in output['roster'].keys()]
             roster_points,count=hist_lineup_points(sport,player_list,date)
             print {'points':roster_points,'missing_players':count,'date':date,'contest':contest}
@@ -77,7 +66,11 @@ def hist_model_lineups(sport,start_date,end_date): #date format in 'YYYY-MM-DD'
 
 def hist_lineup_points(sport,lineup,date):
     ff=features.FD_features(sport.sport,[])
+    dfn_player_map={'Ish Smith':'Ishmael Smith','J.J. Barea':'Jose Barea','Patty Mills':'Patrick Mills',
+                    'Dennis Schroder':'Dennis Schröder','Nikola Vucevic':'Nikola Vučević',
+                    'Kristaps Porzingis':'Kristaps Porziņģis'}
     lineup_points=0
+    lineup=[dfn_player_map[player] if player in dfn_player_map.keys() else player for player in lineup]
     db_data=[sport.get_db_gamedata(player,date,date) for player in lineup]
     count=sum([1 if db_df.empty else 0 for db_df in db_data])
     lineup_points=sum([ff.FD_points(db_df)[0] for db_df in db_data if not db_df.empty])
@@ -92,7 +85,9 @@ def average_lineup_points(hist_lineups_dict):
 
 def run_backtest(length,sport):
     if length=='full':
-        hist_lineups_dict=hist_model_lineups(sport, '2015-11-18','2015-12-10')
+        # hist_lineups_dict=hist_model_lineups(sport, '2015-11-18','2015-12-10')
+        # hist_lineups_dict=hist_model_lineups(sport, '2015-12-11','2015-12-28')
+        hist_lineups_dict=hist_model_lineups(sport, '2015-11-18','2015-12-28')
     else:
         hist_lineups_dict=hist_model_lineups(sport, '2015-12-12','2015-12-12')
     pp = pprint.PrettyPrinter(indent=4)
@@ -126,10 +121,23 @@ def hist_model_score(sport,date):
     plt.show()  
     return
 
+def todays_lineups(sport_list):
+    FDSession = fdo.FDSession()
+    contest_rosters = main.build_contest_rosters(FDSession,sport_list)
+    #write to csv!
+    return
+
 ###                TO DO
 ##---------------------------------------
+#does order matter for feature_df and parameter array??? does it just work out?
+
 ##0: feature engineering
 ##1: refactor backtest into class
+##2: historize opposing_defense_stats
+##3: check points diff vs. confidence
+
+##for features like FD_points_mean, median etc. does it make sense that we are including the game that day in those means/medians??
+##it will increase our model R2/conf but does nothing for future predictions..
 
 ##3: add a write to CSV function to track backtests or start using juptyer
 ##4: player maps!

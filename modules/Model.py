@@ -15,10 +15,10 @@ from sklearn.feature_selection import SelectKBest
 import math
 
 class Model():
-	def __init__(self,model_df,player): #Cole: Class accepts model_data in form {'feature1':[data],feature2:[data]}
+	def __init__(self,model_df,player,target): #Cole: Class accepts model_data in form {'feature1':[data],feature2:[data]}
 		self.player = player
 		self.model_data = model_df
-		self.target = 'FD_points'
+		self.target = target
 		self.dataset_length = len(model_df[self.target])
 		self.target_matrix = numpy.array(model_df[self.target]).astype(float)
 		self.feature_matrix = numpy.array([[model_df[key][index] for key in model_df.keys() if key != self.target] for index in range(0,len(model_df[self.target]))]).astype(float)
@@ -44,7 +44,7 @@ class Model():
 			grid_search.fit(X, y)
 			self.modelled = True
 			regr = grid_search
-			self.R2=r2_score(self.target_matrix,regr.predict(self.feature_matrix))
+			self.R2=r2_score(self.target_matrix,regr.predict(self.feature_matrix)) #Ian: should do R2 on predicted points vs. points on a given day
 			return regr
 		except ValueError,e:
 			print e
